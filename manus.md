@@ -1,7 +1,4 @@
 # AI Manus Backend 架构文档
-
-  
-
 ## 目录
 - [1. 概述](#1-概述)
 - [2. 整体架构](#2-整体架构)
@@ -10,45 +7,18 @@
 - [5. 数据模型](#5-数据模型)
 - [6. 外部集成](#6-外部集成)
 - [7. 架构图](#7-架构图)
-
-  
-
 ---
-
-  
-
 ## 1. 概述
-
-  
-
 AI Manus Backend 是一个基于 FastAPI 的智能对话代理系统,采用领域驱动设计(DDD)架构模式。系统的核心功能是通过双Agent模式(Planner + Executor)实现智能任务规划和执行,支持Shell命令执行、浏览器自动化、文件操作、网络搜索等多种工具调用。
-
-  
-
 ### 1.1 技术栈
-
-  
-
 - **Web框架**: FastAPI (异步)
-
 - **数据库**: MongoDB (Beanie ODM)
-
 - **缓存**: Redis (Streams, Cache)
-
 - **LLM**: OpenAI API / 兼容的API (如DeepSeek)
-
 - **容器化**: Docker (沙盒环境)
-
 - **浏览器自动化**: Playwright
-
 - **实时通信**: Server-Sent Events (SSE) + WebSocket
-
-  
-
 ### 1.2 核心特性
-
-  
-
 - **领域驱动设计**: 清晰的分层架构,业务逻辑与技术实现分离
 
 - **双Agent系统**: Planner Agent(规划) + Execution Agent(执行)
@@ -3271,5 +3241,5 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2MTQ0MDU0MTYsLTI2OTgwMjY0NF19
+eyJoaXN0b3J5IjpbMTUyNTI2ODI4MCwtMjY5ODAyNjQ0XX0=
 -->

@@ -2152,75 +2152,47 @@ style Close fill:#ffcdd2
 ```python
 # backend/app/infrastructure/external/task/redis_task.py:15
 class RedisStreamTask(Task):
-# 类级别字典,所有实例共享
-_task_registry: Dict[str, 'RedisStreamTask'] = {}
+	# 类级别字典,所有实例共享
+	_task_registry: Dict[str, 'RedisStreamTask'] = {}
 
 def __init__(self, runner: TaskRunner):
-self._id = str(uuid.uuid4())
-# 注册到字典
-RedisStreamTask._task_registry[self._id] = self
+	self._id = str(uuid.uuid4())
+	# 注册到字典
+	RedisStreamTask._task_registry[self._id] = self
 
 @classmethod
 def get(cls, task_id: str) -> Optional['RedisStreamTask']:
-"""从注册表获取任务实例"""
-return cls._task_registry.get(task_id)
+	"""从注册表获取任务实例"""
+	return cls._task_registry.get(task_id)
 
 def _cleanup_registry(self) -> None:
-"""从注册表移除"""
-if self._id in RedisStreamTask._task_registry:
-del RedisStreamTask._task_registry[self._id]
+	"""从注册表移除"""
+	if self._id in RedisStreamTask._task_registry:
+		del RedisStreamTask._task_registry[self._id]
 ```
-
-  
-
 **注册表生命周期**:
-
-  
-
 ```mermaid
-
 stateDiagram-v2
-
 [*] --> Created: Task.create(runner)
-
-  
 
 Created --> Registered: 加入_task_registry
 
-  
-
 Registered --> Running: task.run()
 
-  
-
 Running --> Cancelled: task.cancel()
-
 Running --> Completed: 自然完成
 
-  
-
 Cancelled --> Cleanup: _cleanup_registry()
-
 Completed --> Cleanup
-
-  
 
 Cleanup --> Removed: 从注册表删除
 
-  
-
 Removed --> [*]
 
-  
-
 note right of Registered
-
 内存状态：
-
 task_registry[id] = self
-
 可通过 Task.get(id) 查询
-
 end note
 
   
@@ -2651,7 +2623,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2MTE2OTE0NDUsMTExMDI4NDAyOSwtNz
-g2ODg0NzEyLC0xNzEwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAy
-NjQ0XX0=
+eyJoaXN0b3J5IjpbLTE2NjQ1NjU4OSwxMTEwMjg0MDI5LC03OD
+Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
+NDRdfQ==
 -->

@@ -550,70 +550,45 @@ class DockerSandbox:
 **PlaywrightBrowser**: Playwright浏览器实现
 ```python
 class PlaywrightBrowser:
-"""
-使用Playwright通过CDP连接到沙盒浏览器
-- 页面导航
-- 元素交互(点击、输入)
-- 截图
-- JavaScript执行
-- 控制台输出查看
-"""
+	"""
+	使用Playwright通过CDP连接到沙盒浏览器
+	- 页面导航
+	- 元素交互(点击、输入)
+	- 截图
+	- JavaScript执行
+	- 控制台输出查看
+	"""
 
-async def goto(url: str):
-"""导航到URL"""
+	async def goto(url: str):
+	"""导航到URL"""
 
-async def click(selector: str):
-"""点击元素"""
+	async def click(selector: str):
+	"""点击元素"""
 
-async def screenshot() -> bytes:
-"""截图"""
-
+	async def screenshot() -> bytes:
+	"""截图"""
 ```
 
-  
-
 **RedisTask**: Redis任务管理
-
-  
-
 ```python
-
 class RedisTask:
+	"""
+	基于Redis Streams的任务管理
+	- 任务创建和执行
+	- 输入输出流通信
+	- 任务取消
+	- 任务注册表
+	"""
 
-"""
+	@classmethod
+	def create(task_runner: TaskRunner) -> Task:
+	"""创建任务"""
 
-基于Redis Streams的任务管理
+	async def run():
+	"""启动任务执行"""
 
-- 任务创建和执行
-
-- 输入输出流通信
-
-- 任务取消
-
-- 任务注册表
-
-"""
-
-  
-
-@classmethod
-
-def create(task_runner: TaskRunner) -> Task:
-
-"""创建任务"""
-
-  
-
-async def run():
-
-"""启动任务执行"""
-
-  
-
-def cancel():
-
-"""取消任务"""
-
+	def cancel():
+	"""取消任务"""
 ```
 
   
@@ -2548,6 +2523,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjc4NDA2NDMzLDU3MTE4MTMyOSwtMjY5OD
-AyNjQ0XX0=
+eyJoaXN0b3J5IjpbLTE4MDM1MDQ4NDksNTcxMTgxMzI5LC0yNj
+k4MDI2NDRdfQ==
 -->

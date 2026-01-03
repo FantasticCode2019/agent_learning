@@ -2169,80 +2169,39 @@ style Output fill:#e8f5e9
   
 
 ### 7.3 技术栈依赖关系
-
-  
-
 ```mermaid
-
 flowchart TD
-
 subgraph Application[应用代码]
-
 FastAPI[FastAPI<br/>Web框架]
-
 Pydantic[Pydantic<br/>数据验证]
-
 AsyncIO[AsyncIO<br/>异步编程]
-
 end
-
-  
 
 subgraph Database[数据库]
-
 MongoDB[MongoDB<br/>文档数据库]
-
 Beanie[Beanie<br/>ODM]
-
 Redis[Redis<br/>内存数据库]
-
 end
-
-  
 
 subgraph External[外部服务]
-
 OpenAI[OpenAI API<br/>LLM]
-
 Docker[Docker Engine<br/>容器化]
-
 Playwright[Playwright<br/>浏览器自动化]
-
 end
-
-  
 
 subgraph Infrastructure[基础设施]
-
 Network[Docker Network<br/>容器网络]
-
 Volume[Docker Volume<br/>数据卷]
-
 end
 
-  
-
 FastAPI --> Pydantic
-
 FastAPI --> AsyncIO
-
-  
-
 Beanie --> MongoDB
-
 AsyncIO --> MongoDB
-
 AsyncIO --> Redis
-
-  
-
 Application --> Database
-
 Application --> External
-
 External --> Infrastructure
-
-  
 
 style Application fill:#e1f5ff
 
@@ -2254,18 +2213,8 @@ style Infrastructure fill:#e8f5e9
 
 ```
 
-  
-
----
-
-  
-
 ## 8. 设计模式总结
-
-  
-
 ### 8.1 使用的设计模式
-
 | 设计模式 | 应用位置 | 说明 |
 |---------|---------|------|
 | **分层架构** | 整体架构 | Domain, Application, Infrastructure, Interfaces四层分离 |
@@ -2312,6 +2261,6 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTA1MjY3MTA4MCwtNzg2ODg0NzEyLC0xNz
+eyJoaXN0b3J5IjpbLTQyNjIyMjU4NywtNzg2ODg0NzEyLC0xNz
 EwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAyNjQ0XX0=
 -->

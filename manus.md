@@ -2135,82 +2135,40 @@ CheckNull -->|否| Parse[解析事件]
 
 Parse --> Yield[yield event 给前端]
 
-  
-
 Yield --> CheckType{事件类型?}
 
-  
-
 CheckType -->|DoneEvent| Break[break退出]
-
 CheckType -->|ErrorEvent| Break
-
 CheckType -->|WaitEvent| Break
-
 CheckType -->|其他| Loop
-
-  
 
 Break --> Close([SSE连接关闭])
 
-  
-
 style Break fill:#ffebee
-
 style Close fill:#ffcdd2
-
 ```
-
-  
-
 #### 6.6.5 内存注册表管理
-
-  
-
 **RedisTask 注册表实现**:
-
-  
-
 ```python
-
 # backend/app/infrastructure/external/task/redis_task.py:15
-
 class RedisStreamTask(Task):
-
 # 类级别字典,所有实例共享
-
 _task_registry: Dict[str, 'RedisStreamTask'] = {}
 
-  
-
 def __init__(self, runner: TaskRunner):
-
 self._id = str(uuid.uuid4())
-
 # 注册到字典
-
 RedisStreamTask._task_registry[self._id] = self
 
-  
-
 @classmethod
-
 def get(cls, task_id: str) -> Optional['RedisStreamTask']:
-
 """从注册表获取任务实例"""
-
 return cls._task_registry.get(task_id)
 
-  
-
 def _cleanup_registry(self) -> None:
-
 """从注册表移除"""
-
 if self._id in RedisStreamTask._task_registry:
-
 del RedisStreamTask._task_registry[self._id]
-
 ```
 
   
@@ -2693,7 +2651,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjU1NzA0ODU1LDExMTAyODQwMjksLTc4Nj
-g4NDcxMiwtMTcxMDIyMjIyMyw1NzExODEzMjksLTI2OTgwMjY0
-NF19
+eyJoaXN0b3J5IjpbLTE2MTE2OTE0NDUsMTExMDI4NDAyOSwtNz
+g2ODg0NzEyLC0xNzEwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAy
+NjQ0XX0=
 -->

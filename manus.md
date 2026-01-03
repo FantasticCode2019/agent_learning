@@ -1448,51 +1448,27 @@ datetime latest_message_at
 int unread_message_count
 }
 
-  
-
 EVENT {
-
 string id PK
-
 string type
-
 datetime timestamp
-
 json data
-
 }
-
-  
 
 PLAN {
-
 string title
-
 string message
-
 array steps
-
 string status
-
 int completed_steps
-
 }
-
-  
 
 STEP {
-
 string id PK
-
 string description
-
 string status
-
 string result
-
 }
-
-  
 
 SANDBOX {
 
@@ -2281,7 +2257,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIzODMwMzMwMCwxMTEwMjg0MDI5LC03OD
+eyJoaXN0b3J5IjpbMTIzMjgyOTcwOCwxMTEwMjg0MDI5LC03OD
 Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
 NDRdfQ==
 -->

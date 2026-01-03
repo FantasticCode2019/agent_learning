@@ -354,31 +354,22 @@ class SessionRepository(Protocol):
 #### 3.1.6 外部服务接口 (External Interfaces)
 ```python
 class LLM(Protocol):
-"""大语言模型接口"""
-async def chat(messages, tools, response_format) -> Response
+	"""大语言模型接口"""
+	async def chat(messages, tools, response_format) -> Response
+
 class Sandbox(Protocol):
-"""沙盒环境接口"""
-async def create() -> Sandbox
-async def get(sandbox_id: str) -> Optional[Sandbox]
-
-async def execute(command: str) -> Result
-
-async def file_read(path: str) -> Result
-
-async def get_browser() -> Browser
-
-  
+	"""沙盒环境接口"""
+	async def create() -> Sandbox
+	async def get(sandbox_id: str) -> Optional[Sandbox]
+	async def execute(command: str) -> Result
+	async def file_read(path: str) -> Result
+	async def get_browser() -> Browser
 
 class Browser(Protocol):
-
-"""浏览器接口"""
-
-async def goto(url: str)
-
-async def click(selector: str)
-
-async def screenshot() -> bytes
-
+	"""浏览器接口"""
+	async def goto(url: str)
+	async def click(selector: str)
+	async def screenshot() -> bytes
 ```
 
   
@@ -2793,6 +2784,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTQ1MTQ4Mzk4LDU3MTE4MTMyOSwtMjY5OD
+eyJoaXN0b3J5IjpbNjUwMDI3NjkyLDU3MTE4MTMyOSwtMjY5OD
 AyNjQ0XX0=
 -->

@@ -311,7 +311,7 @@ class PlanActFlow(BaseFlow):
 - 输出: StepEvent, ToolEvent, MessageEvent
 - 特点: 支持工具调用(Function Calling)
 
-  
+ 
 
 #### 3.1.4 工具系统 (Tools)
 
@@ -2857,6 +2857,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNTE3NDI1NjY2LDU3MTE4MTMyOSwtMjY5OD
-AyNjQ0XX0=
+eyJoaXN0b3J5IjpbMTA3NjE3MzkyOCw1NzExODEzMjksLTI2OT
+gwMjY0NF19
 -->

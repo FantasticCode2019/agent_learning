@@ -2091,30 +2091,19 @@ end
   
 
 subgraph Processing[处理]
-
 direction TB
-
 Task[Task队列]
-
 Flow[PlanActFlow]
-
 LLM[LLM调用]
-
 Tools[工具执行]
-
 end
-
-  
 
 subgraph Storage[存储]
-
 Events[事件存储<br/>MongoDB]
-
 Cache[缓存<br/>Redis]
-
 FileStore[文件存储<br/>GridFS]
-
 end
+
 subgraph Output[输出]
 SSE[SSE事件流]
 WebSocket[WebSocket消息]
@@ -2226,6 +2215,6 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTA4MTkyMjg1OSwtNzg2ODg0NzEyLC0xNz
+eyJoaXN0b3J5IjpbMTExMDI4NDAyOSwtNzg2ODg0NzEyLC0xNz
 EwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAyNjQ0XX0=
 -->

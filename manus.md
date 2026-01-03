@@ -497,49 +497,25 @@ class Settings:
 - **Streams**: Task输入输出队列
 - `task:input:{task_id}`: 任务输入流
 - `task:output:{task_id}`: 任务输出流(事件流)
-
 - **Cache**: 通用缓存
-
 - **Task Registry**: 运行中的任务注册表
 
-  
-
 #### 3.3.2 外部服务实现
-
-  
-
 **OpenAILLM**: OpenAI API实现
-
-  
-
 ```python
-
 class OpenAILLM:
-
-"""
-
-OpenAI/兼容API的LLM实现
-
-- 支持自定义API Base (DeepSeek等)
-
-- 自动重试机制(指数退避)
-
-- 工具调用支持
-
-- JSON模式支持
-
-"""
-
-  
+	"""
+	OpenAI/兼容API的LLM实现
+	- 支持自定义API Base (DeepSeek等)
+	- 自动重试机制(指数退避)
+	- 工具调用支持
+	- JSON模式支持
+	"""
 
 async def chat(
-
 messages: List[dict],
-
 tools: Optional[List[dict]] = None,
-
 response_format: Optional[dict] = None
-
 ) -> Response:
 
 # 调用OpenAI API
@@ -2628,6 +2604,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTc1MTA4ODkyMCw1NzExODEzMjksLTI2OT
-gwMjY0NF19
+eyJoaXN0b3J5IjpbODc4ODk0NjA0LDU3MTE4MTMyOSwtMjY5OD
+AyNjQ0XX0=
 -->

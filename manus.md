@@ -559,22 +559,13 @@ class PlaywrightBrowser:
 - 控制台输出查看
 """
 
-  
-
 async def goto(url: str):
-
 """导航到URL"""
 
-  
-
 async def click(selector: str):
-
 """点击元素"""
 
-  
-
 async def screenshot() -> bytes:
-
 """截图"""
 
 ```
@@ -2557,6 +2548,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExMTM4MDkxOTMsNTcxMTgxMzI5LC0yNj
-k4MDI2NDRdfQ==
+eyJoaXN0b3J5IjpbMjc4NDA2NDMzLDU3MTE4MTMyOSwtMjY5OD
+AyNjQ0XX0=
 -->

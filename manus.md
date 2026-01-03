@@ -2195,70 +2195,34 @@ task_registry[id] = self
 可通过 Task.get(id) 查询
 end note
 
-  
-
 note right of Cleanup
-
 清理后：
-
 task_registry[id] 不存在
-
 Task.get(id) 返回 None
-
 end note
-
 ```
-
-  
-
 #### 6.6.6 关键设计决策
-
-  
-
 **为什么使用内存注册表而非 Redis?**
-
-  
-
 | 对比项 | 内存注册表 (当前实现) | Redis 存储 Task 实例 |
-
 |-------|---------------------|---------------------|
-
 | **查询速度** | O(1) 字典查找 | 需要网络 I/O |
-
 | **实例引用** | 直接持有 Python 对象 | 需要序列化/反序列化 |
-
 | **生命周期** | 进程级别 | 可跨进程 |
-
 | **适用场景** | 单进程高性能 | 分布式部署 |
-
 | **复杂度** | 简单 | 复杂 |
 
-  
-
 **当前架构的权衡**:
-
-  
-
 ✅ **优点**:
-
 - 极快的查询速度
-
 - 直接操作 asyncio.Task 对象
-
 - 代码简洁
 
-  
-
 ❌ **限制**:
-
 - 服务重启后 Task 实例丢失
-
 - 无法跨进程共享 Task
-
 - 不支持多实例部署(需改造)
 
   
-
 **未来扩展方向**:
 
   
@@ -2623,7 +2587,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2NjQ1NjU4OSwxMTEwMjg0MDI5LC03OD
+eyJoaXN0b3J5IjpbLTEyMjQ2MzcwNSwxMTEwMjg0MDI5LC03OD
 Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
 NDRdfQ==
 -->

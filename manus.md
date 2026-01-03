@@ -238,16 +238,8 @@ class BaseEvent:
 - DoneEvent: 执行完成
 - WaitEvent: 等待用户输入
 ```
-
-  
-
 #### 3.1.2 领域服务 (Services)
-
-  
-
 **AgentDomainService**: 领域服务协调器
-
-  
 
 ```python
 
@@ -2949,6 +2941,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTUxMDI5OTU5MCw1NzExODEzMjksLTI2OT
+eyJoaXN0b3J5IjpbLTk3NTIyNjA0Niw1NzExODEzMjksLTI2OT
 gwMjY0NF19
 -->

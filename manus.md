@@ -385,42 +385,23 @@ class AgentService:
 	async def chat(session_id, user_id, message) -> AsyncGenerator[AgentEvent]:
 	"""聊天: 委托给AgentDomainService"""
 
-  
+	async def get_session(session_id, user_id) -> Optional[Session]:
+	"""获取会话(带权限验证)"""
 
-async def get_session(session_id, user_id) -> Optional[Session]:
+	async def delete_session(session_id, user_id):
+	"""删除会话(带权限验证)"""
 
-"""获取会话(带权限验证)"""
+	async def stop_session(session_id, user_id):
+	"""停止会话(带权限验证)"""
 
-  
+	async def shell_view(session_id, shell_session_id, user_id) -> ShellViewResponse:
+	"""查看Shell输出"""
 
-async def delete_session(session_id, user_id):
+	async def file_view(session_id, file_path, user_id) -> FileViewResponse:
+	"""查看文件内容"""
 
-"""删除会话(带权限验证)"""
-
-  
-
-async def stop_session(session_id, user_id):
-
-"""停止会话(带权限验证)"""
-
-  
-
-async def shell_view(session_id, shell_session_id, user_id) -> ShellViewResponse:
-
-"""查看Shell输出"""
-
-  
-
-async def file_view(session_id, file_path, user_id) -> FileViewResponse:
-
-"""查看文件内容"""
-
-  
-
-async def get_vnc_url(session_id) -> str:
-
-"""获取VNC连接URL"""
-
+	async def get_vnc_url(session_id) -> str:
+	"""获取VNC连接URL"""
 ```
 
   
@@ -2757,6 +2738,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEyMDUwMjE0NjYsNTcxMTgxMzI5LC0yNj
-k4MDI2NDRdfQ==
+eyJoaXN0b3J5IjpbMzM2ODc2NjkyLDU3MTE4MTMyOSwtMjY5OD
+AyNjQ0XX0=
 -->

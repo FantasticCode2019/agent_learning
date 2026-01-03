@@ -524,68 +524,39 @@ class OpenAILLM:
 **DockerSandbox**: Docker沙盒实现
 ```python
 class DockerSandbox:
-"""
-Docker容器沙盒环境
-- 隔离的执行环境
-- TTL自动清理(默认30分钟)
-- 支持命令执行、文件操作
-- 内置浏览器(Chrome)
-- VNC访问支持
+	"""
+	Docker容器沙盒环境
+	- 隔离的执行环境
+	- TTL自动清理(默认30分钟)
+	- 支持命令执行、文件操作
+	- 内置浏览器(Chrome)
+	- VNC访问支持
+	"""
 
-"""
+	@classmethod
+	async def create() -> Sandbox:
+	"""创建新容器"""
 
-  
+	async def execute(command: str, workdir: str) -> Result:
+	"""执行命令"""
 
-@classmethod
+	async def file_read(path: str) -> Result:
+	"""读取文件"""
 
-async def create() -> Sandbox:
-
-"""创建新容器"""
-
-  
-
-async def execute(command: str, workdir: str) -> Result:
-
-"""执行命令"""
-
-  
-
-async def file_read(path: str) -> Result:
-
-"""读取文件"""
-
-  
-
-async def get_browser() -> Browser:
-
-"""获取浏览器实例(CDP连接)"""
-
+	async def get_browser() -> Browser:
+	"""获取浏览器实例(CDP连接)"""
 ```
 
-  
-
 **PlaywrightBrowser**: Playwright浏览器实现
-
-  
-
 ```python
-
 class PlaywrightBrowser:
-
 """
-
 使用Playwright通过CDP连接到沙盒浏览器
-
 - 页面导航
-
 - 元素交互(点击、输入)
-
 - 截图
-
 - JavaScript执行
-
 - 控制台输出查看
-
 """
 
   
@@ -2586,6 +2557,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTc5NzU3NjIyOSw1NzExODEzMjksLTI2OT
-gwMjY0NF19
+eyJoaXN0b3J5IjpbLTExMTM4MDkxOTMsNTcxMTgxMzI5LC0yNj
+k4MDI2NDRdfQ==
 -->

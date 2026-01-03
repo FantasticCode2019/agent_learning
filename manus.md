@@ -2024,35 +2024,20 @@ task.cancel() # 不会立即停止,而是在下次 await 时抛出异常
 
 # 2. 在任何 await 点抛出 CancelledError
 async def some_work():
-result = await long_running_operation() # ← 这里会抛出 CancelledError
-
-# 不会执行到这里
-return result
-
-  
+	result = await long_running_operation() # ← 这里会抛出 CancelledError
+	# 不会执行到这里
+	return result
 
 # 3. 捕获并处理
-
 try:
-
-await some_work()
-
+	await some_work()
 except asyncio.CancelledError:
-
-# 清理逻辑
-
-await cleanup()
-
-raise # 或者不 raise,取决于是否需要传播
-
+	# 清理逻辑
+	await cleanup()
+	raise # 或者不 raise,取决于是否需要传播
 ```
 
-  
-
 **在 AI Manus 中的应用**:
-
-  
-
 ```mermaid
 
 sequenceDiagram
@@ -2751,7 +2736,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExMDU3OTM2OSwxMTEwMjg0MDI5LC03OD
+eyJoaXN0b3J5IjpbMTY5MjIzNDg2NSwxMTEwMjg0MDI5LC03OD
 Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
 NDRdfQ==
 -->

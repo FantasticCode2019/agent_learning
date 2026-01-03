@@ -434,45 +434,23 @@ class FileService:
 	"""删除文件(带权限验证)"""
 ```
 
-  
-
 **TokenService**: Token服务
-
-  
-
 ```python
-
 class TokenService:
+	"""JWT token管理"""
 
-"""JWT token管理"""
+	def create_access_token(user: User) -> str:
+	"""创建访问token (短期有效)"""
 
-  
+	def create_refresh_token(user: User) -> str:
+	"""创建刷新token (长期有效)"""
 
-def create_access_token(user: User) -> str:
+	def verify_token(token: str) -> User:
+	"""验证token并返回用户信息"""
 
-"""创建访问token (短期有效)"""
-
-  
-
-def create_refresh_token(user: User) -> str:
-
-"""创建刷新token (长期有效)"""
-
-  
-
-def verify_token(token: str) -> User:
-
-"""验证token并返回用户信息"""
-
-  
-
-def create_signed_url(base_url: str, expire_minutes: int) -> str:
-
-"""创建签名URL (用于VNC等)"""
-
+	def create_signed_url(base_url: str, expire_minutes: int) -> str:
+	"""创建签名URL (用于VNC等)"""
 ```
-
-  
 
 ### 3.3 基础设施层 (Infrastructure Layer)
 
@@ -2704,6 +2682,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTMxNTgxNjAwLDU3MTE4MTMyOSwtMjY5OD
-AyNjQ0XX0=
+eyJoaXN0b3J5IjpbLTExNDc3ODQ3NzIsNTcxMTgxMzI5LC0yNj
+k4MDI2NDRdfQ==
 -->

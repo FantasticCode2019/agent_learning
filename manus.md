@@ -687,62 +687,35 @@ is_shared: bool
 #### 3.4.3 SSE事件映射
 ```python
 class EventMapper:
-"""将领域事件映射为SSE事件"""
+	"""将领域事件映射为SSE事件"""
 
-@staticmethod
-async def event_to_sse_event(event: AgentEvent) -> Optional[SSEEvent]:
-"""
-
-映射规则:
-
-- PlanEvent -> "plan"
-
-- StepEvent -> "step"
-
-- ToolEvent -> "tool"
-
-- MessageEvent -> "message"
-
-- TitleEvent -> "title"
-
-- ErrorEvent -> "error"
-
-- DoneEvent -> "done"
-
-- WaitEvent -> "wait"
-
-"""
-
+	@staticmethod
+	async def event_to_sse_event(event: AgentEvent) -> Optional[SSEEvent]:
+	"""
+	映射规则:
+	- PlanEvent -> "plan"
+	- StepEvent -> "step"
+	- ToolEvent -> "tool"
+	- MessageEvent -> "message"
+	- TitleEvent -> "title"
+	- ErrorEvent -> "error"
+	- DoneEvent -> "done"
+	- WaitEvent -> "wait"
+	"""
 ```
 
-  
-
 #### 3.4.4 依赖注入
-
-  
-
 ```python
-
 # 服务工厂 (单例)
-
 @lru_cache()
-
 def get_agent_service() -> AgentService:
-
 """创建AgentService单例"""
-
 return AgentService(
-
 llm=get_llm(),
-
 agent_repository=get_agent_repository(),
-
 session_repository=get_session_repository(),
-
 sandbox_cls=DockerSandbox,
-
 task_cls=RedisTask,
-
 ...
 
 )
@@ -2407,6 +2380,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEzNDk5Mzg2NDksLTE3MTAyMjIyMjMsNT
-cxMTgxMzI5LC0yNjk4MDI2NDRdfQ==
+eyJoaXN0b3J5IjpbMjA0NzI2MzQxNywtMTcxMDIyMjIyMyw1Nz
+ExODEzMjksLTI2OTgwMjY0NF19
 -->

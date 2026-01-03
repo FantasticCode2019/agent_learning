@@ -287,32 +287,19 @@ class PlanActFlow(BaseFlow):
 	状态机: IDLE -> PLANNING -> EXECUTING -> UPDATING -> SUMMARIZING -> COMPLETED
 	"""
 
-async def run(message: Message) -> AsyncGenerator[BaseEvent]:
-"""
-状态转换:
-1. PLANNING: PlannerAgent创建计划
-2. EXECUTING: ExecutionAgent执行步骤
-
-3. UPDATING: PlannerAgent更新计划
-
-4. SUMMARIZING: ExecutionAgent总结
-
-5. COMPLETED: 完成
-
-"""
-
+	async def run(message: Message) -> AsyncGenerator[BaseEvent]:
+	"""
+	状态转换:
+	1. PLANNING: PlannerAgent创建计划
+	2. EXECUTING: ExecutionAgent执行步骤
+	3. UPDATING: PlannerAgent更新计划
+	4. SUMMARIZING: ExecutionAgent总结
+	5. COMPLETED: 完成
+	"""
 ```
 
-  
-
 #### 3.1.3 Agent实现
-
-  
-
 **PlannerAgent**: 规划Agent
-
-  
-
 - 职责: 创建执行计划、更新计划
 
 - 输入: 用户消息、当前计划、已完成步骤
@@ -2881,6 +2868,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY5Nzc4NTY4Miw1NzExODEzMjksLTI2OT
+eyJoaXN0b3J5IjpbMTg2NzYwMjIxNiw1NzExODEzMjksLTI2OT
 gwMjY0NF19
 -->

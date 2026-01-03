@@ -343,44 +343,22 @@ class AgentRepository(Protocol):
 	async def find_by_id(agent_id: str) -> Optional[Agent]
 	async def update(agent: Agent) -> None
 
-  
-
 class SessionRepository(Protocol):
-
-async def save(session: Session) -> None
-
-async def find_by_id(session_id: str) -> Optional[Session]
-
-async def find_by_user_id(user_id: str) -> List[Session]
-
-async def add_event(session_id: str, event: AgentEvent) -> None
-
-async def update_status(session_id: str, status: SessionStatus) -> None
-
+	async def save(session: Session) -> None
+	async def find_by_id(session_id: str) -> Optional[Session]
+	async def find_by_user_id(user_id: str) -> List[Session]
+	async def add_event(session_id: str, event: AgentEvent) -> None
+	async def update_status(session_id: str, status: SessionStatus) -> None
 ```
 
-  
-
 #### 3.1.6 外部服务接口 (External Interfaces)
-
-  
-
 ```python
-
 class LLM(Protocol):
-
 """大语言模型接口"""
-
 async def chat(messages, tools, response_format) -> Response
-
-  
-
 class Sandbox(Protocol):
-
 """沙盒环境接口"""
-
 async def create() -> Sandbox
-
 async def get(sandbox_id: str) -> Optional[Sandbox]
 
 async def execute(command: str) -> Result
@@ -2815,6 +2793,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODQyNzAwMzkwLDU3MTE4MTMyOSwtMjY5OD
+eyJoaXN0b3J5IjpbLTQ1MTQ4Mzk4LDU3MTE4MTMyOSwtMjY5OD
 AyNjQ0XX0=
 -->

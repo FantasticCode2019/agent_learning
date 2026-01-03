@@ -1905,21 +1905,723 @@ style Streams fill:#fff4e6
 style Loop fill:#f3e5f5
 
 ```
+### 6.6 Task 取消机制底层原理
+Task 的取消机制是系统中断流程的核心,采用**内存注册表 + Redis 消息队列 + 异步异常处理**的三层架构。
+#### 6.6.1 存储架构
+```mermaid
+flowchart TD
+subgraph Storage[存储层]
+Memory[内存注册表<br/>_task_registry: Dict]
+RedisStreams[Redis Streams<br/>消息队列]
+MongoDB[(MongoDB<br/>Session持久化)]
+end
+
+subgraph Task[Task实例]
+TaskID[task_id]
+ExecutionTask[_execution_task<br/>asyncio.Task]
+InputQueue[input_stream<br/>RedisStreamQueue]
+OutputQueue[output_stream<br/>RedisStreamQueue]
+end
 
   
 
----
+subgraph Session[Session文档]
+
+SessionID[session_id]
+
+TaskIDRef[task_id 引用]
+
+Status[status: SessionStatus]
+
+Events[events: List]
+
+end
 
   
 
+Task -->|注册| Memory
+
+Task -->|消息通信| RedisStreams
+
+Session -->|关联| MongoDB
+
+Session -->|引用| TaskIDRef
+
+TaskIDRef -.->|指向| TaskID
+
+  
+
+style Memory fill:#ffebee
+
+style RedisStreams fill:#e3f2fd
+
+style MongoDB fill:#e8f5e9
+
+```
+
+  
+
+**三层存储机制**:
+
+  
+
+| 存储层 | 用途 | 生命周期 | 数据示例 |
+
+|-------|------|---------|---------|
+
+| **内存注册表** | 快速查找Task实例 | 进程生命周期 | `{"uuid-123": RedisTask实例}` |
+
+| **Redis Streams** | 任务输入输出队列 | TTL或手动清理 | `task:input:uuid-123`, `task:output:uuid-123` |
+
+| **MongoDB** | Session和task_id持久化 | 永久(除非删除) | `{session_id, task_id, status, events}` |
+
+  
+
+#### 6.6.2 取消机制详解
+
+  
+
+**核心实现代码**:
+
+  
+
+```python
+
+# backend/app/infrastructure/external/task/redis_task.py:58-71
+
+def cancel(self) -> bool:
+
+"""取消任务"""
+
+if not self.done:
+
+# 1. 取消 asyncio.Task (抛出 CancelledError)
+
+self._execution_task.cancel()
+
+  
+
+# 2. 从内存注册表移除
+
+self._cleanup_registry()
+
+  
+
+return True
+
+return False
+
+  
+
+# backend/app/domain/services/agent_task_runner.py:242-245
+
+async def run(self, task: Task) -> None:
+
+try:
+
+# ... 执行 Agent 工作流 ...
+
+except asyncio.CancelledError:
+
+# 3. 捕获取消异常
+
+logger.info(f"Agent {self._agent_id} task cancelled")
+
+  
+
+# 4. 发送终止事件
+
+await self._put_and_add_event(task, DoneEvent())
+
+  
+
+# 5. 更新状态
+
+await self._session_repository.update_status(
+
+self._session_id,
+
+SessionStatus.COMPLETED
+
+)
+
+```
+
+  
+
+**取消流程分解**:
+
+  
+
+```mermaid
+
+flowchart LR
+
+subgraph Step1[步骤1: API调用]
+
+A1[POST /stop] --> A2[task.cancel]
+
+end
+
+  
+
+subgraph Step2[步骤2: asyncio层]
+
+B1[_execution_task.cancel] --> B2[抛出CancelledError]
+
+end
+
+  
+
+subgraph Step3[步骤3: 异常处理]
+
+C1[except CancelledError] --> C2[创建DoneEvent]
+
+end
+
+  
+
+subgraph Step4[步骤4: 消息传递]
+
+D1[put to output_stream] --> D2[Redis Streams写入]
+
+end
+
+  
+
+subgraph Step5[步骤5: SSE响应]
+
+E1[SSE读取DoneEvent] --> E2[break循环]
+
+end
+
+  
+
+subgraph Step6[步骤6: 清理]
+
+F1[cleanup_registry] --> F2[update_status]
+
+end
+
+  
+
+A2 --> B1
+
+B2 --> C1
+
+C2 --> D1
+
+D2 --> E1
+
+E2 --> F1
+
+  
+
+style Step1 fill:#ffebee
+
+style Step2 fill:#fff3e0
+
+style Step3 fill:#e8f5e9
+
+style Step4 fill:#e3f2fd
+
+style Step5 fill:#f3e5f5
+
+style Step6 fill:#fce4ec
+
+```
+
+  
+
+#### 6.6.3 异步异常处理机制
+
+  
+
+**Python asyncio.Task.cancel() 原理**:
+
+  
+
+```python
+
+# 1. cancel() 方法调用
+
+task.cancel() # 不会立即停止,而是在下次 await 时抛出异常
+
+  
+
+# 2. 在任何 await 点抛出 CancelledError
+
+async def some_work():
+
+result = await long_running_operation() # ← 这里会抛出 CancelledError
+
+# 不会执行到这里
+
+return result
+
+  
+
+# 3. 捕获并处理
+
+try:
+
+await some_work()
+
+except asyncio.CancelledError:
+
+# 清理逻辑
+
+await cleanup()
+
+raise # 或者不 raise,取决于是否需要传播
+
+```
+
+  
+
+**在 AI Manus 中的应用**:
+
+  
+
+```mermaid
+
+sequenceDiagram
+
+participant Main as 主协程
+
+participant Task as asyncio.Task
+
+participant Runner as AgentTaskRunner
+
+participant Flow as PlanActFlow
+
+participant LLM as LLM调用
+
+  
+
+Main->>Task: task.cancel()
+
+activate Task
+
+Note over Task: 标记为取消<br/>但不立即中断
+
+  
+
+Task->>Runner: 继续执行
+
+Runner->>Flow: run(message)
+
+Flow->>LLM: await llm.chat()
+
+  
+
+Note over LLM: 下次 await 时<br/>抛出异常
+
+  
+
+LLM-->>Flow: 🔴 CancelledError
+
+Flow-->>Runner: 🔴 CancelledError
+
+Runner->>Runner: except CancelledError
+
+  
+
+Note over Runner: 捕获异常<br/>不会导致程序崩溃
+
+  
+
+Runner->>Runner: await _put_and_add_event(DoneEvent)
+
+Runner->>Runner: await update_status(COMPLETED)
+
+  
+
+Runner-->>Task: 任务完成
+
+deactivate Task
+
+Task-->>Main: 取消成功
+
+```
+
+  
+
+#### 6.6.4 SSE 流终止机制
+
+  
+
+**SSE 循环读取与中断**:
+
+  
+
+```python
+
+# backend/app/domain/services/agent_domain_service.py:162-174
+
+async def chat(...) -> AsyncGenerator[BaseEvent, None]:
+
+while task and not task.done:
+
+# 从 Redis Streams 读取事件
+
+event_id, event_str = await task.output_stream.get(
+
+start_id=latest_event_id,
+
+block_ms=0
+
+)
+
+  
+
+if event_str is None:
+
+continue
+
+  
+
+event = TypeAdapter(AgentEvent).validate_json(event_str)
+
+yield event # 发送给前端
+
+  
+
+# 关键：检测终止事件
+
+if isinstance(event, (DoneEvent, ErrorEvent, WaitEvent)):
+
+break # ← SSE 生成器退出
+
+```
+
+  
+
+**SSE 终止流程**:
+
+  
+
+```mermaid
+
+flowchart TD
+
+Start([SSE连接建立]) --> Loop{循环}
+
+  
+
+Loop -->|读取| ReadStream[output_stream.get]
+
+ReadStream --> CheckNull{event_str为空?}
+
+  
+
+CheckNull -->|是| Loop
+
+CheckNull -->|否| Parse[解析事件]
+
+  
+
+Parse --> Yield[yield event 给前端]
+
+  
+
+Yield --> CheckType{事件类型?}
+
+  
+
+CheckType -->|DoneEvent| Break[break退出]
+
+CheckType -->|ErrorEvent| Break
+
+CheckType -->|WaitEvent| Break
+
+CheckType -->|其他| Loop
+
+  
+
+Break --> Close([SSE连接关闭])
+
+  
+
+style Break fill:#ffebee
+
+style Close fill:#ffcdd2
+
+```
+
+  
+
+#### 6.6.5 内存注册表管理
+
+  
+
+**RedisTask 注册表实现**:
+
+  
+
+```python
+
+# backend/app/infrastructure/external/task/redis_task.py:15
+
+class RedisStreamTask(Task):
+
+# 类级别字典,所有实例共享
+
+_task_registry: Dict[str, 'RedisStreamTask'] = {}
+
+  
+
+def __init__(self, runner: TaskRunner):
+
+self._id = str(uuid.uuid4())
+
+# 注册到字典
+
+RedisStreamTask._task_registry[self._id] = self
+
+  
+
+@classmethod
+
+def get(cls, task_id: str) -> Optional['RedisStreamTask']:
+
+"""从注册表获取任务实例"""
+
+return cls._task_registry.get(task_id)
+
+  
+
+def _cleanup_registry(self) -> None:
+
+"""从注册表移除"""
+
+if self._id in RedisStreamTask._task_registry:
+
+del RedisStreamTask._task_registry[self._id]
+
+```
+
+  
+
+**注册表生命周期**:
+
+  
+
+```mermaid
+
+stateDiagram-v2
+
+[*] --> Created: Task.create(runner)
+
+  
+
+Created --> Registered: 加入_task_registry
+
+  
+
+Registered --> Running: task.run()
+
+  
+
+Running --> Cancelled: task.cancel()
+
+Running --> Completed: 自然完成
+
+  
+
+Cancelled --> Cleanup: _cleanup_registry()
+
+Completed --> Cleanup
+
+  
+
+Cleanup --> Removed: 从注册表删除
+
+  
+
+Removed --> [*]
+
+  
+
+note right of Registered
+
+内存状态：
+
+task_registry[id] = self
+
+可通过 Task.get(id) 查询
+
+end note
+
+  
+
+note right of Cleanup
+
+清理后：
+
+task_registry[id] 不存在
+
+Task.get(id) 返回 None
+
+end note
+
+```
+
+  
+
+#### 6.6.6 关键设计决策
+
+  
+
+**为什么使用内存注册表而非 Redis?**
+
+  
+
+| 对比项 | 内存注册表 (当前实现) | Redis 存储 Task 实例 |
+
+|-------|---------------------|---------------------|
+
+| **查询速度** | O(1) 字典查找 | 需要网络 I/O |
+
+| **实例引用** | 直接持有 Python 对象 | 需要序列化/反序列化 |
+
+| **生命周期** | 进程级别 | 可跨进程 |
+
+| **适用场景** | 单进程高性能 | 分布式部署 |
+
+| **复杂度** | 简单 | 复杂 |
+
+  
+
+**当前架构的权衡**:
+
+  
+
+✅ **优点**:
+
+- 极快的查询速度
+
+- 直接操作 asyncio.Task 对象
+
+- 代码简洁
+
+  
+
+❌ **限制**:
+
+- 服务重启后 Task 实例丢失
+
+- 无法跨进程共享 Task
+
+- 不支持多实例部署(需改造)
+
+  
+
+**未来扩展方向**:
+
+  
+
+如需支持分布式部署,可改为:
+
+1. 使用 Redis 存储 Task 元数据 (task_id, status, created_at)
+
+2. 使用进程间通信(IPC)或消息队列传递取消信号
+
+3. 实现 Task 的分布式协调机制
+
+  
+
+#### 6.6.7 错误处理与边界情况
+
+  
+
+**边界情况处理**:
+
+  
+
+| 情况 | 处理方式 | 代码位置 |
+
+|------|---------|---------|
+
+| Task 不存在 | `task = None`, 不调用 cancel | `agent_domain_service.py:111` |
+
+| Task 已完成 | cancel() 返回 False | `redis_task.py:64` |
+
+| 重复取消 | 第二次返回 False | `redis_task.py:64` |
+
+| 异常传播 | 捕获后不再 raise | `agent_task_runner.py:242` |
+
+| Redis 连接失败 | output_stream.put 异常 | 需要外部处理 |
+
+| SSE 连接断开 | 生成器自然退出 | `agent_domain_service.py:174` |
+
+  
+
+**完整的异常处理链**:
+
+  
+
+```mermaid
+
+flowchart TD
+
+Cancel[task.cancel] --> Try1{try}
+
+  
+
+Try1 -->|成功| Clean1[_cleanup_registry]
+
+Try1 -->|异常| Log1[logger.error]
+
+  
+
+Clean1 --> Try2{TaskRunner try}
+
+  
+
+Try2 -->|CancelledError| Catch[except CancelledError]
+
+Try2 -->|其他异常| Catch2[except Exception]
+
+  
+
+Catch --> PutEvent[put DoneEvent]
+
+Catch2 --> PutEvent2[put ErrorEvent]
+
+  
+
+PutEvent --> Try3{put try}
+
+PutEvent2 --> Try3
+
+  
+
+Try3 -->|成功| UpdateDB[update_status]
+
+Try3 -->|失败| Log2[logger.error]
+
+  
+
+UpdateDB --> End([完成])
+
+Log1 --> End
+
+Log2 --> End
+
+  
+
+style Catch fill:#e8f5e9
+
+style Catch2 fill:#ffebee
+
+style Log1 fill:#fff3e0
+
+style Log2 fill:#fff3e0
+
+```
 ## 7. 架构图
-
-  
-
 ### 7.1 请求处理流程总览
-
-  
-
 ```mermaid
 
 flowchart TB
@@ -2179,7 +2881,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODc0NTI4OTY0LDExMTAyODQwMjksLTc4Nj
-g4NDcxMiwtMTcxMDIyMjIyMyw1NzExODEzMjksLTI2OTgwMjY0
-NF19
+eyJoaXN0b3J5IjpbLTI4MDIyODYyOSwxMTEwMjg0MDI5LC03OD
+Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
+NDRdfQ==
 -->

@@ -7,7 +7,6 @@
 - [5. 数据模型](#5-数据模型)
 - [6. 外部集成](#6-外部集成)
 - [7. 架构图](#7-架构图)
----
 ## 1. 概述
 AI Manus Backend 是一个基于 FastAPI 的智能对话代理系统,采用领域驱动设计(DDD)架构模式。系统的核心功能是通过双Agent模式(Planner + Executor)实现智能任务规划和执行,支持Shell命令执行、浏览器自动化、文件操作、网络搜索等多种工具调用。
 ### 1.1 技术栈
@@ -20,21 +19,12 @@ AI Manus Backend 是一个基于 FastAPI 的智能对话代理系统,采用领�
 - **实时通信**: Server-Sent Events (SSE) + WebSocket
 ### 1.2 核心特性
 - **领域驱动设计**: 清晰的分层架构,业务逻辑与技术实现分离
-
 - **双Agent系统**: Planner Agent(规划) + Execution Agent(执行)
-
 - **异步处理**: 全异步设计,高并发支持
-
 - **实时流式响应**: SSE/WebSocket实现实时对话
-
 - **沙盒隔离**: Docker容器提供安全的代码执行环境
-
 - **可扩展工具系统**: 装饰器模式,易于添加新工具
-
 - **事件溯源**: 完整的事件历史记录
-
-  
-
 ---
 
   
@@ -183,25 +173,13 @@ graph TB
         L1[实线: 直接调用]
         L2[虚线: 间接依赖]
     end
-
 ```
-
-  
-
 ### 2.2 分层职责
-
-  
-
 | 层级 | 职责 | 特点 |
-
 |------|------|------|
-
 | **接口层** | 对外暴露API,处理HTTP/WebSocket请求 | 依赖FastAPI,定义DTO,路由分发 |
-
 | **应用层** | 编排业务流程,协调领域服务 | 无状态,事务边界 |
-
 | **领域层** | 核心业务逻辑,领域模型 | 框架无关,纯业务逻辑 |
-
 | **基础设施层** | 技术实现,外部服务集成 | 可替换的具体实现 |
 
   
@@ -3066,5 +3044,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNTcxMTgxMzI5LC0yNjk4MDI2NDRdfQ==
+eyJoaXN0b3J5IjpbMjEyNjU5MzMwNiw1NzExODEzMjksLTI2OT
+gwMjY0NF19
 -->

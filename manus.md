@@ -301,25 +301,14 @@ class PlanActFlow(BaseFlow):
 #### 3.1.3 Agent实现
 **PlannerAgent**: 规划Agent
 - 职责: 创建执行计划、更新计划
-
 - 输入: 用户消息、当前计划、已完成步骤
-
 - 输出: PlanEvent (包含Plan对象)
-
 - 特点: 使用结构化输出(JSON模式)
 
-  
-
 **ExecutionAgent**: 执行Agent
-
-  
-
 - 职责: 执行单个步骤、调用工具、总结结果
-
 - 输入: 当前步骤、计划上下文
-
 - 输出: StepEvent, ToolEvent, MessageEvent
-
 - 特点: 支持工具调用(Function Calling)
 
   
@@ -2868,6 +2857,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTg2NzYwMjIxNiw1NzExODEzMjksLTI2OT
-gwMjY0NF19
+eyJoaXN0b3J5IjpbNTE3NDI1NjY2LDU3MTE4MTMyOSwtMjY5OD
+AyNjQ0XX0=
 -->

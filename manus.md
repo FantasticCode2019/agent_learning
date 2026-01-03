@@ -1951,54 +1951,30 @@ style MongoDB fill:#e8f5e9
 ```python
 # backend/app/infrastructure/external/task/redis_task.py:58-71
 def cancel(self) -> bool:
-"""取消任务"""
-if not self.done:
-# 1. 取消 asyncio.Task (抛出 CancelledError)
-self._execution_task.cancel()
+	"""取消任务"""
+	if not self.done:
+		# 1. 取消 asyncio.Task (抛出 CancelledError)
+		self._execution_task.cancel()
 
-# 2. 从内存注册表移除
-self._cleanup_registry()
-
-  
-
-return True
-
-return False
-
-  
+		# 2. 从内存注册表移除
+		self._cleanup_registry()
+		return True
+	return False
 
 # backend/app/domain/services/agent_task_runner.py:242-245
-
 async def run(self, task: Task) -> None:
-
-try:
-
-# ... 执行 Agent 工作流 ...
-
-except asyncio.CancelledError:
-
-# 3. 捕获取消异常
-
-logger.info(f"Agent {self._agent_id} task cancelled")
-
-  
-
-# 4. 发送终止事件
-
-await self._put_and_add_event(task, DoneEvent())
-
-  
-
-# 5. 更新状态
-
-await self._session_repository.update_status(
-
-self._session_id,
-
-SessionStatus.COMPLETED
-
-)
-
+	try:
+		# ... 执行 Agent 工作流 ...
+	except asyncio.CancelledError:
+		# 3. 捕获取消异常
+		logger.info(f"Agent {self._agent_id} task cancelled")
+		# 4. 发送终止事件
+		await self._put_and_add_event(task, DoneEvent())
+		# 5. 更新状态
+		await self._session_repository.update_status(
+			self._session_id,
+			SessionStatus.COMPLETED
+		)
 ```
 
   
@@ -2835,7 +2811,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5NTYxODk3MywxMTEwMjg0MDI5LC03OD
-Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
-NDRdfQ==
+eyJoaXN0b3J5IjpbLTE5MTU5NDEyNDUsMTExMDI4NDAyOSwtNz
+g2ODg0NzEyLC0xNzEwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAy
+NjQ0XX0=
 -->

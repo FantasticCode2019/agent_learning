@@ -48,316 +48,141 @@ AI Manus Backend 是一个基于 FastAPI 的智能对话代理系统,采用领�
   
 
 ```mermaid
-
 graph TB
-
-subgraph "客户端层"
-
-Web[Web前端]
-
-Mobile[移动端]
-
-end
-
-  
-
-subgraph "接口层 (Interfaces)"
-
-API[FastAPI应用]
-
-Routes[路由层]
-
-Schemas[DTO Schema]
-
-Handlers[异常处理器]
-
-Dependencies[依赖注入]
-
-end
-
-  
-
-subgraph "应用层 (Application)"
-
-AgentService[AgentService]
-
-AuthService[AuthService]
-
-FileService[FileService]
-
-TokenService[TokenService]
-
-EmailService[EmailService]
-
-end
-
-  
-
-subgraph "领域层 (Domain)"
-
-subgraph "领域服务"
-
-AgentDomainService[AgentDomainService]
-
-AgentTaskRunner[AgentTaskRunner]
-
-end
-
-  
-
-subgraph "Agent实现"
-
-PlannerAgent[PlannerAgent<br/>规划Agent]
-
-ExecutionAgent[ExecutionAgent<br/>执行Agent]
-
-end
-
-  
-
-subgraph "工作流"
-
-PlanActFlow[PlanActFlow<br/>计划-执行流程]
-
-end
-
-  
-
-subgraph "工具Tools"
-
-ShellTool[Shell工具]
-
-BrowserTool[浏览器工具]
-
-FileTool[文件工具]
-
-SearchTool[搜索工具]
-
-MCPTool[MCP工具]
-
-MessageTool[消息工具]
-
-end
-
-  
-
-subgraph "领域模型"
-
-Agent[Agent]
-
-Session[Session]
-
-Plan[Plan]
-
-Step[Step]
-
-Event[Event]
-
-User[User]
-
-end
-
-  
-
-subgraph "仓储接口"
-
-AgentRepo[AgentRepository]
-
-SessionRepo[SessionRepository]
-
-UserRepo[UserRepository]
-
-end
-
-  
-
-subgraph "外部服务接口"
-
-LLM[LLM接口]
-
-Sandbox[Sandbox接口]
-
-Browser[Browser接口]
-
-Search[SearchEngine接口]
-
-FileStorage[FileStorage接口]
-
-Task[Task接口]
-
-Cache[Cache接口]
-
-MQ[MessageQueue接口]
-
-end
-
-end
-
-  
-
-subgraph "基础设施层 (Infrastructure)"
-
-subgraph "数据持久化"
-
-MongoDB[(MongoDB)]
-
-Redis[(Redis)]
-
-GridFS[GridFS文件存储]
-
-end
-
-  
-
-subgraph "外部服务实现"
-
-OpenAILLM[OpenAI LLM]
-
-DockerSandbox[Docker Sandbox]
-
-PlaywrightBrowser[Playwright]
-
-GoogleSearch[Google Search]
-
-RedisTask[Redis Task]
-
-RedisCache[Redis Cache]
-
-RedisStream[Redis Stream]
-
-end
-
-  
-
-subgraph "仓储实现"
-
-MongoAgentRepo[Mongo Agent Repository]
-
-MongoSessionRepo[Mongo Session Repository]
-
-MongoUserRepo[Mongo User Repository]
-
-end
-
-end
-
-  
-
-Web --> API
-
-Mobile --> API
-
-API --> Routes
-
-Routes --> AgentService
-
-Routes --> AuthService
-
-Routes --> FileService
-
-  
-
-AgentService --> AgentDomainService
-
-AgentDomainService --> AgentTaskRunner
-
-AgentTaskRunner --> PlanActFlow
-
-  
-
-PlanActFlow --> PlannerAgent
-
-PlanActFlow --> ExecutionAgent
-
-  
-
-PlannerAgent --> ShellTool
-
-PlannerAgent --> BrowserTool
-
-ExecutionAgent --> ShellTool
-
-ExecutionAgent --> BrowserTool
-
-ExecutionAgent --> FileTool
-
-ExecutionAgent --> SearchTool
-
-ExecutionAgent --> MCPTool
-
-  
-
-AgentDomainService --> AgentRepo
-
-AgentDomainService --> SessionRepo
-
-AgentService --> UserRepo
-
-  
-
-AgentRepo --> MongoAgentRepo
-
-SessionRepo --> MongoSessionRepo
-
-UserRepo --> MongoUserRepo
-
-  
-
-MongoAgentRepo --> MongoDB
-
-MongoSessionRepo --> MongoDB
-
-MongoUserRepo --> MongoDB
-
-  
-
-AgentDomainService --> LLM
-
-AgentDomainService --> Sandbox
-
-AgentDomainService --> Task
-
-  
-
-LLM --> OpenAILLM
-
-Sandbox --> DockerSandbox
-
-Browser --> PlaywrightBrowser
-
-Search --> GoogleSearch
-
-Task --> RedisTask
-
-Cache --> RedisCache
-
-MQ --> RedisStream
-
-  
-
-FileStorage --> GridFS
-
-GridFS --> MongoDB
-
-  
-
-RedisTask --> Redis
-
-RedisCache --> Redis
-
-RedisStream --> Redis
-
-  
-
-style API fill:#e1f5ff
-
-style AgentDomainService fill:#fff4e6
-
-style PlanActFlow fill:#fff4e6
-
-style MongoDB fill:#e8f5e9
-
-style Redis fill:#e8f5e9
+    %% 样式定义
+    classDef clientStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef interfaceStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef appStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef domainStyle fill:#fff9c4,stroke:#f9a825,stroke-width:2px
+    classDef infraStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef agentStyle fill:#ffe0b2,stroke:#e64a19,stroke-width:2px
+    classDef toolStyle fill:#e1bee7,stroke:#8e24aa,stroke-width:2px
+    
+    %% 客户端层
+    subgraph Client["🖥️ 客户端层"]
+        Web[Web前端]:::clientStyle
+        Mobile[移动端]:::clientStyle
+    end
+
+    %% 接口层
+    subgraph Interface["🌐 接口层 Interface"]
+        API[FastAPI 应用]:::interfaceStyle
+        Routes[路由 Routes]:::interfaceStyle
+        Schemas[DTO/Schemas]:::interfaceStyle
+    end
+
+    %% 应用层
+    subgraph Application["⚙️ 应用层 Application"]
+        AgentSvc[AgentService]:::appStyle
+        AuthSvc[AuthService]:::appStyle
+        FileSvc[FileService]:::appStyle
+    end
+
+    %% 领域层
+    subgraph Domain["🎯 领域层 Domain"]
+        
+        subgraph DomainCore["核心服务"]
+            AgentDS[AgentDomainService]:::domainStyle
+            TaskRunner[AgentTaskRunner]:::domainStyle
+            Flow[PlanActFlow<br/>计划-执行流程]:::domainStyle
+        end
+        
+        subgraph Agents["🤖 Agent 实现"]
+            Planner[PlannerAgent<br/>规划智能体]:::agentStyle
+            Executor[ExecutionAgent<br/>执行智能体]:::agentStyle
+        end
+        
+        subgraph Tools["🔧 工具集 Tools"]
+            Shell[Shell]:::toolStyle
+            Browser[Browser]:::toolStyle
+            File[File]:::toolStyle
+            Search[Search]:::toolStyle
+            MCP[MCP]:::toolStyle
+        end
+        
+        subgraph Models["📦 领域模型"]
+            Agent[Agent]:::domainStyle
+            Session[Session]:::domainStyle
+            User[User]:::domainStyle
+        end
+        
+        subgraph Repos["📚 仓储接口"]
+            AgentRepo[AgentRepo]:::domainStyle
+            SessionRepo[SessionRepo]:::domainStyle
+            UserRepo[UserRepo]:::domainStyle
+        end
+    end
+
+    %% 基础设施层
+    subgraph Infrastructure["🏗️ 基础设施层 Infrastructure"]
+        
+        subgraph Storage["💾 数据存储"]
+            MongoDB[(MongoDB)]:::infraStyle
+            Redis[(Redis)]:::infraStyle
+        end
+        
+        subgraph RepoImpl["仓储实现"]
+            MongoAgentRepo[MongoAgentRepo]:::infraStyle
+            MongoSessionRepo[MongoSessionRepo]:::infraStyle
+            MongoUserRepo[MongoUserRepo]:::infraStyle
+        end
+        
+        subgraph External["🔌 外部服务"]
+            OpenAI[OpenAI LLM]:::infraStyle
+            Docker[Docker Sandbox]:::infraStyle
+            Playwright[Playwright]:::infraStyle
+        end
+    end
+
+    %% 连接关系 - 垂直流向为主
+    Web --> API
+    Mobile --> API
+    API --> Routes
+    Routes --> Schemas
+    
+    Routes --> AgentSvc
+    Routes --> AuthSvc
+    Routes --> FileSvc
+    
+    AgentSvc --> AgentDS
+    AuthSvc --> UserRepo
+    FileSvc --> MongoDB
+    
+    AgentDS --> TaskRunner
+    AgentDS --> AgentRepo
+    AgentDS --> SessionRepo
+    
+    TaskRunner --> Flow
+    Flow --> Planner
+    Flow --> Executor
+    
+    Planner -.-> Shell
+    Planner -.-> Browser
+    Executor -.-> Shell
+    Executor -.-> File
+    Executor -.-> Search
+    Executor -.-> MCP
+    
+    AgentRepo --> MongoAgentRepo
+    SessionRepo --> MongoSessionRepo
+    UserRepo --> MongoUserRepo
+    
+    MongoAgentRepo --> MongoDB
+    MongoSessionRepo --> MongoDB
+    MongoUserRepo --> MongoDB
+    
+    AgentDS -.-> OpenAI
+    AgentDS -.-> Docker
+    Browser -.-> Playwright
+    
+    OpenAI --> Redis
+    Docker --> Redis
+
+    %% 图例说明
+    subgraph Legend["📖 图例"]
+        L1[实线: 直接调用]
+        L2[虚线: 间接依赖]
+    end
 
 ```
 
@@ -3241,5 +3066,5 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTUyNTI2ODI4MCwtMjY5ODAyNjQ0XX0=
+eyJoaXN0b3J5IjpbNTcxMTgxMzI5LC0yNjk4MDI2NDRdfQ==
 -->

@@ -253,25 +253,14 @@ class AgentDomainService:
 	4. 从Task的输出流读取事件并yield
 	"""
 
-  
-
-async def _create_task(session: Session) -> Task:
-
-"""
-
-创建任务:
-
-1. 获取或创建Sandbox
-
-2. 获取Browser
-
-3. 创建AgentTaskRunner
-
-4. 创建Task并关联到Session
-
-"""
-
-  
+	async def _create_task(session: Session) -> Task:
+	"""
+	创建任务:
+	1. 获取或创建Sandbox
+	2. 获取Browser
+	3. 创建AgentTaskRunner
+	4. 创建Task并关联到Session
+	"""
 
 async def stop_session(session_id):
 
@@ -2929,6 +2918,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEzMTI5OTYxMjIsNTcxMTgxMzI5LC0yNj
-k4MDI2NDRdfQ==
+eyJoaXN0b3J5IjpbLTM3NDA4ODAwLDU3MTE4MTMyOSwtMjY5OD
+AyNjQ0XX0=
 -->

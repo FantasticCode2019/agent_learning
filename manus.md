@@ -262,18 +262,10 @@ class AgentDomainService:
 	4. 创建Task并关联到Session
 	"""
 
-async def stop_session(session_id):
-
-"""停止会话,取消关联的Task"""
-
+	async def stop_session(session_id):
+	"""停止会话,取消关联的Task"""
 ```
-
-  
-
 **AgentTaskRunner**: 任务执行器
-
-  
-
 ```python
 
 class AgentTaskRunner(TaskRunner):
@@ -2918,6 +2910,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTM3NDA4ODAwLDU3MTE4MTMyOSwtMjY5OD
-AyNjQ0XX0=
+eyJoaXN0b3J5IjpbLTExNzUwMDA1MzYsNTcxMTgxMzI5LC0yNj
+k4MDI2NDRdfQ==
 -->

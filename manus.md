@@ -2000,65 +2000,33 @@ E1[SSE读取DoneEvent] --> E2[break循环]
 end
 
 subgraph Step6[步骤6: 清理]
-
 F1[cleanup_registry] --> F2[update_status]
-
 end
 
-  
-
 A2 --> B1
-
 B2 --> C1
-
 C2 --> D1
-
 D2 --> E1
-
 E2 --> F1
 
-  
-
 style Step1 fill:#ffebee
-
 style Step2 fill:#fff3e0
-
 style Step3 fill:#e8f5e9
-
 style Step4 fill:#e3f2fd
-
 style Step5 fill:#f3e5f5
-
 style Step6 fill:#fce4ec
-
 ```
-
-  
-
 #### 6.6.3 异步异常处理机制
-
-  
-
 **Python asyncio.Task.cancel() 原理**:
-
-  
-
 ```python
-
 # 1. cancel() 方法调用
-
 task.cancel() # 不会立即停止,而是在下次 await 时抛出异常
 
-  
-
 # 2. 在任何 await 点抛出 CancelledError
-
 async def some_work():
-
 result = await long_running_operation() # ← 这里会抛出 CancelledError
 
 # 不会执行到这里
-
 return result
 
   
@@ -2783,7 +2751,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEyODIwNTM5NzcsMTExMDI4NDAyOSwtNz
-g2ODg0NzEyLC0xNzEwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAy
-NjQ0XX0=
+eyJoaXN0b3J5IjpbLTExMDU3OTM2OSwxMTEwMjg0MDI5LC03OD
+Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
+NDRdfQ==
 -->

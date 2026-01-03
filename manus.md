@@ -179,83 +179,46 @@ graph TB
 ```python
 # Agent: 智能代理聚合根
 class Agent:
-id: str # Agent唯一标识
-memories: Dict[str, Memory] # 对话记忆(按主题分类)
-model_name: str # 使用的LLM模型
-temperature: float # 生成温度参数
-
-max_tokens: int # 最大token数
-
-created_at: datetime
-
-updated_at: datetime
-
-  
+	id: str # Agent唯一标识
+	memories: Dict[str, Memory] # 对话记忆(按主题分类)
+	model_name: str # 使用的LLM模型
+	temperature: float # 生成温度参数
+	max_tokens: int # 最大token数
+	created_at: datetime
+	updated_at: datetime
 
 # Session: 会话聚合根
-
 class Session:
-
-id: str # 会话ID
-
-user_id: str # 所属用户
-
-agent_id: str # 关联的Agent
-
-sandbox_id: Optional[str] # 沙盒环境ID
-
-task_id: Optional[str] # 运行中的任务ID
-
-title: Optional[str] # 会话标题
-
-status: SessionStatus # 状态: PENDING/RUNNING/WAITING/COMPLETED
-
-events: List[AgentEvent] # 事件历史
-
-files: List[FileInfo] # 附件列表
-
-is_shared: bool # 是否公开分享
-
-created_at: datetime
-
-updated_at: datetime
-
-latest_message: Optional[str] # 最新消息预览
-
-latest_message_at: Optional[datetime] # 最新消息时间
-
-unread_message_count: int # 未读消息数
-
-  
+	id: str # 会话ID
+	user_id: str # 所属用户
+	agent_id: str # 关联的Agent
+	sandbox_id: Optional[str] # 沙盒环境ID
+	task_id: Optional[str] # 运行中的任务ID
+	title: Optional[str] # 会话标题
+	status: SessionStatus # 状态: PENDING/RUNNING/WAITING/COMPLETED
+	events: List[AgentEvent] # 事件历史
+	files: List[FileInfo] # 附件列表
+	is_shared: bool # 是否公开分享
+	created_at: datetime
+	updated_at: datetime
+	latest_message: Optional[str] # 最新消息预览
+	latest_message_at: Optional[datetime] # 最新消息时间
+	unread_message_count: int # 未读消息数
 
 # Plan: 执行计划
-
 class Plan:
-
-title: str # 计划标题
-
-message: str # 计划说明
-
-steps: List[Step] # 步骤列表
-
-status: ExecutionStatus # 执行状态
-
-completed_steps: int # 已完成步骤数
-
-  
+	title: str # 计划标题
+	message: str # 计划说明
+	steps: List[Step] # 步骤列表
+	status: ExecutionStatus # 执行状态
+	completed_steps: int # 已完成步骤数
 
 # Step: 执行步骤
-
 class Step:
-
-id: str # 步骤ID
-
-description: str # 步骤描述
-
-status: StepStatus # 状态: PENDING/RUNNING/COMPLETED/FAILED
-
-result: Optional[str] # 执行结果
-
+	id: str # 步骤ID
+	description: str # 步骤描述
+	status: StepStatus # 状态: PENDING/RUNNING/COMPLETED/FAILED
+	result: Optional[str] # 执行结果
 ```
 
   
@@ -3006,6 +2969,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTg3MTY5NTQ4MCw1NzExODEzMjksLTI2OT
-gwMjY0NF19
+eyJoaXN0b3J5IjpbLTE3MDEyMTY2NTgsNTcxMTgxMzI5LC0yNj
+k4MDI2NDRdfQ==
 -->

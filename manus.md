@@ -512,42 +512,24 @@ class OpenAILLM:
 	- JSON模式支持
 	"""
 
-async def chat(
-messages: List[dict],
-tools: Optional[List[dict]] = None,
-response_format: Optional[dict] = None
-) -> Response:
-
-# 调用OpenAI API
-
-# 3次重试,指数退避
-
-pass
-
+	async def chat(
+		messages: List[dict],
+		tools: Optional[List[dict]] = None,
+		response_format: Optional[dict] = None
+	) -> Response:
+	# 调用OpenAI API,3次重试,指数退避
+	pass
 ```
 
-  
-
 **DockerSandbox**: Docker沙盒实现
-
-  
-
 ```python
-
 class DockerSandbox:
-
 """
-
 Docker容器沙盒环境
-
 - 隔离的执行环境
-
 - TTL自动清理(默认30分钟)
-
 - 支持命令执行、文件操作
-
 - 内置浏览器(Chrome)
-
 - VNC访问支持
 
 """
@@ -2604,6 +2586,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODc4ODk0NjA0LDU3MTE4MTMyOSwtMjY5OD
-AyNjQ0XX0=
+eyJoaXN0b3J5IjpbMTc5NzU3NjIyOSw1NzExODEzMjksLTI2OT
+gwMjY0NF19
 -->

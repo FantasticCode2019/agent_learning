@@ -311,44 +311,22 @@ class PlanActFlow(BaseFlow):
 - 输出: StepEvent, ToolEvent, MessageEvent
 - 特点: 支持工具调用(Function Calling)
 
- 
-
 #### 3.1.4 工具系统 (Tools)
-
-  
-
 工具使用装饰器模式注册:
-
-  
-
 ```python
-
 @tool(
-
-name="shell",
-
-description="Execute shell command",
-
-parameters={
-
-"command": {
-
-"type": "string",
-
-"description": "Shell command to execute"
-
-}
-
-}
-
+	name="shell",
+	description="Execute shell command",
+	parameters={
+		"command": {
+		"type": "string",
+		"description": "Shell command to execute"
+		}
+	}
 )
-
 async def shell_tool(command: str) -> ToolResult:
-
 # 执行逻辑
-
 pass
-
 ```
 
   
@@ -2857,6 +2835,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTA3NjE3MzkyOCw1NzExODEzMjksLTI2OT
+eyJoaXN0b3J5IjpbLTc5Njk3MjQ2Miw1NzExODEzMjksLTI2OT
 gwMjY0NF19
 -->

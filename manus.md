@@ -404,48 +404,24 @@ class AgentService:
 	"""获取VNC连接URL"""
 ```
 
-  
-
 **AuthService**: 认证服务
-
-  
-
 ```python
-
 class AuthService:
-
-"""用户认证和授权"""
-
-  
+	"""用户认证和授权"""
 
 async def register_user(email, password, fullname) -> User:
-
 """用户注册: 验证 -> 哈希密码 -> 保存"""
 
-  
-
 async def login_with_tokens(email, password) -> AuthToken:
-
 """登录: 验证密码 -> 生成JWT token"""
 
-  
-
 async def change_password(user_id, old_password, new_password):
-
 """修改密码"""
-
 ```
 
-  
-
 **FileService**: 文件服务
-
-  
-
 ```python
-
 class FileService:
-
 """文件管理"""
 
   
@@ -2738,6 +2714,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMzM2ODc2NjkyLDU3MTE4MTMyOSwtMjY5OD
-AyNjQ0XX0=
+eyJoaXN0b3J5IjpbLTEwOTkwMTY0NDAsNTcxMTgxMzI5LC0yNj
+k4MDI2NDRdfQ==
 -->

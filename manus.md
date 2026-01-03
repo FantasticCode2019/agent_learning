@@ -2222,51 +2222,22 @@ end note
 - 无法跨进程共享 Task
 - 不支持多实例部署(需改造)
 
-  
 **未来扩展方向**:
-
-  
-
 如需支持分布式部署,可改为:
-
 1. 使用 Redis 存储 Task 元数据 (task_id, status, created_at)
-
 2. 使用进程间通信(IPC)或消息队列传递取消信号
-
 3. 实现 Task 的分布式协调机制
-
-  
-
 #### 6.6.7 错误处理与边界情况
-
-  
-
 **边界情况处理**:
-
-  
-
 | 情况 | 处理方式 | 代码位置 |
-
 |------|---------|---------|
-
 | Task 不存在 | `task = None`, 不调用 cancel | `agent_domain_service.py:111` |
-
 | Task 已完成 | cancel() 返回 False | `redis_task.py:64` |
-
 | 重复取消 | 第二次返回 False | `redis_task.py:64` |
-
 | 异常传播 | 捕获后不再 raise | `agent_task_runner.py:242` |
-
 | Redis 连接失败 | output_stream.put 异常 | 需要外部处理 |
-
 | SSE 连接断开 | 生成器自然退出 | `agent_domain_service.py:174` |
-
-  
-
 **完整的异常处理链**:
-
-  
-
 ```mermaid
 
 flowchart TD
@@ -2295,36 +2266,20 @@ Catch --> PutEvent[put DoneEvent]
 
 Catch2 --> PutEvent2[put ErrorEvent]
 
-  
-
 PutEvent --> Try3{put try}
-
 PutEvent2 --> Try3
 
-  
-
 Try3 -->|成功| UpdateDB[update_status]
-
 Try3 -->|失败| Log2[logger.error]
 
-  
-
 UpdateDB --> End([完成])
-
 Log1 --> End
-
 Log2 --> End
 
-  
-
 style Catch fill:#e8f5e9
-
 style Catch2 fill:#ffebee
-
 style Log1 fill:#fff3e0
-
 style Log2 fill:#fff3e0
-
 ```
 ## 7. 架构图
 ### 7.1 请求处理流程总览
@@ -2587,7 +2542,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEyMjQ2MzcwNSwxMTEwMjg0MDI5LC03OD
+eyJoaXN0b3J5IjpbLTgxMzI4OTYzNSwxMTEwMjg0MDI5LC03OD
 Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
 NDRdfQ==
 -->

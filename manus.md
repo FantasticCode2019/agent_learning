@@ -1502,59 +1502,32 @@ datetime updated_at
 ```
 ### 5.2 Session状态转换
 ```mermaid
-
 stateDiagram-v2
-
 [*] --> PENDING: create_session()
-
-  
 
 PENDING --> RUNNING: 收到消息,创建Task
 
-  
-
 RUNNING --> WAITING: 需要用户输入<br/>(WaitEvent)
-
 RUNNING --> COMPLETED: 执行完成<br/>(DoneEvent)
-
 RUNNING --> COMPLETED: 手动停止<br/>(stop_session)
 
-  
-
 WAITING --> RUNNING: 用户继续输入
-
 WAITING --> COMPLETED: 手动停止
-
-  
 
 COMPLETED --> RUNNING: 收到新消息
 
-  
-
 COMPLETED --> [*]: delete_session()
 
-  
-
 note right of PENDING
-
 初始状态
-
 - 已创建Session
-
 - 未开始执行
-
 end note
 
-  
-
 note right of RUNNING
-
 执行中
-
 - Task正在运行
-
 - 生成事件流
-
 end note
 
   
@@ -2222,7 +2195,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTc1MzM4NDE1OCwxMTEwMjg0MDI5LC03OD
-Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
-NDRdfQ==
+eyJoaXN0b3J5IjpbMjgzMjA5OTIsMTExMDI4NDAyOSwtNzg2OD
+g0NzEyLC0xNzEwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAyNjQ0
+XX0=
 -->

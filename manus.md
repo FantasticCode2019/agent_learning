@@ -709,46 +709,26 @@ class EventMapper:
 # 服务工厂 (单例)
 @lru_cache()
 def get_agent_service() -> AgentService:
-"""创建AgentService单例"""
-return AgentService(
-llm=get_llm(),
-agent_repository=get_agent_repository(),
-session_repository=get_session_repository(),
-sandbox_cls=DockerSandbox,
-task_cls=RedisTask,
-...
-
-)
-
-  
+	"""创建AgentService单例"""
+	return AgentService(
+		llm=get_llm(),
+		agent_repository=get_agent_repository(),
+		session_repository=get_session_repository(),
+		sandbox_cls=DockerSandbox,
+		task_cls=RedisTask,
+		...
+	)
 
 # 认证依赖
-
 async def get_current_user(
-
-token: str = Depends(oauth2_scheme)
-
+	token: str = Depends(oauth2_scheme)
 ) -> User:
-
-"""从JWT token获取当前用户"""
-
-return await get_token_service().verify_token(token)
-
+	"""从JWT token获取当前用户"""
+	return await get_token_service().verify_token(token)
 ```
 
-  
-
----
-
-  
-
 ## 4. 核心业务流程
-
-  
-
 ### 4.1 创建会话流程
-
-  
 
 ```mermaid
 
@@ -2380,6 +2360,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjA0NzI2MzQxNywtMTcxMDIyMjIyMyw1Nz
+eyJoaXN0b3J5IjpbLTc4Njg4NDcxMiwtMTcxMDIyMjIyMyw1Nz
 ExODEzMjksLTI2OTgwMjY0NF19
 -->

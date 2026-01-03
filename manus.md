@@ -1332,81 +1332,36 @@ API-->>User: 200 OK
 Note over User,API: 会话已优雅终止
 ```
 #### 4.6.1 中断机制详解
-
-
 **三层取消机制**:
-
-  
-
 1. **API层取消**: 用户请求 `POST /sessions/{id}/stop`
-
 2. **Task层取消**: 调用 `task.cancel()` 取消 asyncio.Task
-
 3. **异常处理层**: 捕获 `asyncio.CancelledError` 并发送终止信号
 
-  
-
 **关键代码位置**:
-
-  
-
 - API入口: `backend/app/interfaces/api/session_routes.py:70-77`
-
 - 应用层: `backend/app/application/services/agent_service.py:130-139`
-
 - 领域层: `backend/app/domain/services/agent_domain_service.py:105-114`
-
 - Task实现: `backend/app/infrastructure/external/task/redis_task.py:58-71`
-
 - 异常捕获: `backend/app/domain/services/agent_task_runner.py:242-245`
-
-  
-
 #### 4.6.2 优雅终止 vs 强制断开
-
-  
-
 | 对比维度 | 优雅终止 (当前实现) | 强制断开 |
-
 |---------|-------------------|---------|
-
 | **实现方式** | asyncio.CancelledError + DoneEvent | 直接关闭连接 |
-
 | **前端感知** | 收到明确的DoneEvent | 连接突然中断 |
-
 | **状态一致性** | Session状态更新为COMPLETED | 状态可能不一致 |
-
 | **事件记录** | DoneEvent保存到events历史 | 无记录 |
-
 | **资源清理** | 在异常处理中清理 | 可能遗留资源 |
-
 | **用户体验** | 明确知道任务已停止 | 不清楚是否成功停止 |
-
-  
-
 #### 4.6.3 中断流程状态转换
-
-  
-
 ```mermaid
-
 stateDiagram-v2
-
 [*] --> Running: Session运行中
-
-  
 
 Running --> StopRequested: 用户点击停止按钮
 
-  
-
 StopRequested --> CancellingTask: task.cancel()
 
-  
-
 CancellingTask --> CatchingException: asyncio.CancelledError
-
-  
 
 CatchingException --> SendingDoneEvent: 创建并发送DoneEvent
 
@@ -2415,7 +2370,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODc3MzY4MjA0LDExMTAyODQwMjksLTc4Nj
-g4NDcxMiwtMTcxMDIyMjIyMyw1NzExODEzMjksLTI2OTgwMjY0
-NF19
+eyJoaXN0b3J5IjpbMTg0ODU3MzM0MiwxMTEwMjg0MDI5LC03OD
+Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
+NDRdfQ==
 -->

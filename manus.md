@@ -409,39 +409,29 @@ class AgentService:
 class AuthService:
 	"""用户认证和授权"""
 
-async def register_user(email, password, fullname) -> User:
-"""用户注册: 验证 -> 哈希密码 -> 保存"""
+	async def register_user(email, password, fullname) -> User:
+	"""用户注册: 验证 -> 哈希密码 -> 保存"""
 
-async def login_with_tokens(email, password) -> AuthToken:
-"""登录: 验证密码 -> 生成JWT token"""
+	async def login_with_tokens(email, password) -> AuthToken:
+	"""登录: 验证密码 -> 生成JWT token"""
 
-async def change_password(user_id, old_password, new_password):
-"""修改密码"""
+	async def change_password(user_id, old_password, new_password):
+	"""修改密码"""
 ```
 
 **FileService**: 文件服务
 ```python
 class FileService:
-"""文件管理"""
+	"""文件管理"""
 
-  
+	async def upload_file(file_data, filename, user_id) -> FileInfo:
+	"""上传文件到GridFS"""
 
-async def upload_file(file_data, filename, user_id) -> FileInfo:
+	async def download_file(file_id, user_id) -> bytes:
+	"""下载文件(带权限验证)"""
 
-"""上传文件到GridFS"""
-
-  
-
-async def download_file(file_id, user_id) -> bytes:
-
-"""下载文件(带权限验证)"""
-
-  
-
-async def delete_file(file_id, user_id):
-
-"""删除文件(带权限验证)"""
-
+	async def delete_file(file_id, user_id):
+	"""删除文件(带权限验证)"""
 ```
 
   
@@ -2714,6 +2704,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEwOTkwMTY0NDAsNTcxMTgxMzI5LC0yNj
-k4MDI2NDRdfQ==
+eyJoaXN0b3J5IjpbMTMxNTgxNjAwLDU3MTE4MTMyOSwtMjY5OD
+AyNjQ0XX0=
 -->

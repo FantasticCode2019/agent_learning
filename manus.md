@@ -1411,40 +1411,22 @@ PLAN ||--o{ STEP : contains
 EVENT ||--o| PLAN : includes
 EVENT ||--o| STEP : references
 
-  
-
 USER {
-
 string id PK
-
 string email UK
-
 string hashed_password
-
 string fullname
-
 datetime created_at
-
 datetime updated_at
-
 }
 
-  
-
 AGENT {
-
 string id PK
-
 dict memories
-
 string model_name
-
 float temperature
-
 int max_tokens
-
 datetime created_at
-
 datetime updated_at
 
 }
@@ -2318,7 +2300,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTU1MDE5MDMyMiwxMTEwMjg0MDI5LC03OD
-Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
-NDRdfQ==
+eyJoaXN0b3J5IjpbLTE1MjE3NzcyMDIsMTExMDI4NDAyOSwtNz
+g2ODg0NzEyLC0xNzEwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAy
+NjQ0XX0=
 -->

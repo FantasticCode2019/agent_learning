@@ -377,18 +377,13 @@ class Browser(Protocol):
 **AgentService**: Agent应用服务
 ```python
 class AgentService:
-"""
-应用服务,提供高层业务接口
-"""
-async def create_session(user_id: str) -> Session:
+	"""应用服务,提供高层业务接口"""
 
-"""创建会话: 创建Agent -> 创建Session"""
+	async def create_session(user_id: str) -> Session:
+	"""创建会话: 创建Agent -> 创建Session"""
 
-  
-
-async def chat(session_id, user_id, message) -> AsyncGenerator[AgentEvent]:
-
-"""聊天: 委托给AgentDomainService"""
+	async def chat(session_id, user_id, message) -> AsyncGenerator[AgentEvent]:
+	"""聊天: 委托给AgentDomainService"""
 
   
 
@@ -2762,6 +2757,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQ2MzA2MzE0OCw1NzExODEzMjksLTI2OT
-gwMjY0NF19
+eyJoaXN0b3J5IjpbLTEyMDUwMjE0NjYsNTcxMTgxMzI5LC0yNj
+k4MDI2NDRdfQ==
 -->

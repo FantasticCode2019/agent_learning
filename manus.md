@@ -1365,102 +1365,50 @@ CancellingTask --> CatchingException: asyncio.CancelledError
 
 CatchingException --> SendingDoneEvent: 创建并发送DoneEvent
 
-  
-
 SendingDoneEvent --> WritingToRedis: output_stream.put()
-
 SendingToRedis --> SavingToDatabase: add_event()
-
-  
 
 SavingToDatabase --> UpdatingStatus: update_status(COMPLETED)
 
-  
-
 UpdatingStatus --> CleaningRegistry: _cleanup_registry()
-
-  
 
 CleaningRegistry --> ClosingSSE: SSE检测DoneEvent
 
-  
-
 ClosingSSE --> Completed: 会话已完成
-
-  
 
 Completed --> [*]
 
-  
-
 note right of CatchingException
-
 关键步骤：
-
 捕获异步取消异常
-
 不会导致程序崩溃
-
 end note
-
-  
 
 note right of SendingDoneEvent
-
 优雅终止核心：
-
 发送终止事件
-
 而非直接断开连接
-
 end note
-
-  
 
 note right of ClosingSSE
-
 SSE自然退出：
-
 if isinstance(event, DoneEvent):
-
 break
-
 end note
-
 ```
-
-  
-
 ## 5. 数据模型
-
-  
-
 ### 5.1 核心实体关系图
-
-  
-
 ```mermaid
-
 erDiagram
-
 USER ||--o{ SESSION : owns
-
 SESSION ||--|| AGENT : uses
-
 SESSION ||--o{ EVENT : contains
-
 SESSION ||--o| SANDBOX : has
-
 SESSION ||--o| TASK : runs
-
 SESSION ||--o{ FILE : attaches
-
 AGENT ||--o{ MEMORY : has
-
 PLAN ||--o{ STEP : contains
-
 EVENT ||--o| PLAN : includes
-
 EVENT ||--o| STEP : references
 
   
@@ -2370,7 +2318,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTg0ODU3MzM0MiwxMTEwMjg0MDI5LC03OD
+eyJoaXN0b3J5IjpbMTU1MDE5MDMyMiwxMTEwMjg0MDI5LC03OD
 Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
 NDRdfQ==
 -->

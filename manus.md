@@ -2239,31 +2239,19 @@ end note
 | SSE 连接断开 | 生成器自然退出 | `agent_domain_service.py:174` |
 **完整的异常处理链**:
 ```mermaid
-
 flowchart TD
-
 Cancel[task.cancel] --> Try1{try}
-
-  
 
 Try1 -->|成功| Clean1[_cleanup_registry]
 
 Try1 -->|异常| Log1[logger.error]
 
-  
-
 Clean1 --> Try2{TaskRunner try}
 
-  
-
 Try2 -->|CancelledError| Catch[except CancelledError]
-
 Try2 -->|其他异常| Catch2[except Exception]
 
-  
-
 Catch --> PutEvent[put DoneEvent]
-
 Catch2 --> PutEvent2[put ErrorEvent]
 
 PutEvent --> Try3{put try}
@@ -2542,7 +2530,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTgxMzI4OTYzNSwxMTEwMjg0MDI5LC03OD
-Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
-NDRdfQ==
+eyJoaXN0b3J5IjpbNzI3NzM5ODA1LDExMTAyODQwMjksLTc4Nj
+g4NDcxMiwtMTcxMDIyMjIyMyw1NzExODEzMjksLTI2OTgwMjY0
+NF19
 -->

@@ -1293,88 +1293,46 @@ SessionRepo-->>AgentService: Session(验证归属)
 AgentService->>AgentDomainService: stop_session(session_id)
 
 AgentDomainService->>SessionRepo: find_by_id(session_id)
-
 SessionRepo-->>AgentDomainService: Session
 
-  
-
 AgentDomainService->>AgentDomainService: _get_task(session)
-
 Note over AgentDomainService: 从内存注册表获取Task实例<br/>task_registry[task_id]
-
-  
 
 AgentDomainService->>Task: cancel()
 
-  
-
 Task->>Task: _execution_task.cancel()
-
 Note over Task: 取消 asyncio.Task
-
-  
 
 Task-->>TaskRunner: 抛出 asyncio.CancelledError
 
-  
-
 TaskRunner->>TaskRunner: except asyncio.CancelledError
-
 Note over TaskRunner: 捕获取消异常<br/>开始清理流程
 
-  
-
 TaskRunner->>TaskRunner: 创建 DoneEvent
-
 TaskRunner->>Redis: output_stream.put(DoneEvent)
-
 TaskRunner->>SessionRepo: add_event(DoneEvent)
 
-  
-
 Redis-->>SSE: 读取 DoneEvent
-
 SSE-->>User: SSE: event: done
-
-  
 
 Note over SSE: SSE检测到DoneEvent<br/>退出事件循环
 
-  
-
 TaskRunner->>SessionRepo: update_status(COMPLETED)
 
-  
-
 Task->>Task: _cleanup_registry()
-
 Note over Task: 从内存注册表移除
-
-  
 
 AgentDomainService->>SessionRepo: update_status(COMPLETED)
 
-  
-
 SessionRepo-->>AgentDomainService: success
-
 AgentDomainService-->>AgentService: success
-
 AgentService-->>API: success
-
 API-->>User: 200 OK
 
-  
-
 Note over User,API: 会话已优雅终止
-
 ```
-
-  
-
 #### 4.6.1 中断机制详解
 
-  
 
 **三层取消机制**:
 
@@ -2457,7 +2415,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY2NzQwNDIwNCwxMTEwMjg0MDI5LC03OD
-Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
-NDRdfQ==
+eyJoaXN0b3J5IjpbODc3MzY4MjA0LDExMTAyODQwMjksLTc4Nj
+g4NDcxMiwtMTcxMDIyMjIyMyw1NzExODEzMjksLTI2OTgwMjY0
+NF19
 -->

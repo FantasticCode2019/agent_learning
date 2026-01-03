@@ -172,37 +172,16 @@ graph TB
 | **领域层** | 核心业务逻辑,领域模型 | 框架无关,纯业务逻辑 |
 | **基础设施层** | 技术实现,外部服务集成 | 可替换的具体实现 |
 ## 3. 分层架构详解
-
-  
-
 ### 3.1 领域层 (Domain Layer)
-
-  
-
 领域层是系统的核心,包含所有业务逻辑和领域模型,完全独立于框架和技术实现。
-
-  
-
 #### 3.1.1 领域模型 (Models)
-
-  
-
 **核心聚合根**:
-
-  
-
 ```python
-
 # Agent: 智能代理聚合根
-
 class Agent:
-
 id: str # Agent唯一标识
-
 memories: Dict[str, Memory] # 对话记忆(按主题分类)
-
 model_name: str # 使用的LLM模型
-
 temperature: float # 生成温度参数
 
 max_tokens: int # 最大token数
@@ -3027,6 +3006,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjAzMjk0MDkwLDU3MTE4MTMyOSwtMjY5OD
-AyNjQ0XX0=
+eyJoaXN0b3J5IjpbMTg3MTY5NTQ4MCw1NzExODEzMjksLTI2OT
+gwMjY0NF19
 -->

@@ -2266,37 +2266,20 @@ style Infrastructure fill:#e8f5e9
 
 ### 8.1 使用的设计模式
 
-  
-
 | 设计模式 | 应用位置 | 说明 |
-
 |---------|---------|------|
-
 | **分层架构** | 整体架构 | Domain, Application, Infrastructure, Interfaces四层分离 |
-
 | **领域驱动设计(DDD)** | 领域层 | 聚合根(Agent, Session)、值对象、仓储模式 |
-
 | **仓储模式** | 数据访问 | 抽象数据访问,领域层定义接口,基础设施层实现 |
-
 | **工厂模式** | 依赖注入 | `get_agent_service()`等工厂函数创建服务实例 |
-
 | **策略模式** | LLM/搜索引擎 | 多种LLM和搜索引擎实现,统一接口 |
-
 | **装饰器模式** | 工具注册 | `@tool`装饰器注册工具元数据 |
-
 | **状态模式** | PlanActFlow | 状态机(IDLE/PLANNING/EXECUTING/UPDATING/SUMMARIZING) |
-
 | **观察者模式** | 事件系统 | 事件发布-订阅,通过Redis Streams |
-
 | **模板方法模式** | BaseAgent | 抽象基类定义算法骨架,子类实现具体步骤 |
-
 | **适配器模式** | 外部服务 | 将外部API适配为内部接口(如OpenAI API -> LLM接口) |
-
 | **单例模式** | 服务实例 | `@lru_cache()`实现服务单例 |
-
 | **责任链模式** | 异常处理 | FastAPI异常处理器链 |
-
-  
 
 ### 8.2 SOLID原则体现
 
@@ -2380,6 +2363,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2MzkwOTEwNjUsLTc4Njg4NDcxMiwtMT
-cxMDIyMjIyMyw1NzExODEzMjksLTI2OTgwMjY0NF19
+eyJoaXN0b3J5IjpbMTkyNzUzMzg1LC03ODY4ODQ3MTIsLTE3MT
+AyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2NDRdfQ==
 -->

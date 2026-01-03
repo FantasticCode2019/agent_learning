@@ -1530,34 +1530,18 @@ note right of RUNNING
 - 生成事件流
 end note
 
-  
-
 note right of WAITING
-
 等待用户输入
-
 - 需要确认
-
 - 需要额外信息
-
 end note
-
-  
 
 note right of COMPLETED
-
 已完成
-
 - 可重新激活
-
 - 可删除
-
 end note
-
 ```
-
-  
-
 ### 5.3 Step状态转换
 
   
@@ -2195,7 +2179,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjgzMjA5OTIsMTExMDI4NDAyOSwtNzg2OD
-g0NzEyLC0xNzEwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAyNjQ0
-XX0=
+eyJoaXN0b3J5IjpbODc0NTI4OTY0LDExMTAyODQwMjksLTc4Nj
+g4NDcxMiwtMTcxMDIyMjIyMyw1NzExODEzMjksLTI2OTgwMjY0
+NF19
 -->

@@ -1493,28 +1493,14 @@ int size
 datetime upload_time
 }
 
-  
-
 MEMORY {
-
 string topic PK
-
 array messages
-
 datetime created_at
-
 datetime updated_at
-
 }
-
 ```
-
-  
-
 ### 5.2 Session状态转换
-
-  
-
 ```mermaid
 
 stateDiagram-v2
@@ -2236,7 +2222,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTYzOTQwNzkzNCwxMTEwMjg0MDI5LC03OD
+eyJoaXN0b3J5IjpbMTc1MzM4NDE1OCwxMTEwMjg0MDI5LC03OD
 Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
 NDRdfQ==
 -->

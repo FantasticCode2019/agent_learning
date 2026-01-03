@@ -325,43 +325,23 @@ class PlanActFlow(BaseFlow):
 	}
 )
 async def shell_tool(command: str) -> ToolResult:
-# 执行逻辑
-pass
+	# 执行逻辑
+	pass
 ```
-
-  
-
 **可用工具**:
-
 1. **ShellTool**: Shell命令执行
-
 2. **BrowserTool**: 浏览器自动化(导航、点击、输入、截图等)
-
 3. **FileTool**: 文件操作(读、写、列表、搜索、替换)
-
 4. **SearchTool**: 网络搜索(Google/Bing/Baidu)
-
 5. **MCPTool**: MCP协议集成
-
 6. **MessageTool**: 发送消息给用户
-
 7. **PlanTool**: 计划管理
-
-  
-
 #### 3.1.5 仓储接口 (Repository Interfaces)
-
-  
-
 ```python
-
 class AgentRepository(Protocol):
-
-async def save(agent: Agent) -> None
-
-async def find_by_id(agent_id: str) -> Optional[Agent]
-
-async def update(agent: Agent) -> None
+	async def save(agent: Agent) -> None
+	async def find_by_id(agent_id: str) -> Optional[Agent]
+	async def update(agent: Agent) -> None
 
   
 
@@ -2835,6 +2815,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTc5Njk3MjQ2Miw1NzExODEzMjksLTI2OT
-gwMjY0NF19
+eyJoaXN0b3J5IjpbODQyNzAwMzkwLDU3MTE4MTMyOSwtMjY5OD
+AyNjQ0XX0=
 -->

@@ -1471,47 +1471,26 @@ string result
 }
 
 SANDBOX {
-
 string id PK
-
 string container_id
-
 int port
-
 datetime created_at
-
 int ttl_minutes
-
 }
-
-  
 
 TASK {
-
 string id PK
-
 string input_stream
-
 string output_stream
-
 bool done
-
 }
 
-  
-
 FILE {
-
 string file_id PK
-
 string filename
-
 string content_type
-
 int size
-
 datetime upload_time
-
 }
 
   
@@ -2257,7 +2236,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTIzMjgyOTcwOCwxMTEwMjg0MDI5LC03OD
+eyJoaXN0b3J5IjpbLTYzOTQwNzkzNCwxMTEwMjg0MDI5LC03OD
 Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
 NDRdfQ==
 -->

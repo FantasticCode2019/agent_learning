@@ -221,42 +221,22 @@ class Step:
 	result: Optional[str] # 执行结果
 ```
 
-  
-
 **事件模型** (Event Sourcing):
-
-  
-
 ```python
-
 # 事件基类
-
 class BaseEvent:
-
-id: Optional[str] # 事件ID
-
-timestamp: datetime # 时间戳
-
-  
+	id: Optional[str] # 事件ID
+	timestamp: datetime # 时间戳
 
 # 具体事件类型 (Union Type: AgentEvent)
-
 - PlanEvent: 计划创建/更新/完成
-
 - StepEvent: 步骤开始/完成/失败
-
 - ToolEvent: 工具调用/结果返回
-
 - MessageEvent: 消息生成
-
 - TitleEvent: 标题生成
-
 - ErrorEvent: 错误发生
-
 - DoneEvent: 执行完成
-
 - WaitEvent: 等待用户输入
-
 ```
 
   
@@ -2969,6 +2949,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3MDEyMTY2NTgsNTcxMTgxMzI5LC0yNj
-k4MDI2NDRdfQ==
+eyJoaXN0b3J5IjpbLTUxMDI5OTU5MCw1NzExODEzMjksLTI2OT
+gwMjY0NF19
 -->

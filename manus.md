@@ -675,41 +675,22 @@ class GetSessionResponse(BaseModel):
 	is_shared: bool
 
 class ListSessionItem(BaseModel):
-
 session_id: str
-
 title: Optional[str]
-
 status: SessionStatus
-
 unread_message_count: int
-
 latest_message: Optional[str]
-
 latest_message_at: Optional[int]
-
 is_shared: bool
-
 ```
 
-  
-
 #### 3.4.3 SSE事件映射
-
-  
-
 ```python
-
 class EventMapper:
-
 """将领域事件映射为SSE事件"""
 
-  
-
 @staticmethod
-
 async def event_to_sse_event(event: AgentEvent) -> Optional[SSEEvent]:
-
 """
 
 映射规则:
@@ -2426,6 +2407,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNj
-k4MDI2NDRdfQ==
+eyJoaXN0b3J5IjpbLTEzNDk5Mzg2NDksLTE3MTAyMjIyMjMsNT
+cxMTgxMzI5LC0yNjk4MDI2NDRdfQ==
 -->

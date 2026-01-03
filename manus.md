@@ -240,30 +240,18 @@ class BaseEvent:
 ```
 #### 3.1.2 领域服务 (Services)
 **AgentDomainService**: 领域服务协调器
-
 ```python
-
 class AgentDomainService:
-
 """协调Planner和Executor的工作"""
 
-  
-
-async def chat(session_id, user_id, message) -> AsyncGenerator[AgentEvent]:
-
-"""
-
-聊天主流程:
-
-1. 获取Session
-
-2. 获取或创建Task
-
-3. 将消息放入Task的输入流
-
-4. 从Task的输出流读取事件并yield
-
-"""
+	async def chat(session_id, user_id, message) -> AsyncGenerator[AgentEvent]:
+	"""
+	聊天主流程:
+	1. 获取Session
+	2. 获取或创建Task
+	3. 将消息放入Task的输入流
+	4. 从Task的输出流读取事件并yield
+	"""
 
   
 
@@ -2941,6 +2929,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTk3NTIyNjA0Niw1NzExODEzMjksLTI2OT
-gwMjY0NF19
+eyJoaXN0b3J5IjpbLTEzMTI5OTYxMjIsNTcxMTgxMzI5LC0yNj
+k4MDI2NDRdfQ==
 -->

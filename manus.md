@@ -629,59 +629,32 @@ class MongoSessionRepository:
 /api/v1
 
 ├── /sessions # 会话管理
-
 │ ├── PUT "" # 创建会话
-
 │ ├── GET "" # 列出所有会话
-
 │ ├── POST "" # SSE流式会话列表
-
 │ ├── GET "/{id}" # 获取会话详情
-
 │ ├── DELETE "/{id}" # 删除会话
-
 │ ├── POST "/{id}/stop" # 停止会话
-
 │ ├── POST "/{id}/chat" # 聊天 (SSE)
-
 │ ├── WS "/{id}/chat" # 聊天 (WebSocket, 备选)
-
 │ ├── POST "/{id}/shell" # 查看Shell输出
-
 │ ├── POST "/{id}/file" # 查看文件内容
-
 │ ├── WS "/{id}/vnc" # VNC连接
-
 │ ├── POST "/{id}/vnc/signed-url" # 创建VNC签名URL
-
 │ ├── POST "/{id}/share" # 分享会话
-
 │ ├── DELETE "/{id}/share" # 取消分享
-
 │ └── GET "/shared/{id}" # 获取共享会话
-
 ├── /files # 文件管理
-
 │ ├── POST "" # 上传文件
-
 │ ├── GET "/{id}" # 下载文件
-
 │ ├── DELETE "/{id}" # 删除文件
-
 │ └── GET "/{id}/info" # 获取文件信息
-
 └── /auth # 认证
-
 ├── POST "/login" # 登录
-
 ├── POST "/register" # 注册
-
 ├── GET "/status" # 获取认证配置状态
-
 ├── POST "/change-password" # 修改密码
-
 └── POST "/refresh-token" # 刷新token
-
 ```
 
   
@@ -2474,6 +2447,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNTQ2NDg0MDYxLDU3MTE4MTMyOSwtMjY5OD
-AyNjQ0XX0=
+eyJoaXN0b3J5IjpbLTkyMTAwMTI4NSw1NzExODEzMjksLTI2OT
+gwMjY0NF19
 -->

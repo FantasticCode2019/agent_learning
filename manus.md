@@ -28,6 +28,9 @@ AI Manus Backend 是一个基于 FastAPI 的智能对话代理系统,采用领�
 ## 2. 整体架构
 ### 2.1 架构图
 ```mermaid
+
+```
+```mermaid
 graph TB
     %% 样式定义
     classDef clientStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
@@ -2360,6 +2363,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTc4Njg4NDcxMiwtMTcxMDIyMjIyMyw1Nz
-ExODEzMjksLTI2OTgwMjY0NF19
+eyJoaXN0b3J5IjpbLTEzNjEwNDUxMjksLTc4Njg4NDcxMiwtMT
+cxMDIyMjIyMyw1NzExODEzMjksLTI2OTgwMjY0NF19
 -->

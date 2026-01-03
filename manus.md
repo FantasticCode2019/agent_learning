@@ -1428,43 +1428,24 @@ float temperature
 int max_tokens
 datetime created_at
 datetime updated_at
-
 }
 
-  
-
 SESSION {
-
 string id PK
-
 string user_id FK
-
 string agent_id FK
-
 string sandbox_id
-
 string task_id
-
 string title
-
 string status
-
 array events
-
 array files
-
 bool is_shared
-
 datetime created_at
-
 datetime updated_at
-
 string latest_message
-
 datetime latest_message_at
-
 int unread_message_count
-
 }
 
   
@@ -2300,7 +2281,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE1MjE3NzcyMDIsMTExMDI4NDAyOSwtNz
-g2ODg0NzEyLC0xNzEwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAy
-NjQ0XX0=
+eyJoaXN0b3J5IjpbLTIzODMwMzMwMCwxMTEwMjg0MDI5LC03OD
+Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
+NDRdfQ==
 -->

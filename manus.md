@@ -371,37 +371,15 @@ class Browser(Protocol):
 	async def click(selector: str)
 	async def screenshot() -> bytes
 ```
-
-  
-
 ### 3.2 应用层 (Application Layer)
-
-  
-
 应用层编排领域服务,处理应用级别的业务流程。
-
-  
-
 #### 3.2.1 应用服务
-
-  
-
 **AgentService**: Agent应用服务
-
-  
-
 ```python
-
 class AgentService:
-
 """
-
 应用服务,提供高层业务接口
-
 """
-
-  
-
 async def create_session(user_id: str) -> Session:
 
 """创建会话: 创建Agent -> 创建Session"""
@@ -2784,6 +2762,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjUwMDI3NjkyLDU3MTE4MTMyOSwtMjY5OD
-AyNjQ0XX0=
+eyJoaXN0b3J5IjpbMTQ2MzA2MzE0OCw1NzExODEzMjksLTI2OT
+gwMjY0NF19
 -->

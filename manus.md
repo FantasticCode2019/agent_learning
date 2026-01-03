@@ -2114,38 +2114,24 @@ async def chat(...) -> AsyncGenerator[BaseEvent, None]:
 		block_ms=0
 	)
 
-if event_str is None:
-continue
-event = TypeAdapter(AgentEvent).validate_json(event_str)
-yield event # 发送给前端
-# 关键：检测终止事件
-if isinstance(event, (DoneEvent, ErrorEvent, WaitEvent)):
-break # ← SSE 生成器退出
+	if event_str is None:
+		continue
+	event = TypeAdapter(AgentEvent).validate_json(event_str)
+	yield event # 发送给前端
+	# 关键：检测终止事件
+	if isinstance(event, (DoneEvent, ErrorEvent, WaitEvent)):
+		break # ← SSE 生成器退出
 ```
-
 **SSE 终止流程**:
-
-  
-
 ```mermaid
-
 flowchart TD
-
 Start([SSE连接建立]) --> Loop{循环}
 
-  
-
 Loop -->|读取| ReadStream[output_stream.get]
-
 ReadStream --> CheckNull{event_str为空?}
 
-  
-
 CheckNull -->|是| Loop
-
 CheckNull -->|否| Parse[解析事件]
-
-  
 
 Parse --> Yield[yield event 给前端]
 
@@ -2707,7 +2693,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE0NzczNTAxNzMsMTExMDI4NDAyOSwtNz
-g2ODg0NzEyLC0xNzEwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAy
-NjQ0XX0=
+eyJoaXN0b3J5IjpbMjU1NzA0ODU1LDExMTAyODQwMjksLTc4Nj
+g4NDcxMiwtMTcxMDIyMjIyMyw1NzExODEzMjksLTI2OTgwMjY0
+NF19
 -->

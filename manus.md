@@ -607,46 +607,25 @@ class MongoAgentRepository:
 **MongoSessionRepository**: MongoDB Session仓储
 ```python
 class MongoSessionRepository:
-"""Session持久化到MongoDB"""
+	"""Session持久化到MongoDB"""
 
-async def save(session: Session):
-"""保存Session"""
+	async def save(session: Session):
+	"""保存Session"""
 
- 
-async def add_event(session_id: str, event: AgentEvent):
+	async def add_event(session_id: str, event: AgentEvent):
+	"""添加事件到Session (追加到events数组)"""
 
-"""添加事件到Session (追加到events数组)"""
+	async def update_status(session_id: str, status: SessionStatus):
+	"""更新Session状态"""
 
-  
-
-async def update_status(session_id: str, status: SessionStatus):
-
-"""更新Session状态"""
-
-  
-
-async def find_by_user_id(user_id: str) -> List[Session]:
-
-"""查询用户的所有Session"""
-
+	async def find_by_user_id(user_id: str) -> List[Session]:
+	"""查询用户的所有Session"""
 ```
-
-  
 
 ### 3.4 接口层 (Interfaces Layer)
-
-  
-
 接口层负责对外暴露API,处理HTTP请求和响应。
-
-  
-
 #### 3.4.1 路由结构
-
-  
-
 ```
-
 /api/v1
 
 ├── /sessions # 会话管理
@@ -2495,6 +2474,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2OTkxNTIzNzMsNTcxMTgxMzI5LC0yNj
-k4MDI2NDRdfQ==
+eyJoaXN0b3J5IjpbNTQ2NDg0MDYxLDU3MTE4MTMyOSwtMjY5OD
+AyNjQ0XX0=
 -->

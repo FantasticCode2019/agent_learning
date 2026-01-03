@@ -267,27 +267,16 @@ class AgentDomainService:
 ```
 **AgentTaskRunner**: 任务执行器
 ```python
-
 class AgentTaskRunner(TaskRunner):
-
-"""实现TaskRunner接口,运行PlanActFlow"""
-
-  
+	"""实现TaskRunner接口,运行PlanActFlow"""
 
 async def run(task: Task):
-
 """
-
 主循环:
-
 1. 从input_stream读取消息
-
 2. 运行PlanActFlow处理消息
-
 3. 将生成的事件写入output_stream
-
 4. 保存事件到Session
-
 """
 
 ```
@@ -2910,6 +2899,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExNzUwMDA1MzYsNTcxMTgxMzI5LC0yNj
+eyJoaXN0b3J5IjpbLTE2NTE3MDkwOTAsNTcxMTgxMzI5LC0yNj
 k4MDI2NDRdfQ==
 -->

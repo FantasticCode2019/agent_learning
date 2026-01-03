@@ -2103,54 +2103,25 @@ Task-->>Main: 取消成功
   
 
 #### 6.6.4 SSE 流终止机制
-
-  
-
 **SSE 循环读取与中断**:
-
-  
-
 ```python
-
 # backend/app/domain/services/agent_domain_service.py:162-174
-
 async def chat(...) -> AsyncGenerator[BaseEvent, None]:
-
-while task and not task.done:
-
-# 从 Redis Streams 读取事件
-
-event_id, event_str = await task.output_stream.get(
-
-start_id=latest_event_id,
-
-block_ms=0
-
-)
-
-  
+	while task and not task.done:
+	# 从 Redis Streams 读取事件
+	event_id, event_str = await task.output_stream.get(
+		start_id=latest_event_id,
+		block_ms=0
+	)
 
 if event_str is None:
-
 continue
-
-  
-
 event = TypeAdapter(AgentEvent).validate_json(event_str)
-
 yield event # 发送给前端
-
-  
-
 # 关键：检测终止事件
-
 if isinstance(event, (DoneEvent, ErrorEvent, WaitEvent)):
-
 break # ← SSE 生成器退出
-
 ```
-
-  
 
 **SSE 终止流程**:
 
@@ -2736,7 +2707,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY5MjIzNDg2NSwxMTEwMjg0MDI5LC03OD
-Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
-NDRdfQ==
+eyJoaXN0b3J5IjpbLTE0NzczNTAxNzMsMTExMDI4NDAyOSwtNz
+g2ODg0NzEyLC0xNzEwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAy
+NjQ0XX0=
 -->

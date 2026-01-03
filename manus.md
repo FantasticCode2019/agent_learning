@@ -1923,86 +1923,40 @@ InputQueue[input_stream<br/>RedisStreamQueue]
 OutputQueue[output_stream<br/>RedisStreamQueue]
 end
 
-  
-
 subgraph Session[Session文档]
-
 SessionID[session_id]
-
 TaskIDRef[task_id 引用]
-
 Status[status: SessionStatus]
-
 Events[events: List]
-
 end
 
-  
-
 Task -->|注册| Memory
-
 Task -->|消息通信| RedisStreams
-
 Session -->|关联| MongoDB
-
 Session -->|引用| TaskIDRef
-
 TaskIDRef -.->|指向| TaskID
 
-  
-
 style Memory fill:#ffebee
-
 style RedisStreams fill:#e3f2fd
-
 style MongoDB fill:#e8f5e9
-
 ```
-
-  
-
 **三层存储机制**:
-
-  
-
 | 存储层 | 用途 | 生命周期 | 数据示例 |
-
 |-------|------|---------|---------|
-
 | **内存注册表** | 快速查找Task实例 | 进程生命周期 | `{"uuid-123": RedisTask实例}` |
-
 | **Redis Streams** | 任务输入输出队列 | TTL或手动清理 | `task:input:uuid-123`, `task:output:uuid-123` |
-
 | **MongoDB** | Session和task_id持久化 | 永久(除非删除) | `{session_id, task_id, status, events}` |
-
-  
-
 #### 6.6.2 取消机制详解
-
-  
-
 **核心实现代码**:
-
-  
-
 ```python
-
 # backend/app/infrastructure/external/task/redis_task.py:58-71
-
 def cancel(self) -> bool:
-
 """取消任务"""
-
 if not self.done:
-
 # 1. 取消 asyncio.Task (抛出 CancelledError)
-
 self._execution_task.cancel()
 
-  
-
 # 2. 从内存注册表移除
-
 self._cleanup_registry()
 
   
@@ -2881,7 +2835,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTI4MDIyODYyOSwxMTEwMjg0MDI5LC03OD
+eyJoaXN0b3J5IjpbLTE5NTYxODk3MywxMTEwMjg0MDI5LC03OD
 Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
 NDRdfQ==
 -->

@@ -657,43 +657,22 @@ class MongoSessionRepository:
 └── POST "/refresh-token" # 刷新token
 ```
 
-  
-
 #### 3.4.2 DTO Schemas
-
-  
-
 ```python
-
 # 请求Schema
-
 class ChatRequest(BaseModel):
-
-message: str
-
-timestamp: Optional[int]
-
-event_id: Optional[str]
-
-attachments: Optional[List[dict]]
-
-  
+	message: str
+	timestamp: Optional[int]
+	event_id: Optional[str]
+	attachments: Optional[List[dict]]
 
 # 响应Schema
-
 class GetSessionResponse(BaseModel):
-
-session_id: str
-
-title: Optional[str]
-
-status: SessionStatus
-
-events: List[SSEEvent]
-
-is_shared: bool
-
-  
+	session_id: str
+	title: Optional[str]
+	status: SessionStatus
+	events: List[SSEEvent]
+	is_shared: bool
 
 class ListSessionItem(BaseModel):
 
@@ -2447,6 +2426,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTkyMTAwMTI4NSw1NzExODEzMjksLTI2OT
-gwMjY0NF19
+eyJoaXN0b3J5IjpbLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNj
+k4MDI2NDRdfQ==
 -->

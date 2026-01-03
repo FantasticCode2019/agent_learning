@@ -27,9 +27,32 @@ AI Manus Backend 是一个基于 FastAPI 的智能对话代理系统,采用领�
 - **事件溯源**: 完整的事件历史记录
 ## 2. 整体架构
 ### 2.1 架构图
+整体架构图
 ```mermaid
+graph LR
+    %% 样式
+    classDef layer1 fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
+    classDef layer2 fill:#fff3e0,stroke:#f57c00,stroke-width:3px
+    classDef layer3 fill:#fff9c4,stroke:#f9a825,stroke-width:3px
+    classDef layer4 fill:#e8f5e9,stroke:#388e3c,stroke-width:3px
+
+    Client[📱 客户端<br/>Web/Mobile]:::layer1
+    Interface[🌐 接口层<br/>FastAPI/Routes]:::layer1
+    Application[⚙️ 应用层<br/>Services]:::layer2
+    Domain[🎯 领域层<br/>Agent/Flow/Tools]:::layer3
+    Infrastructure[🏗️ 基础设施<br/>MongoDB/Redis/LLM]:::layer4
+
+    Client --> Interface
+    Interface --> Application
+    Application --> Domain
+    Domain --> Infrastructure
+
+    %% 核心组件标注
+    Domain -.-> |核心| PlanActFlow[PlanActFlow<br/>智能体编排]
+    Domain -.-> |工具| Tools[Shell/Browser/Search]
 
 ```
+详细流程架构图
 ```mermaid
 graph TB
     %% 样式定义
@@ -2280,17 +2303,11 @@ style Infrastructure fill:#e8f5e9
   
 
 | 原则 | 体现 |
-
 |-----|------|
-
 | **单一职责原则(SRP)** | 每个服务、Agent、工具只负责一个职责 |
-
 | **开闭原则(OCP)** | 通过接口和抽象类实现扩展,无需修改现有代码 |
-
 | **里氏替换原则(LSP)** | 所有实现类可以替换接口类型(如不同的LLM实现) |
-
 | **接口隔离原则(ISP)** | 细粒度的接口定义(LLM, Sandbox, Browser等分离) |
-
 | **依赖倒置原则(DIP)** | 高层模块依赖抽象接口,不依赖具体实现 |
 
   
@@ -2363,6 +2380,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEzNjEwNDUxMjksLTc4Njg4NDcxMiwtMT
+eyJoaXN0b3J5IjpbLTE2MzkwOTEwNjUsLTc4Njg4NDcxMiwtMT
 cxMDIyMjIyMyw1NzExODEzMjksLTI2OTgwMjY0NF19
 -->

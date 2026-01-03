@@ -1269,10 +1269,252 @@ style MessageEvent2 fill:#e8f5e9
 style DoneEvent fill:#ffebee
 
 ```
+### 4.6 会话中断流程
+当用户主动停止会话时,系统通过优雅的异步任务取消机制实现中断。
+```mermaid
+sequenceDiagram
+participant User as 用户
+participant API as FastAPI
+participant AgentService as AgentService
+participant AgentDomainService as AgentDomainService
+participant SessionRepo as SessionRepository
+participant Task as RedisTask
+participant TaskRunner as AgentTaskRunner
+participant Redis as Redis Streams
+participant SSE as SSE连
+
+User->>API: POST /sessions/{id}/stop
+API->>API: 验证用户Token
+API->>AgentService: stop_session(session_id, user_id)
+
+AgentService->>SessionRepo: find_by_id_and_user_id()
+SessionRepo-->>AgentService: Session(验证归属)
+
+AgentService->>AgentDomainService: stop_session(session_id)
+
+AgentDomainService->>SessionRepo: find_by_id(session_id)
+
+SessionRepo-->>AgentDomainService: Session
 
   
 
----
+AgentDomainService->>AgentDomainService: _get_task(session)
+
+Note over AgentDomainService: 从内存注册表获取Task实例<br/>task_registry[task_id]
+
+  
+
+AgentDomainService->>Task: cancel()
+
+  
+
+Task->>Task: _execution_task.cancel()
+
+Note over Task: 取消 asyncio.Task
+
+  
+
+Task-->>TaskRunner: 抛出 asyncio.CancelledError
+
+  
+
+TaskRunner->>TaskRunner: except asyncio.CancelledError
+
+Note over TaskRunner: 捕获取消异常<br/>开始清理流程
+
+  
+
+TaskRunner->>TaskRunner: 创建 DoneEvent
+
+TaskRunner->>Redis: output_stream.put(DoneEvent)
+
+TaskRunner->>SessionRepo: add_event(DoneEvent)
+
+  
+
+Redis-->>SSE: 读取 DoneEvent
+
+SSE-->>User: SSE: event: done
+
+  
+
+Note over SSE: SSE检测到DoneEvent<br/>退出事件循环
+
+  
+
+TaskRunner->>SessionRepo: update_status(COMPLETED)
+
+  
+
+Task->>Task: _cleanup_registry()
+
+Note over Task: 从内存注册表移除
+
+  
+
+AgentDomainService->>SessionRepo: update_status(COMPLETED)
+
+  
+
+SessionRepo-->>AgentDomainService: success
+
+AgentDomainService-->>AgentService: success
+
+AgentService-->>API: success
+
+API-->>User: 200 OK
+
+  
+
+Note over User,API: 会话已优雅终止
+
+```
+
+  
+
+#### 4.6.1 中断机制详解
+
+  
+
+**三层取消机制**:
+
+  
+
+1. **API层取消**: 用户请求 `POST /sessions/{id}/stop`
+
+2. **Task层取消**: 调用 `task.cancel()` 取消 asyncio.Task
+
+3. **异常处理层**: 捕获 `asyncio.CancelledError` 并发送终止信号
+
+  
+
+**关键代码位置**:
+
+  
+
+- API入口: `backend/app/interfaces/api/session_routes.py:70-77`
+
+- 应用层: `backend/app/application/services/agent_service.py:130-139`
+
+- 领域层: `backend/app/domain/services/agent_domain_service.py:105-114`
+
+- Task实现: `backend/app/infrastructure/external/task/redis_task.py:58-71`
+
+- 异常捕获: `backend/app/domain/services/agent_task_runner.py:242-245`
+
+  
+
+#### 4.6.2 优雅终止 vs 强制断开
+
+  
+
+| 对比维度 | 优雅终止 (当前实现) | 强制断开 |
+
+|---------|-------------------|---------|
+
+| **实现方式** | asyncio.CancelledError + DoneEvent | 直接关闭连接 |
+
+| **前端感知** | 收到明确的DoneEvent | 连接突然中断 |
+
+| **状态一致性** | Session状态更新为COMPLETED | 状态可能不一致 |
+
+| **事件记录** | DoneEvent保存到events历史 | 无记录 |
+
+| **资源清理** | 在异常处理中清理 | 可能遗留资源 |
+
+| **用户体验** | 明确知道任务已停止 | 不清楚是否成功停止 |
+
+  
+
+#### 4.6.3 中断流程状态转换
+
+  
+
+```mermaid
+
+stateDiagram-v2
+
+[*] --> Running: Session运行中
+
+  
+
+Running --> StopRequested: 用户点击停止按钮
+
+  
+
+StopRequested --> CancellingTask: task.cancel()
+
+  
+
+CancellingTask --> CatchingException: asyncio.CancelledError
+
+  
+
+CatchingException --> SendingDoneEvent: 创建并发送DoneEvent
+
+  
+
+SendingDoneEvent --> WritingToRedis: output_stream.put()
+
+SendingToRedis --> SavingToDatabase: add_event()
+
+  
+
+SavingToDatabase --> UpdatingStatus: update_status(COMPLETED)
+
+  
+
+UpdatingStatus --> CleaningRegistry: _cleanup_registry()
+
+  
+
+CleaningRegistry --> ClosingSSE: SSE检测DoneEvent
+
+  
+
+ClosingSSE --> Completed: 会话已完成
+
+  
+
+Completed --> [*]
+
+  
+
+note right of CatchingException
+
+关键步骤：
+
+捕获异步取消异常
+
+不会导致程序崩溃
+
+end note
+
+  
+
+note right of SendingDoneEvent
+
+优雅终止核心：
+
+发送终止事件
+
+而非直接断开连接
+
+end note
+
+  
+
+note right of ClosingSSE
+
+SSE自然退出：
+
+if isinstance(event, DoneEvent):
+
+break
+
+end note
+
+```
 
   
 
@@ -2215,6 +2457,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTExMDI4NDAyOSwtNzg2ODg0NzEyLC0xNz
-EwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAyNjQ0XX0=
+eyJoaXN0b3J5IjpbMTY2NzQwNDIwNCwxMTEwMjg0MDI5LC03OD
+Y4ODQ3MTIsLTE3MTAyMjIyMjMsNTcxMTgxMzI5LC0yNjk4MDI2
+NDRdfQ==
 -->

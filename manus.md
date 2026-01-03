@@ -453,50 +453,23 @@ class TokenService:
 ```
 
 ### 3.3 基础设施层 (Infrastructure Layer)
-
-  
-
 基础设施层提供领域层和应用层所需的技术实现。
-
-  
-
 #### 3.3.1 数据持久化
-
-  
-
 **MongoDB with Beanie ODM**:
-
-  
-
 ```python
-
 # 文档模型
-
 class AgentDocument(Document):
-
-agent_id: str
-
-memories: Dict[str, dict]
-
-model_name: str
-
-temperature: float
-
-max_tokens: int
-
-created_at: datetime
-
-updated_at: datetime
-
-  
+	agent_id: str
+	memories: Dict[str, dict]
+	model_name: str
+	temperature: float
+	max_tokens: int
+	created_at: datetime
+	updated_at: datetime
 
 class Settings:
-
 name = "agents"
-
 indexes = ["agent_id"]
-
-  
 
 class SessionDocument(Document):
 
@@ -2682,6 +2655,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExNDc3ODQ3NzIsNTcxMTgxMzI5LC0yNj
-k4MDI2NDRdfQ==
+eyJoaXN0b3J5IjpbMzE4MzI0MjM0LDU3MTE4MTMyOSwtMjY5OD
+AyNjQ0XX0=
 -->

@@ -591,56 +591,28 @@ class RedisTask:
 	"""取消任务"""
 ```
 
-  
-
 #### 3.3.3 仓储实现
-
-  
-
 **MongoAgentRepository**: MongoDB Agent仓储
-
-  
-
 ```python
-
 class MongoAgentRepository:
+	"""Agent持久化到MongoDB"""
 
-"""Agent持久化到MongoDB"""
+	async def save(agent: Agent):
+	"""保存Agent (领域模型 -> 文档模型)"""
 
-  
-
-async def save(agent: Agent):
-
-"""保存Agent (领域模型 -> 文档模型)"""
-
-  
-
-async def find_by_id(agent_id: str) -> Optional[Agent]:
-
-"""查询Agent (文档模型 -> 领域模型)"""
-
+	async def find_by_id(agent_id: str) -> Optional[Agent]:
+	"""查询Agent (文档模型 -> 领域模型)"""
 ```
 
-  
-
 **MongoSessionRepository**: MongoDB Session仓储
-
-  
-
 ```python
-
 class MongoSessionRepository:
-
 """Session持久化到MongoDB"""
 
-  
-
 async def save(session: Session):
-
 """保存Session"""
 
-  
-
+ 
 async def add_event(session_id: str, event: AgentEvent):
 
 """添加事件到Session (追加到events数组)"""
@@ -2523,6 +2495,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE4MDM1MDQ4NDksNTcxMTgxMzI5LC0yNj
+eyJoaXN0b3J5IjpbLTE2OTkxNTIzNzMsNTcxMTgxMzI5LC0yNj
 k4MDI2NDRdfQ==
 -->

@@ -1976,56 +1976,28 @@ async def run(self, task: Task) -> None:
 			SessionStatus.COMPLETED
 		)
 ```
-
-  
-
 **取消流程分解**:
-
-  
-
 ```mermaid
-
 flowchart LR
-
 subgraph Step1[步骤1: API调用]
-
 A1[POST /stop] --> A2[task.cancel]
-
 end
-
-  
 
 subgraph Step2[步骤2: asyncio层]
-
 B1[_execution_task.cancel] --> B2[抛出CancelledError]
-
 end
-
-  
 
 subgraph Step3[步骤3: 异常处理]
-
 C1[except CancelledError] --> C2[创建DoneEvent]
-
 end
-
-  
 
 subgraph Step4[步骤4: 消息传递]
-
 D1[put to output_stream] --> D2[Redis Streams写入]
-
 end
-
-  
 
 subgraph Step5[步骤5: SSE响应]
-
 E1[SSE读取DoneEvent] --> E2[break循环]
-
 end
-
-  
 
 subgraph Step6[步骤6: 清理]
 
@@ -2811,7 +2783,7 @@ style Infrastructure fill:#e8f5e9
 4. **监控告警**: 集成Prometheus, Grafana
 5. **性能优化**: 缓存策略,连接池优化
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5MTU5NDEyNDUsMTExMDI4NDAyOSwtNz
+eyJoaXN0b3J5IjpbLTEyODIwNTM5NzcsMTExMDI4NDAyOSwtNz
 g2ODg0NzEyLC0xNzEwMjIyMjIzLDU3MTE4MTMyOSwtMjY5ODAy
 NjQ0XX0=
 -->

@@ -25,18 +25,8 @@ AI Manus Backend 是一个基于 FastAPI 的智能对话代理系统,采用领�
 - **沙盒隔离**: Docker容器提供安全的代码执行环境
 - **可扩展工具系统**: 装饰器模式,易于添加新工具
 - **事件溯源**: 完整的事件历史记录
----
-
-  
-
 ## 2. 整体架构
-
-  
-
 ### 2.1 架构图
-
-  
-
 ```mermaid
 graph TB
     %% 样式定义
@@ -181,13 +171,6 @@ graph TB
 | **应用层** | 编排业务流程,协调领域服务 | 无状态,事务边界 |
 | **领域层** | 核心业务逻辑,领域模型 | 框架无关,纯业务逻辑 |
 | **基础设施层** | 技术实现,外部服务集成 | 可替换的具体实现 |
-
-  
-
----
-
-  
-
 ## 3. 分层架构详解
 
   
@@ -3044,6 +3027,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjEyNjU5MzMwNiw1NzExODEzMjksLTI2OT
-gwMjY0NF19
+eyJoaXN0b3J5IjpbMjAzMjk0MDkwLDU3MTE4MTMyOSwtMjY5OD
+AyNjQ0XX0=
 -->

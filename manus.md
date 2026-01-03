@@ -468,61 +468,34 @@ class AgentDocument(Document):
 	updated_at: datetime
 
 class Settings:
-name = "agents"
-indexes = ["agent_id"]
+	name = "agents"
+	indexes = ["agent_id"]
 
 class SessionDocument(Document):
-
-session_id: str
-
-user_id: str
-
-agent_id: str
-
-sandbox_id: Optional[str]
-
-task_id: Optional[str]
-
-title: Optional[str]
-
-status: str
-
-events: List[dict] # 存储为JSON
-
-files: List[dict]
-
-is_shared: bool
-
-created_at: datetime
-
-updated_at: datetime
-
-latest_message: Optional[str]
-
-latest_message_at: Optional[datetime]
-
-unread_message_count: int
-
-  
+	session_id: str
+	user_id: str
+	agent_id: str
+	sandbox_id: Optional[str]
+	task_id: Optional[str]
+	title: Optional[str]
+	status: str
+	events: List[dict] # 存储为JSON
+	files: List[dict]
+	is_shared: bool
+	created_at: datetime
+	updated_at: datetime
+	latest_message: Optional[str]
+	latest_message_at: Optional[datetime]
+	unread_message_count: int
 
 class Settings:
-
-name = "sessions"
-
-indexes = ["session_id", "user_id"]
-
+	name = "sessions"
+	indexes = ["session_id", "user_id"]
 ```
 
-  
-
 **Redis**:
-
-  
-
 - **Streams**: Task输入输出队列
-
 - `task:input:{task_id}`: 任务输入流
-
 - `task:output:{task_id}`: 任务输出流(事件流)
 
 - **Cache**: 通用缓存
@@ -2655,6 +2628,6 @@ style Infrastructure fill:#e8f5e9
 
 **维护者**: AI Manus Team
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMzE4MzI0MjM0LDU3MTE4MTMyOSwtMjY5OD
-AyNjQ0XX0=
+eyJoaXN0b3J5IjpbMTc1MTA4ODkyMCw1NzExODEzMjksLTI2OT
+gwMjY0NF19
 -->

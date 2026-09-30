@@ -1,0 +1,389 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "⑦ Agent 的一步（step）里发生了什么",
+    "locale": "zh-CN",
+    "output": ".archify/guide-20260930-162304/07-agent-step/agent-step.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/OpenHands/software-agent-sdk",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "fcc102a697874d54a357e36004e02c95040dbdc0"
+    }
+  },
+  "lanes": [
+    {
+      "id": "prep",
+      "label": "准备上下文"
+    },
+    {
+      "id": "think",
+      "label": "调用 LLM"
+    },
+    {
+      "id": "act",
+      "label": "执行动作"
+    },
+    {
+      "id": "gate",
+      "label": "闸门与分支",
+      "variant": "exception"
+    }
+  ],
+  "phases": [
+    {
+      "id": "context",
+      "label": "拼上下文",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "decide",
+      "label": "LLM 决策",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "run",
+      "label": "执行",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "view",
+    "tomsg",
+    "llmcall",
+    "classify",
+    "action",
+    "risk",
+    "execute"
+  ],
+  "nodes": [
+    {
+      "id": "view",
+      "lane": "prep",
+      "col": 0,
+      "type": "database",
+      "label": "读取事件视图",
+      "sublabel": "state.view",
+      "width": 130,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "line": 686,
+          "end_line": 697,
+          "label": "prepare_llm_messages"
+        },
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/state.py",
+          "line": 340,
+          "label": "增量视图"
+        }
+      ]
+    },
+    {
+      "id": "tomsg",
+      "lane": "prep",
+      "col": 1,
+      "type": "backend",
+      "label": "事件 → LLM 消息",
+      "sublabel": "系统提示 + 对话 + 工具结果",
+      "width": 170,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/utils.py",
+          "line": 581,
+          "end_line": 633,
+          "label": "events_to_messages"
+        }
+      ]
+    },
+    {
+      "id": "condense",
+      "lane": "gate",
+      "col": 1,
+      "type": "messagebus",
+      "label": "上下文压缩",
+      "sublabel": "产出 Condensation · 本步结束",
+      "width": 170,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "line": 692,
+          "end_line": 695,
+          "label": "condenser 触发"
+        },
+        {
+          "path": "openhands-sdk/openhands/sdk/event/condenser.py",
+          "line": 11,
+          "end_line": 18,
+          "label": "Condensation"
+        }
+      ]
+    },
+    {
+      "id": "llmcall",
+      "lane": "think",
+      "col": 2,
+      "type": "cloud",
+      "label": "LLM 生成",
+      "sublabel": "带工具定义 · 失败重试 5 次",
+      "width": 170,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "line": 935,
+          "end_line": 943,
+          "label": "llm.agenerate"
+        },
+        {
+          "path": "openhands-sdk/openhands/sdk/llm/llm.py",
+          "line": 1648,
+          "end_line": 1778,
+          "label": "completion + 重试"
+        }
+      ]
+    },
+    {
+      "id": "ctxerr",
+      "lane": "gate",
+      "col": 2,
+      "type": "security",
+      "label": "LLM 出错",
+      "sublabel": "超长 → 请求压缩",
+      "width": 150,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "line": 736,
+          "end_line": 810,
+          "label": "错误分类处理"
+        }
+      ]
+    },
+    {
+      "id": "classify",
+      "lane": "think",
+      "col": 3,
+      "type": "backend",
+      "label": "看回复类型",
+      "sublabel": "工具调用 / 纯文本",
+      "width": 150,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/response_dispatch.py",
+          "line": 45,
+          "end_line": 78,
+          "label": "classify_response"
+        }
+      ]
+    },
+    {
+      "id": "reply",
+      "lane": "act",
+      "col": 3,
+      "type": "frontend",
+      "label": "回复用户",
+      "sublabel": "MessageEvent → FINISHED",
+      "width": 170,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/response_dispatch.py",
+          "line": 248,
+          "end_line": 261,
+          "label": "_handle_content_response"
+        }
+      ]
+    },
+    {
+      "id": "action",
+      "lane": "act",
+      "col": 4,
+      "type": "backend",
+      "label": "生成 ActionEvent",
+      "sublabel": "解析参数 · 找到工具",
+      "width": 160,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "line": 1227,
+          "end_line": 1382,
+          "label": "_get_action_event"
+        }
+      ]
+    },
+    {
+      "id": "risk",
+      "lane": "gate",
+      "col": 4,
+      "type": "security",
+      "label": "风险确认闸门",
+      "sublabel": "安全分析 + 确认策略",
+      "width": 160,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "line": 1046,
+          "end_line": 1114,
+          "label": "_requires_user_confirmation"
+        }
+      ]
+    },
+    {
+      "id": "wait",
+      "lane": "gate",
+      "col": 5,
+      "type": "security",
+      "label": "等待用户确认",
+      "sublabel": "WAITING_FOR_CONFIRMATION",
+      "width": 180,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/impl/local_conversation.py",
+          "line": 2641,
+          "end_line": 2679,
+          "label": "拒绝 → UserReject"
+        },
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "line": 652,
+          "end_line": 661,
+          "label": "确认后下一步执行"
+        }
+      ]
+    },
+    {
+      "id": "execute",
+      "lane": "act",
+      "col": 5,
+      "type": "backend",
+      "label": "执行工具",
+      "sublabel": "→ ObservationEvent",
+      "tag": "Finish 工具 → FINISHED",
+      "width": 170,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "line": 570,
+          "end_line": 633,
+          "label": "_execute_actions"
+        },
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "line": 1384,
+          "end_line": 1446,
+          "label": "包装为 ObservationEvent"
+        },
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "line": 340,
+          "end_line": 371,
+          "label": "Finish 设为 FINISHED"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "view-tomsg",
+      "from": "view",
+      "to": "tomsg",
+      "variant": "emphasis"
+    },
+    {
+      "id": "tomsg-llm",
+      "from": "tomsg",
+      "to": "llmcall",
+      "variant": "emphasis"
+    },
+    {
+      "id": "llm-classify",
+      "from": "llmcall",
+      "to": "classify",
+      "variant": "emphasis"
+    },
+    {
+      "id": "classify-action",
+      "from": "classify",
+      "to": "action",
+      "label": "tool_calls",
+      "variant": "emphasis"
+    },
+    {
+      "id": "action-risk",
+      "from": "action",
+      "to": "risk",
+      "variant": "emphasis"
+    },
+    {
+      "id": "risk-execute",
+      "from": "risk",
+      "to": "execute",
+      "label": "放行",
+      "variant": "emphasis"
+    },
+    {
+      "id": "tomsg-condense",
+      "from": "tomsg",
+      "to": "condense",
+      "label": "太长",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "llm-err",
+      "from": "llmcall",
+      "to": "ctxerr",
+      "label": "异常",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "classify-reply",
+      "from": "classify",
+      "to": "reply",
+      "label": "纯文本",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "risk-wait",
+      "from": "risk",
+      "to": "wait",
+      "label": "需确认",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "一句话理解",
+      "items": [
+        "一步 = 把历史整理成对话 → 问 LLM“下一步做什么” → 执行它选的工具",
+        "工具结果变成新事件，下一步 LLM 就能看到"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "默认工具",
+      "items": [
+        "terminal：在 tmux 里执行命令",
+        "file_editor：查看 / 编辑文件",
+        "task_tracker：维护 TASKS.md；另有 Think、Finish"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "安全闸门",
+      "items": [
+        "确认策略判定为高风险的动作，先暂停等待人工确认",
+        "用户拒绝时生成 UserRejectObservation，LLM 会看到被拒绝"
+      ]
+    }
+  ]
+}

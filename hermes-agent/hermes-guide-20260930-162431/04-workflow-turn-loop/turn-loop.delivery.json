@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "4020ea3c-b252-46d4-83db-981b623638b4",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/04-workflow-turn-loop/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/04-workflow-turn-loop/turn-loop.html",
+  "specification": {
+    "sha256": "2e1981f1522ad1c8da6f9eef82cdc868f8fb34f4f6850afe5a2c83f867fb7d86",
+    "bytes": 7208
+  },
+  "artifact": {
+    "sha256": "4fc3ae4a3dc5d3efa4b90abf48a275ee636dbbe41f12f34f7e76ad412be4cd3f",
+    "bytes": 768193
+  }
+}

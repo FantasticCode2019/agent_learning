@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "记忆与学习：Hermes 如何越用越懂你",
+    "output": ".archify/hermes-guide-20260930-162431/09-architecture-memory-learning/memory-learning.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": { "url": "https://github.com/NousResearch/hermes-agent.git", "provider": "github", "link_mode": "web", "revision": "f42f579cf8bac4918ac9599bece71618afadd846" }
+  },
+  "components": [
+    { "id": "conv", "type": "backend", "label": "当前对话", "sublabel": "AIAgent 主循环", "pos": [20, 200], "size": [150, 64],
+      "sources": [ { "path": "agent/turn_finalizer.py", "line": 752, "end_line": 766, "label": "回合后触发复盘" } ] },
+    { "id": "memtool", "type": "backend", "label": "memory 工具", "sublabel": "add / replace / remove", "pos": [270, 40], "size": [170, 64],
+      "sources": [ { "path": "tools/memory_tool.py", "line": 105, "end_line": 112, "label": "动作表" }, { "path": "tools/memory_tool.py", "line": 419, "end_line": 424, "label": "注册" } ] },
+    { "id": "memfiles", "type": "database", "label": "记忆文件", "sublabel": "MEMORY.md · USER.md", "pos": [540, 40], "size": [170, 64],
+      "sources": [ { "path": "tools/memory_tool.py", "line": 38, "end_line": 40, "label": "memories/ 目录" }, { "path": "tools/memory_tool_store.py", "line": 99, "end_line": 103, "label": "字数上限" } ] },
+    { "id": "review", "type": "backend", "label": "后台复盘", "sublabel": "分身 Agent 回看对话", "pos": [270, 360], "size": [170, 64],
+      "sources": [ { "path": "agent/background_review.py", "line": 1, "end_line": 6, "label": "设计说明" }, { "path": "agent/background_review.py", "line": 963, "end_line": 1000, "label": "build_cache_parity_fork" }, { "path": "agent/turn_context.py", "line": 718, "end_line": 727, "label": "每 N 轮提醒" } ] },
+    { "id": "skills", "type": "database", "label": "技能库", "sublabel": "skills/*/SKILL.md", "pos": [540, 360], "size": [170, 64],
+      "sources": [ { "path": "tools/skill_manager_tool.py", "line": 767, "label": "skill_manage" }, { "path": "tools/skills_tool.py", "line": 62, "end_line": 71, "label": "技能目录" } ] },
+    { "id": "curator", "type": "security", "label": "技能管家", "sublabel": "curator · 只归档不删", "pos": [540, 520], "size": [170, 64],
+      "sources": [ { "path": "agent/curator.py", "line": 1, "end_line": 35, "label": "规则与默认值" }, { "path": "agent/curator.py", "line": 209, "end_line": 260, "label": "自动状态变化" } ] },
+    { "id": "next", "type": "frontend", "label": "下一次会话", "sublabel": "系统提示词里读到", "pos": [820, 40], "size": [160, 384],
+      "sources": [ { "path": "agent/system_prompt.py", "line": 516, "end_line": 540, "label": "记忆快照" }, { "path": "agent/system_prompt.py", "line": 301, "end_line": 314, "label": "技能索引" } ] }
+  ],
+  "connections": [
+    { "id": "l1", "from": "conv", "to": "memtool", "label": "模型主动记", "fromSide": "top", "toSide": "left" },
+    { "id": "l2", "from": "memtool", "to": "memfiles", "label": "立即写盘", "variant": "emphasis" },
+    { "id": "l3", "from": "conv", "to": "review", "label": "每 10 轮", "variant": "dashed", "fromSide": "bottom", "toSide": "left" },
+    { "id": "l4", "from": "review", "to": "memtool", "label": "补记", "variant": "dashed" },
+    { "id": "l5", "from": "review", "to": "skills", "label": "新建/修补", "variant": "dashed" },
+    { "id": "l6", "from": "memfiles", "to": "next", "label": "开局快照", "variant": "emphasis" },
+    { "id": "l7", "from": "skills", "to": "next", "label": "技能索引", "variant": "emphasis" },
+    { "id": "l8", "from": "curator", "to": "skills", "label": "归档久未用的" }
+  ],
+  "cards": [
+    { "dot": "violet", "title": "两种记忆", "items": [
+      "MEMORY.md：Agent 给自己记的笔记（环境、经验）；USER.md：关于你的画像（偏好、习惯）",
+      "有字数上限（约 2200 / 1375 字符），逼它只记要点；写入立刻落盘，但下次会话才进提示词"
+    ] },
+    { "dot": "emerald", "title": "后台复盘", "items": [
+      "每 10 个用户回合（记忆）或 10 次工具迭代（技能）触发一次，回答发出后才开始",
+      "复制一个同样提示词的分身 Agent，在后台线程回看对话，决定是否记笔记、写技能；不影响主对话"
+    ] },
+    { "dot": "amber", "title": "技能与回忆", "items": [
+      "技能是可复用的操作手册（SKILL.md）；/技能名 会把整份手册作为用户消息注入",
+      "curator 定期把长期不用的技能归档（14 天标旧、30 天归档），被固定的技能除外",
+      "session_search 工具可在 state.db 全文搜索过去的对话；也可接 mem0、honcho 等外部记忆插件"
+    ] }
+  ]
+}

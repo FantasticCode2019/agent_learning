@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "25a34c69-2c01-4830-9aab-be521e1e3485",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/00-overview/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/00-overview/overview.html",
+  "specification": {
+    "sha256": "5045f1351994999f10297516fa3a59570222e4905e330d004ece578f0266d498",
+    "bytes": 13785
+  },
+  "artifact": {
+    "sha256": "7def621c975b503d9aed2d3da35efb72f96c8f321475b2939d73166434c1c915",
+    "bytes": 790219
+  }
+}

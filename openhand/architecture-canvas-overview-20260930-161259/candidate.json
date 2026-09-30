@@ -1,0 +1,522 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "OpenHands Agent Canvas 架构总览",
+    "locale": "zh-CN",
+    "output": ".archify/architecture-canvas-overview-20260930-161259/canvas-overview.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/OpenHands/OpenHands",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "1ec86616bc0511b1e56269fd6ba5872438f4fb7f"
+    }
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "用户",
+      "sublabel": "浏览器 / Electron",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        130,
+        64
+      ],
+      "sources": [
+        {
+          "path": "electron/main.mjs",
+          "line": 399,
+          "label": "Electron 加载 :8000"
+        }
+      ]
+    },
+    {
+      "id": "routes",
+      "type": "frontend",
+      "label": "路由与页面",
+      "sublabel": "React Router 7 · 组件",
+      "pos": [
+        270,
+        240
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/routes.ts",
+          "line": 1,
+          "end_line": 47,
+          "label": "路由表"
+        },
+        {
+          "path": "src/components/features/chat/chat-interface.tsx",
+          "line": 85,
+          "label": "聊天输入 useSendMessage"
+        }
+      ]
+    },
+    {
+      "id": "hooks",
+      "type": "frontend",
+      "label": "Query Hooks",
+      "sublabel": "TanStack Query",
+      "pos": [
+        520,
+        240
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/api/README.md",
+          "line": 64,
+          "end_line": 90,
+          "label": "服务须经 hook 调用"
+        },
+        {
+          "path": "src/hooks/mutation/use-create-conversation.ts",
+          "line": 78,
+          "end_line": 81
+        },
+        {
+          "path": "src/hooks/query/use-active-conversation.ts",
+          "line": 7,
+          "end_line": 25
+        }
+      ]
+    },
+    {
+      "id": "services",
+      "type": "frontend",
+      "label": "API 服务层",
+      "sublabel": "src/api · TS client",
+      "pos": [
+        770,
+        240
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/api/agent-server-client-options.ts",
+          "line": 54,
+          "end_line": 78,
+          "label": "解析 host/apiKey"
+        },
+        {
+          "path": "src/api/conversation-service/agent-server-conversation-service.api.ts",
+          "line": 433,
+          "end_line": 530,
+          "label": "createConversation"
+        }
+      ]
+    },
+    {
+      "id": "backendReg",
+      "type": "database",
+      "label": "后端注册表",
+      "sublabel": "localStorage · local/cloud",
+      "pos": [
+        770,
+        70
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/api/backend-registry/types.ts",
+          "line": 1,
+          "end_line": 23,
+          "label": "Backend kind"
+        },
+        {
+          "path": "src/api/backend-registry/active-store.ts",
+          "line": 128,
+          "end_line": 145
+        },
+        {
+          "path": "src/api/backend-registry/storage.ts",
+          "line": 13,
+          "end_line": 14,
+          "label": "存储键"
+        }
+      ]
+    },
+    {
+      "id": "cloud",
+      "type": "cloud",
+      "label": "OpenHands Cloud",
+      "sublabel": "app-conversations API",
+      "pos": [
+        770,
+        420
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/api/cloud/client.ts",
+          "line": 33,
+          "end_line": 55,
+          "label": "CloudClient + proxy"
+        },
+        {
+          "path": "src/api/conversation-service/agent-server-conversation-service.api.ts",
+          "line": 450,
+          "end_line": 477,
+          "label": "cloud 分支"
+        }
+      ]
+    },
+    {
+      "id": "ws",
+      "type": "frontend",
+      "label": "会话 WebSocket",
+      "sublabel": "ConversationWebSocketProvider",
+      "pos": [
+        505,
+        420
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/contexts/websocket-provider-wrapper.tsx",
+          "line": 16,
+          "end_line": 114,
+          "label": "用 conversation_url 建连"
+        },
+        {
+          "path": "src/contexts/conversation-websocket-context.tsx",
+          "line": 1209,
+          "end_line": 1290,
+          "label": "sendMessage / REST 回退"
+        }
+      ]
+    },
+    {
+      "id": "eventStore",
+      "type": "database",
+      "label": "事件 Store",
+      "sublabel": "Zustand · 按 id 去重",
+      "pos": [
+        270,
+        420
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/stores/use-event-store.ts",
+          "line": 155,
+          "end_line": 161,
+          "label": "addEvent"
+        },
+        {
+          "path": "src/contexts/conversation-websocket-context.tsx",
+          "line": 618,
+          "end_line": 644,
+          "label": "WS 帧写入 store"
+        }
+      ]
+    },
+    {
+      "id": "ingress",
+      "type": "cloud",
+      "label": "Ingress 代理",
+      "sublabel": ":8000 · 按前缀路由",
+      "pos": [
+        1050,
+        240
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "scripts/ingress.mjs",
+          "line": 1,
+          "end_line": 30,
+          "label": "最长前缀匹配"
+        },
+        {
+          "path": "scripts/dev-with-automation.mjs",
+          "line": 759,
+          "end_line": 770,
+          "label": "路由前缀"
+        }
+      ]
+    },
+    {
+      "id": "agentServer",
+      "type": "backend",
+      "label": "Agent Server",
+      "sublabel": "Python · uvx :18000",
+      "pos": [
+        1320,
+        240
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "config/defaults.json",
+          "line": 3,
+          "end_line": 21,
+          "label": "版本与端口"
+        },
+        {
+          "path": "scripts/dev-with-automation.mjs",
+          "line": 8,
+          "end_line": 22,
+          "label": "栈拓扑"
+        }
+      ]
+    },
+    {
+      "id": "automation",
+      "type": "backend",
+      "label": "Automation",
+      "sublabel": "uvx :18001",
+      "pos": [
+        1050,
+        70
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/api/automation-service/automation-service.api.ts",
+          "line": 51,
+          "label": "/api/automation"
+        },
+        {
+          "path": "config/defaults.json",
+          "line": 15,
+          "end_line": 18
+        }
+      ]
+    },
+    {
+      "id": "launcher",
+      "type": "external",
+      "label": "启动器",
+      "sublabel": "agent-canvas CLI / Electron",
+      "pos": [
+        1310,
+        420
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "sources": [
+        {
+          "path": "bin/agent-canvas.mjs",
+          "line": 1,
+          "end_line": 12,
+          "label": "启动完整栈"
+        },
+        {
+          "path": "scripts/dev-with-automation.mjs",
+          "line": 313,
+          "end_line": 385,
+          "label": "uvx 命令"
+        },
+        {
+          "path": "electron/main.mjs",
+          "line": 1,
+          "end_line": 20
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "浏览器内 Canvas SPA",
+      "wraps": [
+        "routes",
+        "hooks",
+        "services",
+        "backendReg",
+        "ws",
+        "eventStore"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "本地栈 (单一源 :8000)",
+      "wraps": [
+        "ingress",
+        "agentServer",
+        "automation",
+        "launcher"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "user-routes",
+      "from": "user",
+      "to": "routes",
+      "label": "操作 UI",
+      "variant": "emphasis"
+    },
+    {
+      "id": "routes-hooks",
+      "from": "routes",
+      "to": "hooks",
+      "label": "useQuery",
+      "variant": "emphasis"
+    },
+    {
+      "id": "hooks-services",
+      "from": "hooks",
+      "to": "services",
+      "label": "queryFn",
+      "variant": "emphasis"
+    },
+    {
+      "id": "services-ingress",
+      "from": "services",
+      "to": "ingress",
+      "label": "HTTP REST",
+      "variant": "emphasis"
+    },
+    {
+      "id": "ingress-agent",
+      "from": "ingress",
+      "to": "agentServer",
+      "label": "/api /sockets",
+      "variant": "emphasis"
+    },
+    {
+      "id": "services-registry",
+      "from": "services",
+      "to": "backendReg",
+      "label": "读 active backend",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "services-cloud",
+      "from": "services",
+      "to": "cloud",
+      "label": "kind=cloud 时",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "ingress-automation",
+      "from": "ingress",
+      "to": "automation",
+      "label": "/api/automation",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "hooks-ws",
+      "from": "hooks",
+      "to": "ws",
+      "label": "conversation_url",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "ws-ingress",
+      "from": "ws",
+      "to": "ingress",
+      "label": "WS 收发事件",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "bottom"
+    },
+    {
+      "id": "ws-store",
+      "from": "ws",
+      "to": "eventStore",
+      "label": "addEvent"
+    },
+    {
+      "id": "store-routes",
+      "from": "eventStore",
+      "to": "routes",
+      "label": "渲染事件",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "launcher-agent",
+      "from": "launcher",
+      "to": "agentServer",
+      "label": "uvx 启动",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "前端分层",
+      "items": [
+        "页面只调用 hooks，hooks 包装 src/api 服务",
+        "本地后端直接用 @openhands/typescript-client",
+        "Canvas 不重新实现 Agent Server 接口"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "后端选择",
+      "items": [
+        "注册表区分 local / cloud 后端，存于 localStorage",
+        "cloud：POST /api/v1/app-conversations + 任务轮询",
+        "local：加密 settings 后直接创建会话"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "实时事件",
+      "items": [
+        "WS 用 after_seq 游标续传，历史先走 REST 预加载",
+        "WS 未连接时 sendMessage 回退到 REST sendEvent",
+        "plan 模式另开规划子会话的第二条 WS"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "本地栈",
+      "items": [
+        "npx @openhands/agent-canvas 或 Electron 一键启动",
+        "Ingress 统一 :8000，另有 /vscode 前缀给编辑器",
+        "版本与端口集中在 config/defaults.json"
+      ]
+    }
+  ]
+}

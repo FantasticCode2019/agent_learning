@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "16daed82-26fa-4898-a1af-ec4000f52c9b",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/07-architecture-error-recovery/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/07-architecture-error-recovery/error-recovery.html",
+  "specification": {
+    "sha256": "09ae06b882b60469c5a1d9e91aad9aea68630f5ac2f28309fad8afdcf2013cc2",
+    "bytes": 6485
+  },
+  "artifact": {
+    "sha256": "2798cab3bf36e379b22d730eaba49414d2733015a8adefb90a2ea19d3cb84a2b",
+    "bytes": 763048
+  }
+}

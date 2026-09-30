@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "32c41a99-65a4-4ddb-9d61-c03da418c7d4",
+  "status": "current",
+  "command": "deliver",
+  "type": "lifecycle",
+  "input": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/04-agent-lifecycle/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/04-agent-lifecycle/agent-lifecycle.html",
+  "specification": {
+    "sha256": "9385de8c0f3fe89fab738cece12681b83a1f3c1b37fa451a4ccfc31e0f7f569b",
+    "bytes": 7543
+  },
+  "artifact": {
+    "sha256": "dba99c2672988de869383aa3fe0689093485c205cdc7f99c6da4f4b5ecabd15a",
+    "bytes": 768408
+  }
+}

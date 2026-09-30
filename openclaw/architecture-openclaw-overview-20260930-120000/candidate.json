@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "OpenClaw 系统架构总览",
+    "locale": "zh-CN",
+    "output": ".archify/architecture-openclaw-overview-20260930-120000/openclaw-architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/openclaw/openclaw",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "63144fe0c4d170902aa50155daa36460af6e8569"
+    }
+  },
+  "components": [
+    { "id": "clients", "type": "frontend", "label": "控制端客户端", "sublabel": "Control UI · CLI · macOS/iOS/Android", "pos": [20, 50], "size": [170, 64],
+      "sources": [
+        { "path": "ui/src/api/gateway-browser-socket.ts", "line": 97, "label": "Control UI WebSocket" },
+        { "path": "src/gateway/client.ts", "line": 248, "label": "CLI GatewayClient" },
+        { "path": "apps/android/app/src/main/java/ai/openclaw/app/gateway/GatewaySession.kt", "line": 325, "label": "Android GatewaySession" }
+      ] },
+    { "id": "gateway", "type": "backend", "label": "Gateway 服务", "sublabel": "HTTP + WebSocket RPC :18789", "tag": "handleGatewayRequest", "pos": [290, 50], "size": [380, 64],
+      "sources": [
+        { "path": "src/gateway/server.ts", "line": 23, "end_line": 49, "label": "startGatewayServer" },
+        { "path": "src/gateway/server-runtime-state.ts", "line": 294, "end_line": 307, "label": "WebSocketServer" },
+        { "path": "src/gateway/server-methods.ts", "line": 492, "label": "RPC 方法分发" }
+      ] },
+    { "id": "plugins", "type": "backend", "label": "插件加载器", "sublabel": "openclaw.plugin.json · plugin-sdk", "pos": [890, 50], "size": [190, 64],
+      "sources": [
+        { "path": "src/gateway/server-plugins.ts", "line": 227, "label": "loadGatewayPlugins" },
+        { "path": "src/plugins/loader-runtime-load.ts", "line": 91, "label": "loadOpenClawPlugins" },
+        { "path": "src/plugins/manifest.ts", "line": 35, "label": "manifest 文件名" }
+      ] },
+    { "id": "users", "type": "external", "label": "IM 用户", "sublabel": "Telegram · Discord · Slack…", "pos": [20, 240], "size": [170, 64],
+      "sources": [
+        { "path": "extensions/telegram/src/bot-core.ts", "line": 107, "label": "grammY Bot" }
+      ] },
+    { "id": "channels", "type": "backend", "label": "渠道插件", "sublabel": "startAccount · 入站管线 · 出站发送", "pos": [290, 240], "size": [180, 64],
+      "sources": [
+        { "path": "src/gateway/server-channels.ts", "line": 538, "label": "ChannelManager 启动账号" },
+        { "path": "extensions/telegram/src/channel.ts", "line": 933, "label": "Telegram startAccount" },
+        { "path": "extensions/telegram/src/bot-handlers.inbound-pipeline.ts", "line": 393, "end_line": 403, "label": "入站 handler" }
+      ] },
+    { "id": "dispatch", "type": "backend", "label": "渠道回合 + Auto-reply", "sublabel": "runChannelTurn → getReplyFromConfig", "pos": [570, 240], "size": [200, 64],
+      "sources": [
+        { "path": "src/channels/turn/run-channel-turn.ts", "line": 158, "label": "runChannelTurn" },
+        { "path": "src/auto-reply/dispatch.ts", "line": 210, "label": "dispatchInboundMessage" },
+        { "path": "src/auto-reply/reply/get-reply.ts", "line": 213, "label": "getReplyFromConfig" }
+      ] },
+    { "id": "agent", "type": "backend", "label": "Agent 运行时", "sublabel": "runEmbeddedAgent · 模型回退", "pos": [890, 240], "size": [190, 64],
+      "sources": [
+        { "path": "src/auto-reply/reply/agent-runner-run.ts", "line": 75, "label": "runReplyAgent" },
+        { "path": "src/agents/embedded-agent-runner/run-orchestrator.ts", "line": 109, "label": "runEmbeddedAgent" },
+        { "path": "packages/agent-core/src/agent.ts", "line": 442, "label": "Agent.prompt 循环" }
+      ] },
+    { "id": "llm", "type": "external", "label": "模型提供方", "sublabel": "Anthropic · OpenAI · Google…", "pos": [1180, 240], "size": [170, 64],
+      "sources": [
+        { "path": "packages/ai/src/providers/anthropic.ts", "line": 1, "label": "provider 适配器" },
+        { "path": "extensions/anthropic/register.runtime.ts", "line": 654, "label": "registerProvider" }
+      ] },
+    { "id": "sqlite", "type": "database", "label": "SQLite 状态", "sublabel": "~/.openclaw/state · agents/<id>", "tag": "worker 线程", "pos": [570, 420], "size": [200, 64],
+      "sources": [
+        { "path": "src/channels/session.ts", "line": 27, "label": "recordInboundSession" },
+        { "path": "src/state/openclaw-state-db.ts", "line": 355, "label": "openOpenClawStateDatabase" },
+        { "path": "src/infra/sqlite-worker-broker.ts", "line": 63, "label": "SqliteWorkerBroker" }
+      ] },
+    { "id": "tools", "type": "backend", "label": "工具集", "sublabel": "exec · browser · nodes · cron…", "pos": [890, 420], "size": [190, 64],
+      "sources": [
+        { "path": "src/agents/agent-tools.ts", "line": 752, "label": "createOpenClawCodingTools" },
+        { "path": "packages/agent-core/src/agent-loop.ts", "line": 1136, "label": "tool.execute" },
+        { "path": "extensions/browser/index.ts", "line": 9, "end_line": 17, "label": "browser 插件" }
+      ] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Gateway 进程 (Node.js)", "wraps": ["gateway", "plugins", "channels", "dispatch", "agent", "tools"] }
+  ],
+  "connections": [
+    { "id": "client-rpc", "from": "clients", "to": "gateway", "label": "WS RPC", "variant": "emphasis" },
+    { "id": "load-plugins", "from": "gateway", "to": "plugins", "label": "加载插件" },
+    { "id": "start-channels", "from": "gateway", "to": "channels", "label": "startAccount", "fromSide": "bottom", "toSide": "top" },
+    { "id": "chat-send", "from": "gateway", "to": "dispatch", "label": "chat.send", "fromSide": "bottom", "toSide": "top" },
+    { "id": "user-message", "from": "users", "to": "channels", "label": "消息", "variant": "emphasis" },
+    { "id": "inbound-event", "from": "channels", "to": "dispatch", "label": "入站事件", "variant": "emphasis" },
+    { "id": "run-agent", "from": "dispatch", "to": "agent", "label": "runReplyAgent", "variant": "emphasis" },
+    { "id": "stream-llm", "from": "agent", "to": "llm", "label": "流式调用", "variant": "emphasis" },
+    { "id": "register-caps", "from": "plugins", "to": "agent", "label": "provider/工具注册", "variant": "dashed" },
+    { "id": "record-session", "from": "dispatch", "to": "sqlite", "label": "会话/转录" },
+    { "id": "exec-tools", "from": "agent", "to": "tools", "label": "tool.execute" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "两个入口，一条管线", "items": ["IM 消息经渠道插件进入 runChannelInboundEvent", "Control UI 的 chat.send 经 Gateway 进入同一 dispatchInboundMessage", "回复经渠道 outbound（如 Telegram sendText）或 WS 事件返回"] },
+    { "dot": "emerald", "title": "Agent 回合", "items": ["runReplyAgent 负责模型/CLI 后端回退", "runEmbeddedAttempt 构建系统提示词、技能与工具", "agent-core 循环：LLM 流式输出 → tool.execute → 再次调用"] },
+    { "dot": "violet", "title": "插件边界", "items": ["渠道、模型提供方、工具、记忆均为插件", "插件只依赖 openclaw/plugin-sdk/* 契约", "manifest 元数据先于运行时加载"] },
+    { "dot": "amber", "title": "状态与配置", "items": ["配置：~/.openclaw/openclaw.json", "全局与每个 agent 各有一个 SQLite 库", "数据库读写在 worker 线程执行，不占主线程"] }
+  ]
+}

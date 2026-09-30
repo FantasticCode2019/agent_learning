@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "595d3ef7-932b-40ff-b737-be69db636f97",
+  "status": "current",
+  "command": "deliver",
+  "type": "dataflow",
+  "input": "/Users/yajun/Documents/opensource/WeKnora/.archify/dataflow-weknora-hybrid-search-20260930-172606/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/WeKnora/.archify/dataflow-weknora-hybrid-search-20260930-172606/weknora-hybrid-search.html",
+  "specification": {
+    "sha256": "8d3accb159f9073e1eed4c30b5e13a0b3c13e568d887c23dc04e80f693adc65e",
+    "bytes": 6111
+  },
+  "artifact": {
+    "sha256": "5497aedd94204c72d9157fa3ac6406aef2c35991ea3a4710b88abd1b57034a7b",
+    "bytes": 759396
+  }
+}

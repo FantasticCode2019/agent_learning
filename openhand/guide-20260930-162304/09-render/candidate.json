@@ -1,0 +1,323 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "⑨ 事件回到前端：分拣、存储、渲染",
+    "locale": "zh-CN",
+    "output": ".archify/guide-20260930-162304/09-render/render.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/OpenHands/OpenHands",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "1ec86616bc0511b1e56269fd6ba5872438f4fb7f"
+    },
+    "viewBox": [
+      1070,
+      540
+    ]
+  },
+  "stages": [
+    {
+      "label": "接收"
+    },
+    {
+      "label": "分拣 / 缓冲"
+    },
+    {
+      "label": "存储"
+    },
+    {
+      "label": "加工"
+    },
+    {
+      "label": "展示"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "socket",
+      "type": "messagebus",
+      "label": "WebSocket 帧",
+      "sublabel": "三类帧",
+      "stage": 0,
+      "row": 1,
+      "sources": [
+        {
+          "path": "src/types/agent-server/session-frames.ts",
+          "line": 14,
+          "end_line": 107,
+          "label": "帧类型定义"
+        }
+      ]
+    },
+    {
+      "id": "router",
+      "type": "frontend",
+      "label": "routeSessionFrame",
+      "sublabel": "按帧类型分流",
+      "stage": 1,
+      "row": 1,
+      "sources": [
+        {
+          "path": "src/contexts/conversation-websocket-context.tsx",
+          "line": 138,
+          "end_line": 183,
+          "label": "routeSessionFrame"
+        }
+      ]
+    },
+    {
+      "id": "batcher",
+      "type": "frontend",
+      "label": "增量批处理",
+      "sublabel": "合并流式文字",
+      "stage": 1,
+      "row": 0,
+      "sources": [
+        {
+          "path": "src/utils/streaming-delta-batcher.ts",
+          "line": 9,
+          "end_line": 72,
+          "label": "requestAnimationFrame 合并"
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "事件 Store",
+      "sublabel": "按 id 去重",
+      "stage": 2,
+      "row": 1,
+      "sources": [
+        {
+          "path": "src/stores/use-event-store.ts",
+          "line": 113,
+          "end_line": 161,
+          "label": "appendEvent / addEvent"
+        }
+      ]
+    },
+    {
+      "id": "side",
+      "type": "frontend",
+      "label": "副作用分发",
+      "sublabel": "终端/浏览器/文件",
+      "stage": 1,
+      "row": 2,
+      "sources": [
+        {
+          "path": "src/contexts/conversation-websocket-context.tsx",
+          "line": 636,
+          "end_line": 768,
+          "label": "handleMainMessage 分支"
+        },
+        {
+          "path": "src/utils/cache-utils.ts",
+          "line": 18,
+          "end_line": 61,
+          "label": "文件变更刷新缓存"
+        }
+      ]
+    },
+    {
+      "id": "uiproc",
+      "type": "frontend",
+      "label": "handleEventForUI",
+      "sublabel": "结果替换动作",
+      "stage": 3,
+      "row": 1,
+      "sources": [
+        {
+          "path": "src/utils/handle-event-for-ui.ts",
+          "line": 273,
+          "end_line": 335,
+          "label": "uiEvents 合并规则"
+        }
+      ]
+    },
+    {
+      "id": "statusStore",
+      "type": "database",
+      "label": "会话状态 Store",
+      "sublabel": "执行状态",
+      "stage": 2,
+      "row": 2,
+      "sources": [
+        {
+          "path": "src/stores/conversation-state-store.ts",
+          "line": 4,
+          "end_line": 41,
+          "label": "按会话存状态"
+        },
+        {
+          "path": "src/hooks/use-agent-state.ts",
+          "line": 12,
+          "end_line": 78,
+          "label": "映射为 AgentState"
+        }
+      ]
+    },
+    {
+      "id": "chat",
+      "type": "frontend",
+      "label": "聊天消息列表",
+      "sublabel": "过滤→分组→卡片",
+      "stage": 4,
+      "row": 1,
+      "sources": [
+        {
+          "path": "src/hooks/use-filtered-events.ts",
+          "line": 15,
+          "end_line": 56,
+          "label": "shouldRenderEvent 过滤"
+        },
+        {
+          "path": "src/components/conversation-events/chat/messages.tsx",
+          "line": 25,
+          "end_line": 160,
+          "label": "分组渲染"
+        },
+        {
+          "path": "src/components/conversation-events/chat/event-message.tsx",
+          "line": 175,
+          "end_line": 398,
+          "label": "事件类型 → 组件"
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "type": "frontend",
+      "label": "状态与控制",
+      "sublabel": "停止/继续/确认",
+      "stage": 4,
+      "row": 2,
+      "sources": [
+        {
+          "path": "src/components/features/controls/agent-status.tsx",
+          "line": 55,
+          "end_line": 172,
+          "label": "AgentStatus"
+        },
+        {
+          "path": "src/components/shared/buttons/conversation-confirmation-buttons.tsx",
+          "line": 16,
+          "end_line": 136,
+          "label": "确认/拒绝"
+        }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "socket-router",
+      "from": "socket",
+      "to": "router",
+      "label": "JSON 解析",
+      "variant": "emphasis"
+    },
+    {
+      "id": "router-batcher",
+      "from": "router",
+      "to": "batcher",
+      "label": "delta 文字片段",
+      "variant": "dashed",
+      "labelAt": [
+        315,
+        214
+      ]
+    },
+    {
+      "id": "router-store",
+      "from": "router",
+      "to": "store",
+      "label": "durable 事件",
+      "classification": "推进 seq 游标",
+      "variant": "emphasis"
+    },
+    {
+      "id": "router-side",
+      "from": "router",
+      "to": "side",
+      "label": "非重复事件",
+      "variant": "default",
+      "labelAt": [
+        315,
+        328
+      ]
+    },
+    {
+      "id": "batcher-uiproc",
+      "from": "batcher",
+      "to": "uiproc",
+      "label": "流式临时槽",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "top",
+      "via": [
+        [
+          745,
+          157
+        ]
+      ]
+    },
+    {
+      "id": "store-uiproc",
+      "from": "store",
+      "to": "uiproc",
+      "label": "新事件",
+      "variant": "emphasis"
+    },
+    {
+      "id": "side-status",
+      "from": "side",
+      "to": "statusStore",
+      "label": "状态更新事件",
+      "variant": "default"
+    },
+    {
+      "id": "uiproc-chat",
+      "from": "uiproc",
+      "to": "chat",
+      "label": "uiEvents",
+      "variant": "emphasis"
+    },
+    {
+      "id": "status-panel",
+      "from": "statusStore",
+      "to": "panel",
+      "label": "AgentState",
+      "variant": "default"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "一句话理解",
+      "items": [
+        "服务端推来的每一帧先分类：流式文字走缓冲，正式事件进 Store，同时触发界面副作用",
+        "聊天区只渲染加工后的 uiEvents"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "加工规则",
+      "items": [
+        "工具的执行结果（Observation）会替换对应的动作卡片（Action）",
+        "正式事件到达时，按事件 id 收起对应的流式临时槽",
+        "Think / Finish 的结果被丢弃，只保留动作本身"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "副作用举例",
+      "items": [
+        "命令 → 终端面板；浏览器截图 → 浏览器面板",
+        "改文件 → 刷新文件变更与 diff 缓存",
+        "error 帧 → 顶部错误横幅，连接保持"
+      ]
+    }
+  ]
+}

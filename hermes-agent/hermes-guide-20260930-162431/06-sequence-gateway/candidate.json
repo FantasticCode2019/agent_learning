@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "消息网关：一条 Telegram 消息的处理",
+    "output": ".archify/hermes-guide-20260930-162431/06-sequence-gateway/gateway.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [1068, 660],
+    "column_fit": "spread",
+    "repository": { "url": "https://github.com/NousResearch/hermes-agent.git", "provider": "github", "link_mode": "web", "revision": "f42f579cf8bac4918ac9599bece71618afadd846" }
+  },
+  "participants": [
+    { "id": "user", "type": "external", "label": "Telegram 用户", "sublabel": "手机聊天" },
+    { "id": "adapter", "type": "frontend", "label": "平台适配器", "sublabel": "telegram + base",
+      "sources": [ { "path": "plugins/platforms/telegram/adapter.py", "line": 6528, "label": "_handle_text_message" }, { "path": "gateway/platforms/base.py", "line": 3987, "end_line": 4027, "label": "handle_message" }, { "path": "gateway/platforms/base.py", "line": 4491, "end_line": 4552, "label": "后台处理并发送" } ] },
+    { "id": "runner", "type": "backend", "label": "网关入口", "sublabel": "_handle_message",
+      "sources": [ { "path": "gateway/run_inbound.py", "line": 205, "end_line": 296, "label": "_hm_admit_event 鉴权" }, { "path": "gateway/run_inbound.py", "line": 1312, "end_line": 1390 }, { "path": "gateway/run_inbound.py", "line": 726, "label": "会话忙时处理" } ] },
+    { "id": "store", "type": "database", "label": "会话存储", "sublabel": "state.db",
+      "sources": [ { "path": "gateway/run_turn.py", "line": 2045, "end_line": 2095, "label": "_hmwa_prepare_turn" }, { "path": "gateway/session_transcript.py", "line": 539, "label": "load_transcript" }, { "path": "gateway/run_turn.py", "line": 1822, "end_line": 1913, "label": "补写记录" } ] },
+    { "id": "turn", "type": "backend", "label": "回合执行", "sublabel": "线程池 TurnRunner",
+      "sources": [ { "path": "gateway/run_turn.py", "line": 2926, "label": "_run_agent（绑定 profile）" }, { "path": "gateway/run_turn_runner.py", "line": 1139, "end_line": 1174, "label": "agent 缓存" }, { "path": "gateway/run_turn_runner.py", "line": 1724, "label": "run_conversation" } ] },
+    { "id": "agent", "type": "backend", "label": "AIAgent", "sublabel": "主循环",
+      "sources": [ { "path": "agent/session_persistence.py", "line": 469, "label": "_flush_messages_to_session_db" }, { "path": "agent/stream_delivery.py", "line": 298, "label": "_fire_stream_delta" } ] },
+    { "id": "stream", "type": "messagebus", "label": "流式推送", "sublabel": "StreamConsumer",
+      "sources": [ { "path": "gateway/stream_consumer.py", "line": 527, "end_line": 544, "label": "on_delta / run" }, { "path": "gateway/stream_consumer_transport.py", "line": 44, "label": "edit_message" } ] }
+  ],
+  "segments": [
+    { "from": 155, "to": 275, "label": "① 接收与准备" },
+    { "from": 280, "to": 420, "label": "② 运行 Agent" },
+    { "from": 425, "to": 560, "label": "③ 收尾与回复" }
+  ],
+  "messages": [
+    { "id": "g1", "from": "user", "to": "adapter", "y": 168, "label": "发消息", "variant": "emphasis" },
+    { "id": "g2", "from": "adapter", "to": "runner", "y": 198, "label": "MessageEvent", "variant": "emphasis" },
+    { "id": "g3", "from": "runner", "to": "store", "y": 230, "label": "取会话 + 读历史", "variant": "default" },
+    { "id": "g4", "from": "store", "to": "runner", "y": 258, "label": "history", "variant": "return" },
+    { "id": "g5", "from": "runner", "to": "turn", "y": 290, "label": "_run_agent", "variant": "emphasis" },
+    { "id": "g6", "from": "turn", "to": "agent", "y": 320, "label": "run_conversation", "variant": "emphasis" },
+    { "id": "g7", "from": "agent", "to": "stream", "y": 350, "label": "文字增量", "variant": "dashed" },
+    { "id": "g8", "from": "stream", "to": "user", "y": 378, "label": "边生成边编辑消息", "variant": "dashed" },
+    { "id": "g9", "from": "agent", "to": "store", "y": 408, "label": "逐步写入", "variant": "dashed" },
+    { "id": "g10", "from": "agent", "to": "turn", "y": 438, "label": "final_response", "variant": "return" },
+    { "id": "g11", "from": "turn", "to": "runner", "y": 466, "label": "结果", "variant": "return" },
+    { "id": "g12", "from": "runner", "to": "store", "y": 496, "label": "补写（去重）", "variant": "dashed" },
+    { "id": "g13", "from": "runner", "to": "adapter", "y": 524, "label": "回复文本", "variant": "return" },
+    { "id": "g14", "from": "adapter", "to": "user", "y": 552, "label": "最终消息", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "adapter", "from": 168, "to": 552, "type": "frontend" },
+    { "participant": "runner", "from": 198, "to": 524, "type": "backend" },
+    { "participant": "store", "from": 230, "to": 258, "type": "database" },
+    { "participant": "turn", "from": 290, "to": 466, "type": "backend" },
+    { "participant": "agent", "from": 320, "to": 438, "type": "backend" },
+    { "participant": "stream", "from": 350, "to": 378, "type": "messagebus" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "① 接收与准备", "items": [
+      "适配器长轮询收到消息；Telegram 会把长文本拆成几条，这里先合并成一个事件",
+      "网关入口依次检查：是否授权（陌生人私聊会收到配对码）、是否斜杠命令、会话是否正忙",
+      "会话正忙时，新消息默认会打断当前回合，也可配置为排队或“插话”(steer)"
+    ] },
+    { "dot": "emerald", "title": "② 运行 Agent", "items": [
+      "在线程池里运行，并绑定所属 profile（多账号隔离）",
+      "按会话缓存 AIAgent，配置没变就复用，保证提示词缓存有效",
+      "模型每生成一段文字，就编辑同一条 Telegram 消息，用户能看到“打字”效果"
+    ] },
+    { "dot": "amber", "title": "③ 收尾与回复", "items": [
+      "Agent 自己已逐步写库，网关再补写时会跳过已写的行",
+      "如果已经流式发完，就只补发图片/页脚；否则由适配器发送最终文本",
+      "对话接近上下文上限的 85% 时，网关会在下次回合前先做一次压缩"
+    ] }
+  ]
+}

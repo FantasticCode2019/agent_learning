@@ -1,0 +1,284 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "② 配置层叠：YAML 补丁怎样变成插件树",
+    "locale": "zh-CN",
+    "output": ".archify/dsh-guide-20260929-171932/02-config/config.html",
+    "viewBox": [
+      1080,
+      560
+    ],
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/deepseek-ai/deepseek-harness.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "4878cdabd87d4041bdaff61d04c966883b9fd07a"
+    }
+  },
+  "stages": [
+    {
+      "label": "补丁来源（低 → 高）"
+    },
+    {
+      "label": "合并"
+    },
+    {
+      "label": "有效配置"
+    },
+    {
+      "label": "挂载"
+    },
+    {
+      "label": "运行时"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "base",
+      "type": "database",
+      "label": "dsh-base",
+      "sublabel": "LLM/工具/会话/沙箱",
+      "stage": 0,
+      "row": 0,
+      "tag": "第 1 层",
+      "sources": [
+        {
+          "path": "packages/bundle/base/cordis.patch.yml",
+          "line": 1,
+          "end_line": 20
+        },
+        {
+          "path": "packages/bundle/base/package.json",
+          "line": 31,
+          "end_line": 35
+        }
+      ]
+    },
+    {
+      "id": "webapp",
+      "type": "database",
+      "label": "dsh-web-app",
+      "sublabel": "Web 服务 + 预设",
+      "stage": 0,
+      "row": 1,
+      "tag": "第 2 层",
+      "sources": [
+        {
+          "path": "packages/bundle/web-app/package.json",
+          "line": 43,
+          "end_line": 49
+        },
+        {
+          "path": "packages/bundle/web-app/cordis.patch.yml",
+          "line": 1,
+          "end_line": 12
+        }
+      ]
+    },
+    {
+      "id": "user",
+      "type": "database",
+      "label": "用户层补丁",
+      "sublabel": "profile/home/--patch",
+      "stage": 0,
+      "row": 2,
+      "tag": "第 3-5 层",
+      "sources": [
+        {
+          "path": "packages/boot/app-boot/src/profile-context.ts",
+          "line": 63,
+          "end_line": 75,
+          "label": "层顺序"
+        },
+        {
+          "path": "apps/cli/src/profile-boot.ts",
+          "line": 197,
+          "end_line": 209,
+          "label": "--patch"
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "type": "backend",
+      "label": "applyEntryPatches",
+      "sublabel": "按 id 替换 / 追加",
+      "stage": 1,
+      "row": 1,
+      "sources": [
+        {
+          "path": "vendor/include/src/index.ts",
+          "line": 57,
+          "end_line": 127,
+          "label": "applyEntryPatches"
+        }
+      ]
+    },
+    {
+      "id": "tree",
+      "type": "messagebus",
+      "label": "有效条目列表",
+      "sublabel": "--dump-config 可见",
+      "stage": 2,
+      "row": 1,
+      "sources": [
+        {
+          "path": "packages/boot/app-boot/src/profile.ts",
+          "line": 731,
+          "end_line": 738,
+          "label": "composeEntries"
+        }
+      ]
+    },
+    {
+      "id": "loader",
+      "type": "backend",
+      "label": "Loader / Entry",
+      "sublabel": "!!js 求值 + import",
+      "stage": 3,
+      "row": 1,
+      "sources": [
+        {
+          "path": "vendor/loader/src/index.ts",
+          "line": 104,
+          "end_line": 113,
+          "label": "!!js 插值"
+        },
+        {
+          "path": "vendor/loader/src/config/entry.ts",
+          "line": 74,
+          "end_line": 93,
+          "label": "disabled"
+        }
+      ]
+    },
+    {
+      "id": "services",
+      "type": "backend",
+      "label": "ctx.* 服务",
+      "sublabel": "llm/tools/sessions…",
+      "stage": 4,
+      "row": 0,
+      "sources": [
+        {
+          "path": "vendor/loader/src/config/entry.ts",
+          "line": 208,
+          "end_line": 235,
+          "label": "ctx.plugin"
+        }
+      ]
+    },
+    {
+      "id": "isolate",
+      "type": "security",
+      "label": "isolate 领域",
+      "sublabel": "按预设隔离服务",
+      "stage": 4,
+      "row": 2,
+      "sources": [
+        {
+          "path": "vendor/loader/src/config/isolate.ts",
+          "line": 48,
+          "end_line": 68
+        }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "f-base",
+      "from": "base",
+      "to": "apply",
+      "label": "第 1 层 insert",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "top",
+      "via": [
+        [
+          315,
+          157
+        ]
+      ]
+    },
+    {
+      "id": "f-webapp",
+      "from": "webapp",
+      "to": "apply",
+      "label": "第 2 层"
+    },
+    {
+      "id": "f-user",
+      "from": "user",
+      "to": "apply",
+      "label": "第 3-5 层",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "bottom",
+      "via": [
+        [
+          315,
+          385
+        ]
+      ]
+    },
+    {
+      "id": "f-tree",
+      "from": "apply",
+      "to": "tree",
+      "label": "条目[]",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f-loader",
+      "from": "tree",
+      "to": "loader",
+      "label": "逐行",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f-services",
+      "from": "loader",
+      "to": "services",
+      "label": "plugin(config)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f-isolate",
+      "from": "loader",
+      "to": "isolate",
+      "label": "isolate 配置",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "什么是“行”（entry）",
+      "items": [
+        "cordis.patch.yml 里每一项形如 { id, name, config, disabled }：name 是要加载的 npm 包，config 是它的配置",
+        "一行 = 一个插件实例；插件向 ctx 注册服务、事件监听和工具",
+        "dsh --profile web --dump-config 能打印最终生效的全部行"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "补丁怎么合并",
+      "items": [
+        "带 insert 的补丁把新行追加进列表（或插入某个 group）",
+        "只带 id 的补丁找到同 id 的行，整键替换 config / disabled 等——不做深合并",
+        "目标 id 不存在只打警告，不会失败；越靠后的层优先级越高"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Loader 挂载时做什么",
+      "items": [
+        "config 里的 !!js 表达式以该行的 ctx 为作用域求值，例如 port: ctx.webStartup.port ?? 3080",
+        "disabled 为真（或祖先被禁用）的行不挂载",
+        "isolate 让某些服务只在指定领域可见，用于给不同 agent 预设不同能力"
+      ]
+    }
+  ]
+}

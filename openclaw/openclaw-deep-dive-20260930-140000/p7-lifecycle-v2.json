@@ -1,0 +1,381 @@
+{
+ "schema_version": 2,
+ "diagram_type": "lifecycle",
+ "meta": {
+  "title": "第 7 部分：一次回复运行的生命周期",
+  "locale": "zh-CN",
+  "output": ".archify/openclaw-deep-dive-20260930-140000/p7-lifecycle.html",
+  "quality_profile": "showcase",
+  "repository": {
+   "url": "https://github.com/openclaw/openclaw",
+   "provider": "github",
+   "link_mode": "web",
+   "revision": "63144fe0c4d170902aa50155daa36460af6e8569"
+  }
+ },
+ "lanes": [
+  {
+   "id": "main",
+   "label": "主流程"
+  },
+  {
+   "id": "wait",
+   "label": "准备与等待"
+  },
+  {
+   "id": "recover",
+   "label": "尝试内恢复"
+  },
+  {
+   "id": "terminal",
+   "label": "终态"
+  }
+ ],
+ "states": [
+  {
+   "id": "queued",
+   "type": "start",
+   "label": "排队中",
+   "sublabel": "queued",
+   "lane": "main",
+   "col": 0,
+   "step": "01",
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/reply-run-registry.operation.ts",
+     "line": 94,
+     "label": "初始 phase"
+    },
+    {
+     "path": "src/auto-reply/reply/reply-run-registry.contracts.ts",
+     "line": 292,
+     "end_line": 301,
+     "label": "ReplyOperationPhase"
+    }
+   ]
+  },
+  {
+   "id": "running",
+   "type": "active",
+   "label": "运行中",
+   "sublabel": "running · attempt 循环",
+   "lane": "main",
+   "col": 2,
+   "step": "02",
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/agent-runner-execute.ts",
+     "line": 167,
+     "label": "setPhase(running)"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run-loop.ts",
+     "line": 254,
+     "end_line": 672,
+     "label": "run-loop 主循环"
+    }
+   ]
+  },
+  {
+   "id": "settle",
+   "type": "active",
+   "label": "结算回复",
+   "sublabel": "用量 · payload",
+   "lane": "main",
+   "col": 3,
+   "step": "03",
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/agent-runner-result-accounting.ts",
+     "line": 76,
+     "label": "accountAgentTurn"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run-loop.ts",
+     "line": 610,
+     "end_line": 671,
+     "label": "终态判定"
+    }
+   ]
+  },
+  {
+   "id": "completed",
+   "type": "success",
+   "label": "已完成",
+   "sublabel": "completed",
+   "lane": "main",
+   "col": 4,
+   "step": "04",
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/reply-run-registry.operation.ts",
+     "line": 429,
+     "end_line": 435,
+     "label": "complete()"
+    },
+    {
+     "path": "src/auto-reply/reply/agent-runner-core.ts",
+     "line": 414,
+     "end_line": 460,
+     "label": "cleanupReplyAgentRun"
+    }
+   ]
+  },
+  {
+   "id": "preflight",
+   "type": "waiting",
+   "label": "预压缩",
+   "sublabel": "记忆 flush · 压缩",
+   "lane": "wait",
+   "col": 1,
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/agent-runner-execute.ts",
+     "line": 134,
+     "end_line": 151,
+     "label": "preflight_compacting"
+    },
+    {
+     "path": "src/auto-reply/reply/agent-runner-memory.ts",
+     "line": 1345,
+     "label": "memory_flushing"
+    }
+   ]
+  },
+  {
+   "id": "waitlane",
+   "type": "waiting",
+   "label": "等待全局 lane",
+   "sublabel": "并发已满",
+   "lane": "wait",
+   "col": 4,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/lane-controller.ts",
+     "line": 307,
+     "label": "markWaitingForGlobalLane"
+    },
+    {
+     "path": "src/auto-reply/reply/reply-run-registry.operation.ts",
+     "line": 312,
+     "end_line": 328,
+     "label": "等待与恢复 phase"
+    }
+   ]
+  },
+  {
+   "id": "retry",
+   "type": "decision",
+   "label": "重试",
+   "sublabel": "退避 · 轮换凭据 · 降思考",
+   "lane": "recover",
+   "col": 1,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-recovery.ts",
+     "line": 384,
+     "end_line": 465,
+     "label": "瞬时错误退避"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/assistant-failure.ts",
+     "line": 336,
+     "end_line": 431,
+     "label": "轮换认证配置"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/assistant-failure.ts",
+     "line": 153,
+     "end_line": 162,
+     "label": "降低思考等级"
+    }
+   ]
+  },
+  {
+   "id": "overflow",
+   "type": "active",
+   "label": "压缩上下文",
+   "sublabel": "最多 3 次",
+   "lane": "recover",
+   "col": 2,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-recovery.ts",
+     "line": 475,
+     "end_line": 503,
+     "label": "溢出恢复"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/overflow-context-recovery.ts",
+     "line": 70,
+     "label": "recoverEmbeddedRunOverflow"
+    }
+   ]
+  },
+  {
+   "id": "fallback",
+   "type": "decision",
+   "label": "切换备用模型",
+   "sublabel": "FailoverError",
+   "lane": "recover",
+   "col": 3,
+   "sources": [
+    {
+     "path": "src/agents/model-fallback-runner.ts",
+     "line": 136,
+     "end_line": 746,
+     "label": "runWithModelFallback"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/failover-policy.ts",
+     "line": 112,
+     "end_line": 219,
+     "label": "轮换 / 回退 / 上报"
+    }
+   ]
+  },
+  {
+   "id": "aborted",
+   "type": "failure",
+   "label": "已中止",
+   "sublabel": "用户中止 · 被替代",
+   "lane": "terminal",
+   "col": 0,
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/reply-run-registry.operation.ts",
+     "line": 474,
+     "end_line": 506,
+     "label": "abortByUser / supersede"
+    }
+   ]
+  },
+  {
+   "id": "failed",
+   "type": "failure",
+   "label": "失败",
+   "sublabel": "候选耗尽 · 卡死",
+   "lane": "terminal",
+   "col": 3,
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/reply-run-registry.operation.ts",
+     "line": 460,
+     "end_line": 472,
+     "label": "fail(code)"
+    }
+   ]
+  }
+ ],
+ "transitions": [
+  {
+   "from": "queued",
+   "to": "running",
+   "label": "开始"
+  },
+  {
+   "from": "running",
+   "to": "settle",
+   "label": "回合结束"
+  },
+  {
+   "from": "settle",
+   "to": "completed"
+  },
+  {
+   "from": "queued",
+   "to": "preflight",
+   "label": "需压缩",
+   "variant": "dashed"
+  },
+  {
+   "from": "preflight",
+   "to": "running"
+  },
+  {
+   "from": "running",
+   "to": "waitlane",
+   "label": "lane 忙",
+   "variant": "dashed"
+  },
+  {
+   "from": "waitlane",
+   "to": "running",
+   "label": "获得容量"
+  },
+  {
+   "from": "running",
+   "to": "retry",
+   "label": "瞬时错误",
+   "variant": "security"
+  },
+  {
+   "from": "retry",
+   "to": "running",
+   "label": "再试"
+  },
+  {
+   "from": "running",
+   "to": "overflow",
+   "label": "上下文溢出",
+   "variant": "security"
+  },
+  {
+   "from": "overflow",
+   "to": "running",
+   "label": "压缩后重试"
+  },
+  {
+   "from": "running",
+   "to": "fallback",
+   "label": "不可恢复",
+   "variant": "security"
+  },
+  {
+   "from": "fallback",
+   "to": "running",
+   "label": "下一个候选"
+  },
+  {
+   "from": "fallback",
+   "to": "failed",
+   "label": "候选耗尽",
+   "variant": "security"
+  },
+  {
+   "from": "queued",
+   "to": "aborted",
+   "label": "中止",
+   "variant": "security"
+  }
+ ],
+ "cards": [
+  {
+   "dot": "cyan",
+   "title": "正常路径",
+   "items": [
+    "排队 → 运行 → 结算 → 完成",
+    "需要时先做记忆 flush 和预压缩",
+    "全局并发满时暂停，拿到容量后继续"
+   ]
+  },
+  {
+   "dot": "amber",
+   "title": "尝试内恢复",
+   "items": [
+    "瞬时错误：退避重试、轮换凭据、降低思考等级",
+    "上下文溢出：压缩历史后重试，最多 3 次",
+    "不可恢复：抛出 FailoverError，换下一个候选模型"
+   ]
+  },
+  {
+   "dot": "rose",
+   "title": "终态",
+   "items": [
+    "用户中止或被新运行替代 → 已中止（任意阶段都可能）",
+    "所有候选都失败或运行卡死 → 失败",
+    "重试与压缩状态由 run-loop 推导，不是枚举值"
+   ]
+  }
+ ]
+}

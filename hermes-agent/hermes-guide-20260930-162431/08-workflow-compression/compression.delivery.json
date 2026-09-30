@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "cbe41e28-663e-4615-a9d8-a89e0b63e414",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/08-workflow-compression/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/08-workflow-compression/compression.html",
+  "specification": {
+    "sha256": "6f70e145f5dbb4f50ea6d832da170682034f30ac715c5989e8a4f188655af9cf",
+    "bytes": 6510
+  },
+  "artifact": {
+    "sha256": "76644cff3d73c5e061d053f8b6018e6412ee1d60adb25a7eaa299b3448e2fdb8",
+    "bytes": 758356
+  }
+}

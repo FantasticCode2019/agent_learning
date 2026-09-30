@@ -1,0 +1,317 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "② 前端启动与后端选择",
+    "locale": "zh-CN",
+    "output": ".archify/guide-20260930-162304/02-boot/boot.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/OpenHands/OpenHands",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "1ec86616bc0511b1e56269fd6ba5872438f4fb7f"
+    }
+  },
+  "lanes": [
+    {
+      "id": "entry",
+      "label": "页面入口"
+    },
+    {
+      "id": "registry",
+      "label": "后端注册表"
+    },
+    {
+      "id": "gate",
+      "label": "启动闸门 root.tsx"
+    },
+    {
+      "id": "blocked",
+      "label": "拦截画面",
+      "variant": "exception"
+    }
+  ],
+  "phases": [
+    {
+      "id": "mount",
+      "label": "挂载 React",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "select",
+      "label": "选后端",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "verify",
+      "label": "校验并进入",
+      "fromCol": 4,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "entry",
+    "providers",
+    "readStore",
+    "pickActive",
+    "probe",
+    "app"
+  ],
+  "nodes": [
+    {
+      "id": "entry",
+      "lane": "entry",
+      "col": 0,
+      "type": "frontend",
+      "label": "entry.client",
+      "sublabel": "等 i18n → hydrateRoot",
+      "width": 170,
+      "sources": [
+        {
+          "path": "src/entry.client.tsx",
+          "line": 17,
+          "end_line": 49,
+          "label": "prepareApp + hydrateRoot"
+        }
+      ]
+    },
+    {
+      "id": "providers",
+      "lane": "entry",
+      "col": 1,
+      "type": "frontend",
+      "label": "Provider 栈",
+      "sublabel": "Query · Backend · Telemetry",
+      "width": 170,
+      "sources": [
+        {
+          "path": "src/components/providers/agent-server-ui-providers.tsx",
+          "line": 113,
+          "end_line": 144,
+          "label": "Provider 嵌套顺序"
+        }
+      ]
+    },
+    {
+      "id": "readStore",
+      "lane": "registry",
+      "col": 2,
+      "type": "database",
+      "label": "读取已存后端",
+      "sublabel": "localStorage",
+      "tag": "为空则生成 default-local",
+      "width": 170,
+      "sources": [
+        {
+          "path": "src/api/backend-registry/storage.ts",
+          "line": 104,
+          "end_line": 149,
+          "label": "readStoredBackends"
+        },
+        {
+          "path": "src/api/backend-registry/default-backend.ts",
+          "line": 53,
+          "end_line": 70,
+          "label": "makeDefaultLocalBackend"
+        },
+        {
+          "path": "src/api/agent-server-config.ts",
+          "line": 181,
+          "end_line": 194,
+          "label": "host 与 Key 来源"
+        }
+      ]
+    },
+    {
+      "id": "pickActive",
+      "lane": "registry",
+      "col": 3,
+      "type": "backend",
+      "label": "选出活动后端",
+      "sublabel": "URL > 上次选择 > 健康本地",
+      "width": 170,
+      "sources": [
+        {
+          "path": "src/api/backend-registry/active-store.ts",
+          "line": 52,
+          "end_line": 120,
+          "label": "回退顺序与快照"
+        },
+        {
+          "path": "src/contexts/active-backend-context.tsx",
+          "line": 71,
+          "end_line": 80,
+          "label": "useSyncExternalStore"
+        }
+      ]
+    },
+    {
+      "id": "probe",
+      "lane": "gate",
+      "col": 4,
+      "type": "security",
+      "label": "探测 server_info",
+      "sublabel": "5s 超时 · 校验版本",
+      "tag": "≥ 1.47.0",
+      "width": 170,
+      "sources": [
+        {
+          "path": "src/root.tsx",
+          "line": 324,
+          "end_line": 329,
+          "label": "useConfig 启动探测"
+        },
+        {
+          "path": "src/api/agent-server-compatibility.ts",
+          "line": 365,
+          "end_line": 445,
+          "label": "loadAgentServerInfo"
+        },
+        {
+          "path": "src/api/agent-server-compatibility.ts",
+          "line": 303,
+          "end_line": 328,
+          "label": "版本断言"
+        }
+      ]
+    },
+    {
+      "id": "app",
+      "lane": "gate",
+      "col": 5,
+      "type": "frontend",
+      "label": "进入主界面",
+      "sublabel": "Sidebar + 路由 Outlet",
+      "width": 170,
+      "sources": [
+        {
+          "path": "src/root.tsx",
+          "line": 362,
+          "end_line": 406,
+          "label": "闸门渲染顺序"
+        },
+        {
+          "path": "src/routes/root-layout.tsx",
+          "line": 85,
+          "end_line": 164,
+          "label": "MainAppContent"
+        }
+      ]
+    },
+    {
+      "id": "apikey",
+      "lane": "blocked",
+      "col": 4,
+      "type": "security",
+      "label": "输入 API Key",
+      "sublabel": "缺 Key 或 401",
+      "width": 170,
+      "sources": [
+        {
+          "path": "src/root.tsx",
+          "line": 245,
+          "end_line": 253,
+          "label": "authMissing 判定"
+        }
+      ]
+    },
+    {
+      "id": "unavailable",
+      "lane": "blocked",
+      "col": 5,
+      "type": "security",
+      "label": "后端不可用",
+      "sublabel": "连不上 / 版本过低",
+      "width": 170,
+      "sources": [
+        {
+          "path": "src/root.tsx",
+          "line": 362,
+          "end_line": 406,
+          "label": "MissingAgentServerScreen"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "entry-providers",
+      "from": "entry",
+      "to": "providers",
+      "variant": "emphasis"
+    },
+    {
+      "id": "providers-read",
+      "from": "providers",
+      "to": "readStore",
+      "label": "模块加载",
+      "variant": "emphasis"
+    },
+    {
+      "id": "read-pick",
+      "from": "readStore",
+      "to": "pickActive",
+      "variant": "emphasis"
+    },
+    {
+      "id": "pick-probe",
+      "from": "pickActive",
+      "to": "probe",
+      "label": "local 后端",
+      "variant": "emphasis"
+    },
+    {
+      "id": "probe-app",
+      "from": "probe",
+      "to": "app",
+      "label": "通过",
+      "variant": "emphasis"
+    },
+    {
+      "id": "probe-apikey",
+      "from": "probe",
+      "to": "apikey",
+      "label": "401",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "probe-unavailable",
+      "from": "probe",
+      "to": "unavailable",
+      "label": "失败",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "一句话理解",
+      "items": [
+        "页面先决定“连哪个后端”，再确认它能用，最后才渲染界面",
+        "后端信息只存在浏览器 localStorage 里"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "local 与 cloud",
+      "items": [
+        "local：请求头带 X-Session-API-Key，并探测 /server_info",
+        "cloud：Bearer Token，只做健康检查 /api/keys/current"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "健康与切换",
+      "items": [
+        "后端每 30s 探活，连续 5 次失败标记禁用",
+        "切换后端会清掉缓存的 server_info 并重新探测"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "a0088097-0d00-4966-b9a8-06e35b9da056",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/yajun/Documents/opensource/OpenHands/.archify/architecture-canvas-overview-20260930-161259/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/OpenHands/.archify/architecture-canvas-overview-20260930-161259/canvas-overview.html",
+  "specification": {
+    "sha256": "5a65f63b1ac91c928e769910839a6b81d4cfc6707ae3ba78802cdcbbb8c656fd",
+    "bytes": 11339
+  },
+  "artifact": {
+    "sha256": "907006eaa3c1695002cb9a981a1fb6c02212bb9b54253d2366deb84dd549aef4",
+    "bytes": 777795
+  }
+}

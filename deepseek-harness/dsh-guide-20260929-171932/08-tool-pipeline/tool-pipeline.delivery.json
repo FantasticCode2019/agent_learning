@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "b10c3bca-d93f-4679-b9d8-8a847547389e",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/08-tool-pipeline/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/08-tool-pipeline/tool-pipeline.html",
+  "specification": {
+    "sha256": "0a4ee8dc905dbe43665e8fc16c61dd2de5db0fed62b8371b0a26b92a6319c6fc",
+    "bytes": 10180
+  },
+  "artifact": {
+    "sha256": "2f2e3585cdcbc4b305398a9315d0ebbcb0b641f7cdbb25faf1c50a56a07eb4c5",
+    "bytes": 770038
+  }
+}

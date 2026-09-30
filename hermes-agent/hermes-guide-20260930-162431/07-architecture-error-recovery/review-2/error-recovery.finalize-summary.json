@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "fail",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/07-architecture-error-recovery/candidate.json",
+    "sha256": "9a83dc745f111c8123c666f8303d054106e6ac7e167c3353d73c847128ba2aac",
+    "bytes": 6771
+  },
+  "artifact": {
+    "path": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/07-architecture-error-recovery/error-recovery.html",
+    "sha256": "2ce0395f23bcc1aebe10e9b557999881e57574acdc6a572438416dc8bcd8b0e3",
+    "bytes": 763048
+  },
+  "gates": {
+    "validate": "fail",
+    "deliver": "not-run",
+    "check": "not-run",
+    "browser-check": "not-run"
+  },
+  "failedStage": "validate",
+  "diagnostics": [
+    {
+      "code": "clean-flow/endpoint-side-direction",
+      "severity": "error",
+      "message": "[clean-flow/endpoint-side-direction] architecture connections[4] id \"r5\" \"backoff\" -> \"retry\" first segment 0 [620, 72] -> [740, 202] does not honor fromSide \"right\" — it must run horizontal rightward; keep automatic routing so the renderer can use a side-aware bridge, or set truthful fromSide/toSide with perpendicular via segments.",
+      "subject": {
+        "diagramType": "architecture",
+        "collection": "connections",
+        "index": 4,
+        "id": "r5",
+        "from": "backoff",
+        "to": "retry"
+      },
+      "evidence": {
+        "endpoint": "source",
+        "authoredField": "fromSide",
+        "sideOrigin": "authored",
+        "side": "right",
+        "segmentIndex": 0,
+        "from": [
+          620,
+          72
+        ],
+        "to": [
+          740,
+          202
+        ],
+        "expectedAxis": "horizontal",
+        "expectedDirection": "rightward"
+      },
+      "supportedFixes": [
+        "keep automatic routing so the renderer can use a side-aware bridge, or set truthful fromSide/toSide with perpendicular via segments"
+      ]
+    },
+    {
+      "code": "clean-flow/endpoint-side-direction",
+      "severity": "error",
+      "message": "[clean-flow/endpoint-side-direction] architecture connections[6] id \"r7\" \"compress\" -> \"retry\" first segment 0 [620, 332] -> [740, 202] does not honor fromSide \"right\" — it must run horizontal rightward; keep automatic routing so the renderer can use a side-aware bridge, or set truthful fromSide/toSide with perpendicular via segments.",
+      "subject": {
+        "diagramType": "architecture",
+        "collection": "connections",
+        "index": 6,
+        "id": "r7",
+        "from": "compress",
+        "to": "retry"
+      },
+      "evidence": {
+        "endpoint": "source",
+        "authoredField": "fromSide",
+        "sideOrigin": "authored",
+        "side": "right",
+        "segmentIndex": 0,
+        "from": [
+          620,
+          332
+        ],
+        "to": [
+          740,
+          202
+        ],
+        "expectedAxis": "horizontal",
+        "expectedDirection": "rightward"
+      },
+      "supportedFixes": [
+        "keep automatic routing so the renderer can use a side-aware bridge, or set truthful fromSide/toSide with perpendicular via segments"
+      ]
+    },
+    {
+      "code": "clean-flow/endpoint-side-direction",
+      "severity": "error",
+      "message": "[clean-flow/endpoint-side-direction] architecture connections[4] id \"r5\" \"backoff\" -> \"retry\" final segment 0 [620, 72] -> [740, 202] does not honor toSide \"left\" — it must run horizontal rightward from the left; keep automatic routing so the renderer can use a side-aware bridge, or set truthful fromSide/toSide with perpendicular via segments.",
+      "subject": {
+        "diagramType": "architecture",
+        "collection": "connections",
+        "index": 4,
+        "id": "r5",
+        "from": "backoff",
+        "to": "retry"
+      },
+      "evidence": {
+        "endpoint": "target",
+        "authoredField": "toSide",
+        "sideOrigin": "authored",
+        "side": "left",
+        "segmentIndex": 0,
+        "from": [
+          620,
+          72
+        ],
+        "to": [
+          740,
+          202
+        ],
+        "expectedAxis": "horizontal",
+        "expectedDirection": "rightward from the left"
+      },
+      "supportedFixes": [
+        "keep automatic routing so the renderer can use a side-aware bridge, or set truthful fromSide/toSide with perpendicular via segments"
+      ]
+    },
+    {
+      "code": "clean-flow/endpoint-side-direction",
+      "severity": "error",
+      "message": "[clean-flow/endpoint-side-direction] architecture connections[6] id \"r7\" \"compress\" -> \"retry\" final segment 0 [620, 332] -> [740, 202] does not honor toSide \"left\" — it must run horizontal rightward from the left; keep automatic routing so the renderer can use a side-aware bridge, or set truthful fromSide/toSide with perpendicular via segments.",
+      "subject": {
+        "diagramType": "architecture",
+        "collection": "connections",
+        "index": 6,
+        "id": "r7",
+        "from": "compress",
+        "to": "retry"
+      },
+      "evidence": {
+        "endpoint": "target",
+        "authoredField": "toSide",
+        "sideOrigin": "authored",
+        "side": "left",
+        "segmentIndex": 0,
+        "from": [
+          620,
+          332
+        ],
+        "to": [
+          740,
+          202
+        ],
+        "expectedAxis": "horizontal",
+        "expectedDirection": "rightward from the left"
+      },
+      "supportedFixes": [
+        "keep automatic routing so the renderer can use a side-aware bridge, or set truthful fromSide/toSide with perpendicular via segments"
+      ]
+    }
+  ],
+  "diagnosticSummary": {
+    "total": 4,
+    "shown": 4,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/07-architecture-error-recovery/review-2/error-recovery.finalize.json",
+    "summaryReceipt": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/07-architecture-error-recovery/review-2/error-recovery.finalize-summary.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.0.1",
+    "releaseNotes": null,
+    "checkedAt": "2026-09-29T09:06:25.980Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 220,
+  "nextAction": {
+    "action": "edit-in-place",
+    "candidate": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/07-architecture-error-recovery/candidate.json",
+    "constraint": "Preserve all semantics and user-fixed geometry. Use references/architecture-layout-repair.md to choose a local repair or connected-scene reflow; edit the existing candidate.",
+    "then": "finalize-once"
+  }
+}

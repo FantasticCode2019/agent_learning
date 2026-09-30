@@ -1,0 +1,324 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "⑨ 流式输出：答案为什么能“一个字一个字”地出现",
+    "output": ".archify/sequence-weknora-sse-20260930-172606/weknora-sse.html",
+    "locale": "zh-CN",
+    "viewBox": [
+      1080,
+      670
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Tencent/WeKnora.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "bccb4b151bae403508da77fbb174efc79dc47c1a"
+    },
+    "legend": {
+      "entries": {
+        "emphasis": {
+          "label": "关键步骤"
+        },
+        "dashed": {
+          "label": "后台 / 重连"
+        },
+        "security": {
+          "label": "停止 / 取消"
+        },
+        "default": {
+          "label": "普通调用"
+        },
+        "return": {
+          "label": "返回"
+        }
+      }
+    }
+  },
+  "participants": [
+    {
+      "id": "browser",
+      "type": "frontend",
+      "label": "浏览器",
+      "sublabel": "EventSource / fetch"
+    },
+    {
+      "id": "handler",
+      "type": "backend",
+      "label": "QA Handler",
+      "sublabel": "setupSSEStream",
+      "sources": [
+        {
+          "path": "internal/handler/session/qa.go",
+          "line": 723,
+          "end_line": 839
+        },
+        {
+          "path": "internal/handler/session/stream.go",
+          "line": 331,
+          "end_line": 471
+        }
+      ]
+    },
+    {
+      "id": "engine",
+      "type": "backend",
+      "label": "流水线 / Agent",
+      "sublabel": "后台执行",
+      "sources": [
+        {
+          "path": "internal/handler/session/qa.go",
+          "line": 1386,
+          "end_line": 1504
+        }
+      ]
+    },
+    {
+      "id": "bus",
+      "type": "messagebus",
+      "label": "EventBus",
+      "sublabel": "每个请求一个",
+      "sources": [
+        {
+          "path": "internal/event/event.go",
+          "line": 115,
+          "end_line": 189
+        },
+        {
+          "path": "internal/handler/session/agent_stream_handler.go",
+          "line": 139,
+          "end_line": 158
+        }
+      ]
+    },
+    {
+      "id": "stream",
+      "type": "database",
+      "label": "流存储",
+      "sublabel": "Redis 或内存",
+      "sources": [
+        {
+          "path": "internal/stream/factory.go",
+          "line": 18,
+          "end_line": 38
+        },
+        {
+          "path": "internal/stream/redis_manager.go",
+          "line": 60,
+          "end_line": 121
+        }
+      ]
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "messages 表",
+      "sources": [
+        {
+          "path": "internal/handler/session/helpers.go",
+          "line": 279,
+          "end_line": 298
+        },
+        {
+          "path": "internal/handler/session/qa.go",
+          "line": 1924,
+          "end_line": 1953
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 250,
+      "label": "建立连接"
+    },
+    {
+      "from": 258,
+      "to": 452,
+      "label": "边生成边推送"
+    },
+    {
+      "from": 462,
+      "to": 568,
+      "label": "重连 / 停止"
+    }
+  ],
+  "messages": [
+    {
+      "id": "s1",
+      "from": "browser",
+      "to": "handler",
+      "y": 165,
+      "label": "POST 提问",
+      "variant": "emphasis"
+    },
+    {
+      "id": "s2",
+      "from": "handler",
+      "to": "pg",
+      "y": 193,
+      "label": "存用户消息 + 空白助手消息",
+      "variant": "default"
+    },
+    {
+      "id": "s3",
+      "from": "handler",
+      "to": "browser",
+      "y": 221,
+      "label": "SSE 响应头 + agent_query",
+      "variant": "return"
+    },
+    {
+      "id": "s4",
+      "from": "handler",
+      "to": "engine",
+      "y": 249,
+      "label": "后台 goroutine 开始执行",
+      "variant": "dashed"
+    },
+    {
+      "id": "s5",
+      "from": "engine",
+      "to": "bus",
+      "y": 277,
+      "label": "thinking / tool_call / answer",
+      "variant": "emphasis"
+    },
+    {
+      "id": "s6",
+      "from": "bus",
+      "to": "stream",
+      "y": 305,
+      "label": "AppendEvent 追加事件",
+      "variant": "default"
+    },
+    {
+      "id": "s7",
+      "from": "handler",
+      "to": "stream",
+      "y": 333,
+      "label": "每 100ms 拉取新事件",
+      "variant": "default"
+    },
+    {
+      "id": "s9",
+      "from": "handler",
+      "to": "browser",
+      "y": 361,
+      "label": "SSE message 推送",
+      "variant": "emphasis"
+    },
+    {
+      "id": "s10",
+      "from": "engine",
+      "to": "bus",
+      "y": 389,
+      "label": "complete（答案 + 引用）",
+      "variant": "emphasis"
+    },
+    {
+      "id": "s11",
+      "from": "handler",
+      "to": "pg",
+      "y": 417,
+      "label": "更新助手消息",
+      "variant": "default"
+    },
+    {
+      "id": "s12",
+      "from": "handler",
+      "to": "browser",
+      "y": 445,
+      "label": "complete · 结束",
+      "variant": "return"
+    },
+    {
+      "id": "s13",
+      "from": "browser",
+      "to": "handler",
+      "y": 475,
+      "label": "断线重连：continue-stream 重放",
+      "variant": "dashed"
+    },
+    {
+      "id": "s15",
+      "from": "browser",
+      "to": "handler",
+      "y": 503,
+      "label": "POST /stop",
+      "variant": "security"
+    },
+    {
+      "id": "s16",
+      "from": "handler",
+      "to": "stream",
+      "y": 531,
+      "label": "写入 stop 事件",
+      "variant": "security"
+    },
+    {
+      "id": "s17",
+      "from": "handler",
+      "to": "engine",
+      "y": 559,
+      "label": "cancel() 取消执行",
+      "variant": "security"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "handler",
+      "from": 165,
+      "to": 564,
+      "type": "backend"
+    },
+    {
+      "participant": "engine",
+      "from": 249,
+      "to": 420,
+      "type": "backend"
+    },
+    {
+      "participant": "bus",
+      "from": 272,
+      "to": 420,
+      "type": "messagebus"
+    },
+    {
+      "participant": "stream",
+      "from": 300,
+      "to": 336,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "SSE 是什么",
+      "items": [
+        "Server-Sent Events：一个一直不关闭的 HTTP 响应，服务器可以不断往里写新内容",
+        "所以模型每生成一小段，前端就能马上显示"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "为什么中间要多一层“流存储”",
+      "items": [
+        "生成的事件先存进 Redis（或内存），Handler 再每 100ms 取一次推给浏览器",
+        "好处：网络断了可以用 continue-stream 从头重放，不丢内容；多副本部署也能接上"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "停止与收尾",
+      "items": [
+        "点“停止”会写一条 stop 事件，Handler 发现后取消后台执行，并保存已生成的部分",
+        "正常结束时先把答案、引用写进数据库，再发 complete 事件"
+      ]
+    }
+  ]
+}

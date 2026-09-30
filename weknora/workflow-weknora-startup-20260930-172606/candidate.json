@@ -1,0 +1,309 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "① 服务启动：WeKnora 是怎么跑起来的",
+    "output": ".archify/workflow-weknora-startup-20260930-172606/weknora-startup.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Tencent/WeKnora.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "bccb4b151bae403508da77fbb174efc79dc47c1a"
+    },
+    "viewBox": [
+      1030,
+      652
+    ],
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "用户 / 入口"
+        },
+        "backend": {
+          "label": "处理步骤"
+        },
+        "database": {
+          "label": "存储 / 数据"
+        },
+        "security": {
+          "label": "校验 / 异常"
+        },
+        "messagebus": {
+          "label": "队列 / 任务"
+        },
+        "external": {
+          "label": "模型调用"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "entry",
+      "label": "入口 main.go"
+    },
+    {
+      "id": "infra",
+      "label": "基础设施"
+    },
+    {
+      "id": "biz",
+      "label": "业务组装"
+    },
+    {
+      "id": "bg",
+      "label": "后台任务"
+    }
+  ],
+  "mainPath": [
+    "main",
+    "config",
+    "db",
+    "store",
+    "engines",
+    "services",
+    "handlers",
+    "serve"
+  ],
+  "nodes": [
+    {
+      "id": "main",
+      "lane": "entry",
+      "col": 0,
+      "type": "backend",
+      "label": "main()",
+      "sublabel": "设置 Gin 模式",
+      "sources": [
+        {
+          "path": "cmd/server/main.go",
+          "line": 43,
+          "end_line": 59
+        }
+      ],
+      "width": 140
+    },
+    {
+      "id": "config",
+      "lane": "infra",
+      "col": 1,
+      "type": "backend",
+      "label": "加载配置",
+      "sublabel": "config.yaml + 环境变量",
+      "sources": [
+        {
+          "path": "internal/container/container.go",
+          "line": 130
+        }
+      ],
+      "width": 140
+    },
+    {
+      "id": "db",
+      "lane": "infra",
+      "col": 2,
+      "type": "database",
+      "label": "连接数据库",
+      "sublabel": "自动执行迁移",
+      "sources": [
+        {
+          "path": "internal/container/container.go",
+          "line": 132
+        },
+        {
+          "path": "internal/container/container.go",
+          "line": 895,
+          "end_line": 933,
+          "label": "RunMigrations"
+        }
+      ],
+      "width": 140
+    },
+    {
+      "id": "store",
+      "lane": "infra",
+      "col": 3,
+      "type": "database",
+      "label": "文件存储 + Redis",
+      "sublabel": "无 Redis 时 Lite 模式",
+      "sources": [
+        {
+          "path": "internal/container/container.go",
+          "line": 133,
+          "end_line": 134
+        },
+        {
+          "path": "internal/container/container.go",
+          "line": 761,
+          "label": "initRedisClient"
+        }
+      ],
+      "width": 140
+    },
+    {
+      "id": "engines",
+      "lane": "biz",
+      "col": 3,
+      "type": "backend",
+      "label": "检索引擎注册表",
+      "sublabel": "DocReader · 流管理器",
+      "sources": [
+        {
+          "path": "internal/container/container.go",
+          "line": 144,
+          "end_line": 152
+        }
+      ],
+      "width": 140
+    },
+    {
+      "id": "services",
+      "lane": "biz",
+      "col": 4,
+      "type": "backend",
+      "label": "业务服务",
+      "sublabel": "模型 · 知识 · 会话 · Agent",
+      "sources": [
+        {
+          "path": "internal/container/container.go",
+          "line": 231,
+          "end_line": 347
+        }
+      ],
+      "width": 140
+    },
+    {
+      "id": "handlers",
+      "lane": "biz",
+      "col": 5,
+      "type": "backend",
+      "label": "流水线插件 + 路由",
+      "sublabel": "Handler · NewRouter",
+      "sources": [
+        {
+          "path": "internal/container/container.go",
+          "line": 491,
+          "end_line": 606
+        }
+      ],
+      "width": 140
+    },
+    {
+      "id": "asynq",
+      "lane": "bg",
+      "col": 5,
+      "type": "messagebus",
+      "label": "Asynq Worker",
+      "sublabel": "6 个任务池",
+      "sources": [
+        {
+          "path": "internal/container/container.go",
+          "line": 441,
+          "end_line": 471
+        },
+        {
+          "path": "internal/router/task.go",
+          "line": 229,
+          "end_line": 338
+        }
+      ],
+      "width": 140
+    },
+    {
+      "id": "serve",
+      "lane": "entry",
+      "col": 5,
+      "type": "frontend",
+      "label": "HTTP 开始监听",
+      "sublabel": ":8080 · 优雅退出",
+      "sources": [
+        {
+          "path": "cmd/server/main.go",
+          "line": 66,
+          "end_line": 137
+        }
+      ],
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "main",
+      "to": "config",
+      "label": "构建容器",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e2",
+      "from": "config",
+      "to": "db",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e3",
+      "from": "db",
+      "to": "store",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e4",
+      "from": "store",
+      "to": "engines",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e5",
+      "from": "engines",
+      "to": "services",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e6",
+      "from": "services",
+      "to": "handlers",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e7",
+      "from": "handlers",
+      "to": "serve",
+      "label": "注入 router",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e8",
+      "from": "handlers",
+      "to": "asynq",
+      "label": "注册任务",
+      "variant": "dashed",
+      "role": "async"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "依赖注入是什么",
+      "items": [
+        "WeKnora 用 dig 容器统一创建对象：先有配置，再有数据库，再有服务",
+        "每个服务只声明自己需要什么，容器负责按顺序把它们拼好"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "两种运行模式",
+      "items": [
+        "有 Redis：启动 6 个 Asynq 任务池（core / postprocess / enrichment 等）",
+        "没有 Redis：退化为同步执行任务，适合轻量体验"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "退出时",
+      "items": [
+        "收到信号后先停止接收请求，再清理资源（ResourceCleaner）"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "6854560f-5aea-4c99-b462-a15fc9f592d4",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/02-workflow-agent-init/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/02-workflow-agent-init/agent-init.html",
+  "specification": {
+    "sha256": "e79cff5474a407aa8ba4101a90e8f77943c373e0bf892c865764a8d1a26480ac",
+    "bytes": 8190
+  },
+  "artifact": {
+    "sha256": "fda33fe791202f6704f2a075a855b5041472a081c8a74a2eb087d96d79dd872f",
+    "bytes": 766459
+  }
+}

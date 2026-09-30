@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "⑨ Session 日志：一条事件写下之后去了哪里",
+    "locale": "zh-CN",
+    "output": ".archify/dsh-guide-20260929-171932/09-session-log/session-log.html",
+    "viewBox": [
+      1080,
+      560
+    ],
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/deepseek-ai/deepseek-harness.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "4878cdabd87d4041bdaff61d04c966883b9fd07a"
+    }
+  },
+  "stages": [
+    {
+      "label": "产生"
+    },
+    {
+      "label": "追加"
+    },
+    {
+      "label": "分发"
+    },
+    {
+      "label": "存储 / 投影"
+    },
+    {
+      "label": "使用方"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "producer",
+      "type": "backend",
+      "label": "Agent Loop / 插件",
+      "sublabel": "turn/…, tool/…",
+      "stage": 0,
+      "row": 1,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 303,
+          "end_line": 389
+        }
+      ]
+    },
+    {
+      "id": "append",
+      "type": "backend",
+      "label": "session.append()",
+      "sublabel": "校验 + 冻结 + seq",
+      "stage": 1,
+      "row": 1,
+      "tag": "同步",
+      "sources": [
+        {
+          "path": "packages/core/session/src/index.ts",
+          "line": 722,
+          "end_line": 773,
+          "label": "append"
+        }
+      ]
+    },
+    {
+      "id": "bus",
+      "type": "messagebus",
+      "label": "session/event",
+      "sublabel": "提交后广播",
+      "stage": 2,
+      "row": 1,
+      "sources": [
+        {
+          "path": "packages/core/session/src/index.ts",
+          "line": 43,
+          "end_line": 87,
+          "label": "事件声明"
+        }
+      ]
+    },
+    {
+      "id": "surface",
+      "type": "security",
+      "label": "Surface",
+      "sublabel": "模型可见节点表",
+      "stage": 2,
+      "row": 2,
+      "sources": [
+        {
+          "path": "packages/core/session/src/surface.ts",
+          "line": 516,
+          "end_line": 591,
+          "label": "plan/apply"
+        },
+        {
+          "path": "packages/core/session/src/types.ts",
+          "line": 439,
+          "end_line": 478
+        }
+      ]
+    },
+    {
+      "id": "jsonl",
+      "type": "database",
+      "label": "JSONL 文件",
+      "sublabel": "session.v4.jsonl",
+      "stage": 3,
+      "row": 0,
+      "tag": "fsync",
+      "sources": [
+        {
+          "path": "packages/session/session-persistence-jsonl/src/storage.ts",
+          "line": 534,
+          "end_line": 566,
+          "label": "监听"
+        },
+        {
+          "path": "packages/session/session-persistence-jsonl/src/index.ts",
+          "line": 1324,
+          "end_line": 1352,
+          "label": "appendLines"
+        }
+      ]
+    },
+    {
+      "id": "proj",
+      "type": "backend",
+      "label": "投影 + follow 流",
+      "sublabel": "sessionProjections",
+      "stage": 3,
+      "row": 1,
+      "sources": [
+        {
+          "path": "packages/session/session-projection/src/index.ts",
+          "line": 199,
+          "end_line": 327
+        },
+        {
+          "path": "packages/api/session-controller/src/history.ts",
+          "line": 120,
+          "end_line": 241,
+          "label": "follow"
+        }
+      ]
+    },
+    {
+      "id": "derive",
+      "type": "backend",
+      "label": "deriveMessages()",
+      "sublabel": "节点 → 消息",
+      "stage": 3,
+      "row": 2,
+      "sources": [
+        {
+          "path": "packages/core/session/src/index.ts",
+          "line": 860,
+          "end_line": 881
+        }
+      ]
+    },
+    {
+      "id": "resume",
+      "type": "external",
+      "label": "恢复 / 分叉",
+      "sublabel": "resume · fork",
+      "stage": 4,
+      "row": 0,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/index.ts",
+          "line": 816,
+          "end_line": 890,
+          "label": "resumeWith"
+        },
+        {
+          "path": "packages/core/session/src/fork.ts",
+          "line": 21,
+          "end_line": 30,
+          "label": "buildForkSeed"
+        }
+      ]
+    },
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "浏览器 UI",
+      "sublabel": "快照 + 增量",
+      "stage": 4,
+      "row": 1,
+      "sources": [
+        {
+          "path": "packages/api/session-controller/src/client/sessions/session.ts",
+          "line": 616,
+          "end_line": 665
+        }
+      ]
+    },
+    {
+      "id": "nextreq",
+      "type": "cloud",
+      "label": "下一次模型请求",
+      "sublabel": "冻结的 messages",
+      "stage": 4,
+      "row": 2,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 669,
+          "end_line": 686
+        }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "s-append",
+      "from": "producer",
+      "to": "append",
+      "label": "type + data",
+      "variant": "emphasis"
+    },
+    {
+      "id": "s-bus",
+      "from": "append",
+      "to": "bus",
+      "label": "已提交",
+      "variant": "emphasis"
+    },
+    {
+      "id": "s-surface",
+      "from": "append",
+      "to": "surface",
+      "label": "surfaceOp",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "left",
+      "via": [
+        [
+          315,
+          385
+        ]
+      ]
+    },
+    {
+      "id": "s-jsonl",
+      "from": "bus",
+      "to": "jsonl",
+      "label": "200ms 批写",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "left",
+      "via": [
+        [
+          530,
+          157
+        ]
+      ]
+    },
+    {
+      "id": "s-proj",
+      "from": "bus",
+      "to": "proj",
+      "label": "fold",
+      "variant": "emphasis"
+    },
+    {
+      "id": "s-derive",
+      "from": "surface",
+      "to": "derive",
+      "label": "节点"
+    },
+    {
+      "id": "s-resume",
+      "from": "jsonl",
+      "to": "resume",
+      "label": "读回 + 迁移",
+      "variant": "dashed"
+    },
+    {
+      "id": "s-ui",
+      "from": "proj",
+      "to": "ui",
+      "label": "WS 帧",
+      "variant": "emphasis"
+    },
+    {
+      "id": "s-next",
+      "from": "derive",
+      "to": "nextreq",
+      "label": "messages"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "append：日志只增不改",
+      "items": [
+        "每条事件形如 { type, seq, time, data }，seq 从 0 连续递增，写入后深度冻结",
+        "先校验数据和 surface 操作，再推进日志，最后同步通知 session/event 监听者（监听者出错不影响提交）",
+        "“修改”历史也是追加：压缩（compaction）写一条 replace 事件，把一段旧节点在 Surface 上替换为摘要，原始事件仍在"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "三个去向",
+      "items": [
+        "落盘：JSONL 插件缓冲 200ms 批量追加并 fsync；模型调用前、工具派发前还会强制 flush",
+        "给人看：投影把事件折叠成状态（inbox、turnBoundary、标题等），follow 流把快照 + 增量推给浏览器",
+        "给模型看：Surface 只保留 system/developer/user/assistant/tool 五类节点，deriveMessages() 把它们变成下一次请求"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "重启之后",
+      "items": [
+        "文件路径 ~/.dsh 下 <项目>/<会话>/session.v4.jsonl；旧版本文件打开时按 v0→v1→…→v4 逐级迁移，新版本另存一份、绝不覆盖",
+        "resume：读回全部事件，给中断的 turn 补上 tool/result、step/end、turn/end（reason=interrupted），再作为种子重建 Agent",
+        "fork：复制到某个 turn 边界为止的事件作为新会话的种子；SQLite 检索索引只在查询时从文件对账重建"
+      ]
+    }
+  ]
+}

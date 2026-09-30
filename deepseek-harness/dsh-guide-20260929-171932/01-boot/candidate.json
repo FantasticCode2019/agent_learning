@@ -1,0 +1,83 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "① 启动流程：dsh web 如何把插件树跑起来",
+    "locale": "zh-CN",
+    "output": ".archify/dsh-guide-20260929-171932/01-boot/boot.html",
+    "quality_profile": "showcase",
+    "repository": { "url": "https://github.com/deepseek-ai/deepseek-harness.git", "provider": "github", "link_mode": "web", "revision": "4878cdabd87d4041bdaff61d04c966883b9fd07a" }
+  },
+  "lanes": [
+    { "id": "cli", "label": "启动器（apps/cli）" },
+    { "id": "profile", "label": "Profile 组合（app-boot）" },
+    { "id": "kernel", "label": "Cordis 内核（Loader）" },
+    { "id": "web", "label": "Web 应用插件" },
+    { "id": "fail", "label": "失败处理", "variant": "exception" }
+  ],
+  "phases": [
+    { "id": "p-launch", "label": "准备进程", "fromCol": 0, "toCol": 1 },
+    { "id": "p-compose", "label": "组合配置", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "p-mount", "label": "挂载并就绪", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["parse", "env", "prep", "compose", "boot", "mount", "audit", "ws"],
+  "nodes": [
+    { "id": "parse", "lane": "cli", "col": 0, "type": "external", "label": "解析命令行", "sublabel": "dsh web → --profile web", "width": 136,
+      "sources": [{ "path": "apps/cli/src/args.ts", "line": 145, "end_line": 211, "label": "parseDshArgs" }, { "path": "apps/cli/src/bin.ts", "line": 18, "end_line": 39 }] },
+    { "id": "env", "lane": "cli", "col": 1, "type": "backend", "label": ".env 快照 + 代理", "sublabel": "loadLayeredEnv", "width": 136,
+      "sources": [{ "path": "packages/boot/app-boot/src/index.ts", "line": 234, "end_line": 255, "label": "loadLayeredEnv" }, { "path": "apps/cli/src/profile-boot.ts", "line": 244, "end_line": 252, "label": "代理" }] },
+    { "id": "prep", "lane": "profile", "col": 2, "type": "database", "label": "加载 Profile 目录", "sublabel": "~/.dsh/profiles/web", "width": 136,
+      "sources": [{ "path": "packages/boot/app-boot/src/profile.ts", "line": 704, "end_line": 721, "label": "loadProfile" }, { "path": "packages/boot/app-boot/src/profile.ts", "line": 179, "end_line": 195, "label": "模板" }] },
+    { "id": "compose", "lane": "profile", "col": 3, "type": "backend", "label": "组合补丁层", "sublabel": "bundle → 用户 → --patch", "width": 136,
+      "sources": [{ "path": "packages/boot/app-boot/src/profile-context.ts", "line": 63, "end_line": 75, "label": "readProfilePatches" }, { "path": "apps/cli/src/profile-boot.ts", "line": 197, "end_line": 209 }] },
+    { "id": "boot", "lane": "kernel", "col": 3, "type": "backend", "label": "boot() 创建根上下文", "sublabel": "Context + Loader", "width": 136,
+      "sources": [{ "path": "packages/boot/app-boot/src/index.ts", "line": 972, "end_line": 1038, "label": "boot" }, { "path": "apps/cli/src/profile-boot.ts", "line": 296, "end_line": 312, "label": "宿主服务" }] },
+    { "id": "mount", "lane": "kernel", "col": 4, "type": "backend", "label": "逐行挂载插件", "sublabel": "import + ctx.plugin()", "width": 136,
+      "sources": [{ "path": "packages/boot/app-boot/src/index.ts", "line": 538, "end_line": 585, "label": "mountRootInclude" }, { "path": "vendor/loader/src/config/entry.ts", "line": 208, "end_line": 235, "label": "Entry._init" }] },
+    { "id": "audit", "lane": "kernel", "col": 5, "type": "security", "label": "启动审计", "sublabel": "必需行必须 ACTIVE", "width": 136,
+      "sources": [{ "path": "packages/boot/app-boot/src/index.ts", "line": 824, "end_line": 862, "label": "auditStartupEntries" }, { "path": "packages/boot/app-boot/src/index.ts", "line": 746, "end_line": 754, "label": "必需 id" }] },
+    { "id": "listen", "lane": "web", "col": 4, "type": "backend", "label": "WebServer 监听", "sublabel": "127.0.0.1:3080", "width": 136,
+      "sources": [{ "path": "packages/host/webserver/src/index.ts", "line": 293, "end_line": 301, "label": "listen" }, { "path": "packages/bundle/web-app/cordis.patch.yml", "line": 169, "end_line": 177 }] },
+    { "id": "ws", "lane": "web", "col": 5, "type": "frontend", "label": "开放 WebSocket", "sublabel": "/api/remote.mux", "width": 136,
+      "sources": [{ "path": "packages/api/gateway/src/index.ts", "line": 239, "end_line": 275, "label": "registerUpgrade" }, { "path": "apps/cli/src/profile-boot.ts", "line": 313, "end_line": 319, "label": "appReady" }] },
+    { "id": "browser", "lane": "cli", "col": 5, "type": "external", "label": "打印 URL / 开浏览器", "sublabel": "web-runtime", "width": 136,
+      "sources": [{ "path": "packages/bundle/web-app/src/index.ts", "line": 252, "end_line": 299, "label": "就绪公告" }] },
+    { "id": "failed", "lane": "fail", "col": 5, "type": "security", "label": "启动失败", "sublabel": "写启动日志, exit 1", "width": 136,
+      "sources": [{ "path": "apps/cli/src/startup-diagnostics.ts", "line": 34, "end_line": 68, "label": "reportStartupFailure" }] }
+  ],
+  "edges": [
+    { "id": "e-parse-env", "from": "parse", "to": "env", "label": "mode=profile" },
+    { "id": "e-env-prep", "from": "env", "to": "prep", "label": "runProfile", "variant": "emphasis" },
+    { "id": "e-prep-compose", "from": "prep", "to": "compose", "label": "读 bundles" },
+    { "id": "e-compose-boot", "from": "compose", "to": "boot", "label": "patches[]", "variant": "emphasis" },
+    { "id": "e-boot-mount", "from": "boot", "to": "mount", "label": "根 Include" },
+    { "id": "e-mount-listen", "from": "mount", "to": "listen", "label": "webserver 行", "role": "branch" },
+    { "id": "e-mount-audit", "from": "mount", "to": "audit", "label": "loader.await()" },
+    { "id": "e-audit-ws", "from": "audit", "to": "ws", "label": "appReady", "variant": "emphasis" },
+    { "id": "e-listen-ws", "from": "listen", "to": "ws", "label": "upgrade 路由", "variant": "dashed" },
+    { "id": "e-audit-browser", "from": "audit", "to": "browser", "label": "审计通过", "variant": "dashed", "role": "branch" },
+    { "id": "e-audit-fail", "from": "audit", "to": "failed", "label": "必需行未激活", "variant": "security", "role": "error" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "第 1 步：命令行变成“要启动哪个 profile”", "items": [
+      "dsh web 会被改写成 dsh --profile web；profile 就是一套“装哪些插件”的清单",
+      "先读取当前目录和 ~/.dsh 下的 .env，冻结成只读快照，所有插件只从这份快照读环境变量",
+      "代理在任何插件发请求之前就装好"
+    ] },
+    { "dot": "emerald", "title": "第 2 步：把配置一层层叠起来", "items": [
+      "profile 目录 ~/.dsh/profiles/web 第一次使用时由内置模板生成，模板只写了 bundle 列表 [dsh-base, dsh-web-app]",
+      "每个 bundle 自带一份 cordis.patch.yml；再叠上 profile 自己的、home 的、命令行 --patch 的补丁",
+      "结果是一个补丁数组，交给 Cordis 的根 Include"
+    ] },
+    { "dot": "violet", "title": "第 3 步：Loader 把每一行变成一个运行中的插件", "items": [
+      "boot() 先 new Context 并挂上 Loader，再注入 profileContext、环境快照、命令行参数等宿主服务",
+      "每个配置行：按 name import 包 → 求值 !!js 表达式 → ctx.plugin(插件, config)",
+      "webserver 行在 127.0.0.1:3080 监听 HTTP；agent-loop、llm、tools 等行同时挂载"
+    ] },
+    { "dot": "rose", "title": "第 4 步：确认一切就绪", "items": [
+      "等所有挂载任务结束后审计：agent-loop、webserver、connection 等必需行必须处于 ACTIVE",
+      "有缺失就抛 StartupError，写日志到 ~/.dsh/logs 并退出码 1",
+      "通过后 appReady 提交，Gateway 才开放 WebSocket，web-runtime 打印访问 URL 并打开浏览器"
+    ] }
+  ]
+}

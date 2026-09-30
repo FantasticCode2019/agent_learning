@@ -1,0 +1,333 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "创建会话与消息往返时序（本地后端）",
+    "locale": "zh-CN",
+    "output": ".archify/sequence-send-message-20260930-161259/send-message.html",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      680
+    ],
+    "repository": {
+      "url": "https://github.com/OpenHands/OpenHands",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "1ec86616bc0511b1e56269fd6ba5872438f4fb7f"
+    }
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "用户",
+      "sublabel": "浏览器"
+    },
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "聊天界面",
+      "sublabel": "ChatInterface",
+      "sources": [
+        {
+          "path": "src/components/features/home/home-chat-launcher.tsx",
+          "line": 185,
+          "end_line": 196,
+          "label": "创建后跳转"
+        },
+        {
+          "path": "src/hooks/use-send-message.ts",
+          "line": 13,
+          "end_line": 67,
+          "label": "useSendMessage"
+        }
+      ]
+    },
+    {
+      "id": "svc",
+      "type": "frontend",
+      "label": "会话服务",
+      "sublabel": "src/api",
+      "sources": [
+        {
+          "path": "src/hooks/mutation/use-create-conversation.ts",
+          "line": 253,
+          "end_line": 262,
+          "label": "mutation 调用"
+        },
+        {
+          "path": "src/api/conversation-service/agent-server-conversation-service.api.ts",
+          "line": 479,
+          "end_line": 526,
+          "label": "本地创建路径"
+        }
+      ]
+    },
+    {
+      "id": "ws",
+      "type": "frontend",
+      "label": "WS Provider",
+      "sublabel": "WebSocket 上下文",
+      "sources": [
+        {
+          "path": "src/contexts/conversation-websocket-context.tsx",
+          "line": 352,
+          "end_line": 368,
+          "label": "REST 历史预加载"
+        },
+        {
+          "path": "src/contexts/conversation-websocket-context.tsx",
+          "line": 1100,
+          "end_line": 1110,
+          "label": "after_seq 游标"
+        },
+        {
+          "path": "src/contexts/conversation-websocket-context.tsx",
+          "line": 1236,
+          "end_line": 1288,
+          "label": "sendMessage"
+        }
+      ]
+    },
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "Agent Server",
+      "sublabel": "经 Ingress",
+      "sources": [
+        {
+          "path": "scripts/dev-with-automation.mjs",
+          "line": 759,
+          "end_line": 770,
+          "label": "/api /sockets 路由"
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "事件 Store",
+      "sublabel": "Zustand",
+      "sources": [
+        {
+          "path": "src/stores/use-event-store.ts",
+          "line": 155,
+          "end_line": 161,
+          "label": "addEvent / addEvents"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 287,
+      "label": "创建会话"
+    },
+    {
+      "from": 290,
+      "to": 392,
+      "label": "加载历史并建连"
+    },
+    {
+      "from": 398,
+      "to": 478,
+      "label": "发送消息"
+    },
+    {
+      "from": 484,
+      "to": 562,
+      "label": "事件回流"
+    }
+  ],
+  "messages": [
+    {
+      "id": "type-first",
+      "from": "user",
+      "to": "ui",
+      "y": 165,
+      "label": "输入首条任务"
+    },
+    {
+      "id": "create-call",
+      "from": "ui",
+      "to": "svc",
+      "y": 193,
+      "label": "createConversation()",
+      "variant": "emphasis"
+    },
+    {
+      "id": "create-post",
+      "from": "svc",
+      "to": "agent",
+      "y": 221,
+      "label": "POST 会话（加密 settings）",
+      "variant": "emphasis",
+      "note": "cloud 后端改为 POST /api/v1/app-conversations 并轮询任务"
+    },
+    {
+      "id": "create-ret",
+      "from": "agent",
+      "to": "svc",
+      "y": 249,
+      "label": "ConversationInfo",
+      "variant": "return"
+    },
+    {
+      "id": "navigate",
+      "from": "svc",
+      "to": "ui",
+      "y": 277,
+      "label": "跳转 /conversations/:id",
+      "variant": "return"
+    },
+    {
+      "id": "history-get",
+      "from": "ws",
+      "to": "agent",
+      "y": 300,
+      "label": "REST 读取历史页",
+      "variant": "default"
+    },
+    {
+      "id": "history-ret",
+      "from": "agent",
+      "to": "ws",
+      "y": 328,
+      "label": "events + afterSeq",
+      "variant": "return"
+    },
+    {
+      "id": "history-add",
+      "from": "ws",
+      "to": "store",
+      "y": 356,
+      "label": "addEvents",
+      "variant": "default"
+    },
+    {
+      "id": "ws-open",
+      "from": "ws",
+      "to": "agent",
+      "y": 384,
+      "label": "WS /sockets?after_seq",
+      "variant": "emphasis"
+    },
+    {
+      "id": "type-next",
+      "from": "user",
+      "to": "ui",
+      "y": 412,
+      "label": "输入后续消息"
+    },
+    {
+      "id": "send-call",
+      "from": "ui",
+      "to": "ws",
+      "y": 440,
+      "label": "sendMessage(role=user)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "send-frame",
+      "from": "ws",
+      "to": "agent",
+      "y": 468,
+      "label": "WS send {..., run:true}",
+      "variant": "emphasis",
+      "note": "WS 未连接时改用 REST sendEvent，返回 queued"
+    },
+    {
+      "id": "agent-events",
+      "from": "agent",
+      "to": "ws",
+      "y": 496,
+      "label": "Action / Observation 帧",
+      "variant": "dashed"
+    },
+    {
+      "id": "store-add",
+      "from": "ws",
+      "to": "store",
+      "y": 524,
+      "label": "addEvent（按 id 去重）"
+    },
+    {
+      "id": "render",
+      "from": "store",
+      "to": "ui",
+      "y": 552,
+      "label": "订阅并渲染",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "ui",
+      "from": 188,
+      "to": 283,
+      "type": "frontend"
+    },
+    {
+      "participant": "svc",
+      "from": 193,
+      "to": 277,
+      "type": "frontend"
+    },
+    {
+      "participant": "agent",
+      "from": 221,
+      "to": 249,
+      "type": "backend"
+    },
+    {
+      "participant": "ws",
+      "from": 295,
+      "to": 558,
+      "type": "frontend"
+    },
+    {
+      "participant": "agent",
+      "from": 468,
+      "to": 502,
+      "type": "backend"
+    },
+    {
+      "participant": "store",
+      "from": 519,
+      "to": 558,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "主路径",
+      "items": [
+        "创建会话走 REST，消息往返走 WebSocket",
+        "run:true 让 Agent 循环在服务端异步执行",
+        "流式增量帧按事件 id 收拢到持久事件"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "容错",
+      "items": [
+        "重连时按 after_seq 续传，store 按 id 去重",
+        "重放事件跳过非幂等副作用",
+        "WS 断开时消息经 REST 排队投递"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "变体",
+      "items": [
+        "cloud：app-conversations 任务轮询至 READY",
+        "plan 模式：消息发往规划子会话的 WS",
+        "Electron 与 CLI 共用同一本地栈"
+      ]
+    }
+  ]
+}

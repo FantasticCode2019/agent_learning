@@ -1,0 +1,269 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "⑦ 混合检索：问题是怎么找到最相关分块的",
+    "output": ".archify/dataflow-weknora-hybrid-search-20260930-172606/weknora-hybrid-search.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1070,
+      560
+    ],
+    "repository": {
+      "url": "https://github.com/Tencent/WeKnora.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "bccb4b151bae403508da77fbb174efc79dc47c1a"
+    },
+    "legend": {
+      "entries": {
+        "emphasis": {
+          "label": "主要数据"
+        },
+        "dashed": {
+          "label": "降级路径"
+        },
+        "default": {
+          "label": "数据流"
+        },
+        "database": {
+          "label": "检索索引"
+        }
+      }
+    }
+  },
+  "stages": [
+    {
+      "label": "问题"
+    },
+    {
+      "label": "转换"
+    },
+    {
+      "label": "双路召回"
+    },
+    {
+      "label": "融合"
+    },
+    {
+      "label": "精排"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "query",
+      "type": "frontend",
+      "label": "改写后的问题",
+      "sublabel": "RewriteQuery",
+      "stage": 0,
+      "row": 1,
+      "sources": [
+        {
+          "path": "internal/application/service/chat_pipeline/search.go",
+          "line": 364,
+          "end_line": 536
+        }
+      ]
+    },
+    {
+      "id": "embedq",
+      "type": "external",
+      "label": "查询向量化",
+      "sublabel": "与入库同一模型",
+      "stage": 1,
+      "row": 0,
+      "sources": [
+        {
+          "path": "internal/application/service/chat_pipeline/search.go",
+          "line": 434,
+          "end_line": 452
+        }
+      ]
+    },
+    {
+      "id": "kwq",
+      "type": "backend",
+      "label": "关键词查询",
+      "sublabel": "问题原文",
+      "stage": 1,
+      "row": 2,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledgebase_search.go",
+          "line": 496,
+          "end_line": 509
+        }
+      ]
+    },
+    {
+      "id": "vec",
+      "type": "database",
+      "label": "向量检索",
+      "sublabel": "pgvector HNSW 余弦",
+      "stage": 2,
+      "row": 0,
+      "sources": [
+        {
+          "path": "internal/application/repository/retriever/postgres/repository.go",
+          "line": 410,
+          "end_line": 413
+        },
+        {
+          "path": "migrations/versioned/000002_embeddings.up.sql",
+          "line": 59,
+          "end_line": 70
+        }
+      ]
+    },
+    {
+      "id": "bm25",
+      "type": "database",
+      "label": "关键词检索",
+      "sublabel": "ParadeDB BM25",
+      "stage": 2,
+      "row": 2,
+      "sources": [
+        {
+          "path": "internal/application/repository/retriever/postgres/repository.go",
+          "line": 225,
+          "end_line": 243
+        },
+        {
+          "path": "migrations/versioned/000002_embeddings.up.sql",
+          "line": 42,
+          "end_line": 46
+        }
+      ]
+    },
+    {
+      "id": "rrf",
+      "type": "backend",
+      "label": "RRF 融合",
+      "sublabel": "k=60 · 权重 0.7/0.3",
+      "stage": 3,
+      "row": 1,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledgebase_search_fusion.go",
+          "line": 58,
+          "end_line": 84
+        },
+        {
+          "path": "internal/types/retrieval_config.go",
+          "line": 93,
+          "end_line": 110
+        }
+      ]
+    },
+    {
+      "id": "rerank",
+      "type": "external",
+      "label": "Rerank 精排",
+      "sublabel": "阈值 · MMR → Top-K",
+      "stage": 4,
+      "row": 1,
+      "sources": [
+        {
+          "path": "internal/reranking/rerank.go",
+          "line": 100,
+          "end_line": 214
+        }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "h1",
+      "from": "query",
+      "to": "embedq",
+      "label": "问题文本",
+      "classification": "语义路",
+      "variant": "emphasis"
+    },
+    {
+      "id": "h2",
+      "from": "query",
+      "to": "kwq",
+      "label": "问题文本",
+      "classification": "字面路"
+    },
+    {
+      "id": "h3",
+      "from": "embedq",
+      "to": "vec",
+      "label": "查询向量",
+      "classification": "按意思找",
+      "variant": "emphasis"
+    },
+    {
+      "id": "h4",
+      "from": "kwq",
+      "to": "bm25",
+      "label": "关键词",
+      "classification": "按字面找"
+    },
+    {
+      "id": "h5",
+      "from": "vec",
+      "to": "rrf",
+      "label": "向量得分",
+      "classification": "排名",
+      "variant": "emphasis"
+    },
+    {
+      "id": "h6",
+      "from": "bm25",
+      "to": "rrf",
+      "label": "BM25 得分",
+      "classification": "排名"
+    },
+    {
+      "id": "h7",
+      "from": "rrf",
+      "to": "rerank",
+      "label": "候选分块",
+      "classification": "默认 ≤50",
+      "variant": "emphasis"
+    },
+    {
+      "id": "h8",
+      "from": "embedq",
+      "to": "kwq",
+      "label": "向量化失败",
+      "classification": "降级",
+      "variant": "dashed",
+      "labelAt": [
+        315,
+        271
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "为什么要“两路”",
+      "items": [
+        "向量检索按意思找：“怎么请假”能找到“休假申请流程”",
+        "关键词检索按字面找：型号、人名、错误码这类精确词更靠谱",
+        "两路互补，比单用任何一种都稳"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "RRF 融合是什么",
+      "items": [
+        "不直接比较两种分数，而是看每个分块在两份榜单里的排名",
+        "排名越靠前得分越高，向量占 0.7、关键词占 0.3，最后归一化到 0~1"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "精排与兜底",
+      "items": [
+        "Rerank 模型逐条打分；分数不够会逐级放宽阈值，并用 MMR 去掉意思重复的块",
+        "没配置 Rerank 模型时跳过这一步；向量化失败时只走关键词检索"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "d875d144-5d4b-48f4-8e88-b7a2d6855db5",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/private/tmp/claude-501/-Users-yajun-Documents-opensource-openclaw/822bc09c-850c-4e26-82f3-63ca35d1b4ce/scratchpad/.archify/architecture-openclaw-overview-20260930-120000/candidate.json",
+  "output": "/private/tmp/claude-501/-Users-yajun-Documents-opensource-openclaw/822bc09c-850c-4e26-82f3-63ca35d1b4ce/scratchpad/.archify/architecture-openclaw-overview-20260930-120000/review-2/openclaw-architecture.html",
+  "specification": {
+    "sha256": "c993472973e84a09ed2773b08a8ae725211bdd0c6b72ca57226f6301fad3a70a",
+    "bytes": 7568
+  },
+  "artifact": {
+    "sha256": "5325b52de96ec4e53525b8ba9c400ff31f34457105ab22d58c81682ab55a8657",
+    "bytes": 772513
+  }
+}

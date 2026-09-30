@@ -1,0 +1,348 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "③ 消息入口：从按下发送到 Agent 被唤醒",
+    "locale": "zh-CN",
+    "output": ".archify/dsh-guide-20260929-171932/03-ingress/ingress.html",
+    "viewBox": [
+      1080,
+      696
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/deepseek-ai/deepseek-harness.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "4878cdabd87d4041bdaff61d04c966883b9fd07a"
+    }
+  },
+  "participants": [
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "聊天输入框",
+      "sublabel": "ui-conversation",
+      "sources": [
+        {
+          "path": "packages/client/ui-conversation/src/client/service.ts",
+          "line": 229,
+          "end_line": 297,
+          "label": "sendSession"
+        }
+      ]
+    },
+    {
+      "id": "client",
+      "type": "frontend",
+      "label": "客户端 Session",
+      "sublabel": "ctx.remote 代理",
+      "sources": [
+        {
+          "path": "packages/api/session-controller/src/client/sessions/session.ts",
+          "line": 254,
+          "end_line": 315,
+          "label": "prompt"
+        },
+        {
+          "path": "packages/api/gateway/src/client/index.ts",
+          "line": 417,
+          "end_line": 461,
+          "label": "unary/stream"
+        }
+      ]
+    },
+    {
+      "id": "conn",
+      "type": "security",
+      "label": "Connection",
+      "sublabel": "/api 信任栅栏",
+      "sources": [
+        {
+          "path": "packages/client/connection/src/index.ts",
+          "line": 139,
+          "end_line": 159
+        },
+        {
+          "path": "packages/client/connection/src/rpc-host.ts",
+          "line": 103,
+          "end_line": 113,
+          "label": "admit"
+        }
+      ]
+    },
+    {
+      "id": "gw",
+      "type": "backend",
+      "label": "API Gateway",
+      "sublabel": "Typert Remote",
+      "sources": [
+        {
+          "path": "packages/api/gateway/src/index.ts",
+          "line": 232,
+          "end_line": 238,
+          "label": "intercept /api"
+        },
+        {
+          "path": "packages/api/gateway/src/index.ts",
+          "line": 686,
+          "end_line": 741,
+          "label": "派发"
+        }
+      ]
+    },
+    {
+      "id": "ctl",
+      "type": "backend",
+      "label": "会话控制器",
+      "sublabel": "namespace session",
+      "sources": [
+        {
+          "path": "packages/api/session-controller/src/commands.ts",
+          "line": 311,
+          "end_line": 377,
+          "label": "prompt"
+        },
+        {
+          "path": "packages/api/session-controller/src/agent.ts",
+          "line": 183,
+          "end_line": 229,
+          "label": "resolve"
+        }
+      ]
+    },
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "Agent",
+      "sublabel": "ReactLoopAgent",
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 154,
+          "end_line": 173,
+          "label": "send/followup"
+        },
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 214,
+          "end_line": 235,
+          "label": "wakeDriver"
+        }
+      ]
+    },
+    {
+      "id": "log",
+      "type": "database",
+      "label": "Session 日志",
+      "sublabel": "append-only",
+      "sources": [
+        {
+          "path": "packages/core/session/src/index.ts",
+          "line": 722,
+          "end_line": 773,
+          "label": "append"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 151,
+      "label": "订阅（打开会话时）",
+      "to": 175
+    },
+    {
+      "from": 189,
+      "label": "发送一条消息",
+      "to": 409
+    },
+    {
+      "from": 423,
+      "label": "Agent 开始工作 · 结果回流",
+      "to": 559
+    }
+  ],
+  "messages": [
+    {
+      "id": "follow",
+      "from": "client",
+      "to": "gw",
+      "y": 165,
+      "label": "WS session.follow",
+      "variant": "dashed",
+      "note": "打开 /api/remote.mux 上的流"
+    },
+    {
+      "id": "prompt",
+      "from": "ui",
+      "to": "client",
+      "y": 203,
+      "label": "session.prompt()",
+      "variant": "emphasis"
+    },
+    {
+      "id": "post",
+      "from": "client",
+      "to": "conn",
+      "y": 231,
+      "label": "POST /api/session/prompt",
+      "variant": "emphasis"
+    },
+    {
+      "id": "admit",
+      "from": "conn",
+      "to": "gw",
+      "y": 259,
+      "label": "admit 通过 → 派发",
+      "variant": "security",
+      "note": "校验 Host/Origin + Cookie/token"
+    },
+    {
+      "id": "remote",
+      "from": "gw",
+      "to": "ctl",
+      "y": 287,
+      "label": "@Remote prompt()",
+      "variant": "default"
+    },
+    {
+      "id": "resolve",
+      "from": "ctl",
+      "to": "agent",
+      "y": 315,
+      "label": "get / resume / create",
+      "variant": "default",
+      "note": "没有活的 Agent 就恢复或新建"
+    },
+    {
+      "id": "followup",
+      "from": "ctl",
+      "to": "agent",
+      "y": 343,
+      "label": "followup(message)",
+      "variant": "emphasis",
+      "note": "steer 模式则进 next-step"
+    },
+    {
+      "id": "spliced",
+      "from": "agent",
+      "to": "log",
+      "y": 371,
+      "label": "agent/inbox/spliced",
+      "variant": "dashed"
+    },
+    {
+      "id": "accepted",
+      "from": "ctl",
+      "to": "client",
+      "y": 399,
+      "label": "{ accepted: true }",
+      "variant": "return",
+      "note": "立即返回，不等待回合结束"
+    },
+    {
+      "id": "wake",
+      "from": "agent",
+      "to": "log",
+      "y": 437,
+      "label": "turn/start → user/message …",
+      "variant": "dashed",
+      "note": "wakeDriver: idle → running"
+    },
+    {
+      "id": "event",
+      "from": "log",
+      "to": "ctl",
+      "y": 465,
+      "label": "session/event",
+      "variant": "dashed"
+    },
+    {
+      "id": "stream",
+      "from": "agent",
+      "to": "ctl",
+      "y": 493,
+      "label": "agent/assistant-stream",
+      "variant": "dashed"
+    },
+    {
+      "id": "item",
+      "from": "ctl",
+      "to": "client",
+      "y": 521,
+      "label": "WS item 帧",
+      "variant": "return"
+    },
+    {
+      "id": "render",
+      "from": "client",
+      "to": "ui",
+      "y": 549,
+      "label": "刷新消息列表",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "client",
+      "from": 198,
+      "to": 404,
+      "type": "frontend"
+    },
+    {
+      "participant": "gw",
+      "from": 254,
+      "to": 292,
+      "type": "backend"
+    },
+    {
+      "participant": "ctl",
+      "from": 282,
+      "to": 404,
+      "type": "backend"
+    },
+    {
+      "participant": "agent",
+      "from": 310,
+      "to": 498,
+      "type": "backend"
+    },
+    {
+      "participant": "ctl",
+      "from": 460,
+      "to": 526,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "两条通道",
+      "items": [
+        "一次性调用（prompt / create / commands）走 HTTP POST /api/<ns>/<method>",
+        "持续推送（follow / control / $events）走 WebSocket /api/remote.mux",
+        "两条通道都先经过 Connection 的信任校验"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "消息怎么交给 Agent",
+      "items": [
+        "Session Controller 先找到 Agent：内存里有就用，否则从磁盘恢复（resume）或新建（create）",
+        "followup 把消息放进 inbox 的 next-turn 队列，并写一条 agent/inbox/spliced 事件",
+        "inbox 的状态完全由日志事件折叠而来，重启后也不会丢"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "结果怎么回到浏览器",
+      "items": [
+        "每次 session.append 都会广播 session/event；模型吐字时还有 agent/assistant-stream 实时帧",
+        "session.follow 流把这些事件打包成 WS item 帧推给客户端",
+        "客户端先收到快照，再增量追加，所以断线重连不会漏消息"
+      ]
+    }
+  ]
+}

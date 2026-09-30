@@ -1,0 +1,325 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "⑧ Agent 问答：思考 → 调工具 → 观察 的循环",
+    "output": ".archify/workflow-weknora-agent-20260930-172606/weknora-agent.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1230,
+      680
+    ],
+    "repository": {
+      "url": "https://github.com/Tencent/WeKnora.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "bccb4b151bae403508da77fbb174efc79dc47c1a"
+    },
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "用户 / 入口"
+        },
+        "backend": {
+          "label": "处理步骤"
+        },
+        "database": {
+          "label": "存储 / 数据"
+        },
+        "security": {
+          "label": "安全阀"
+        },
+        "messagebus": {
+          "label": "工具执行"
+        },
+        "external": {
+          "label": "模型调用"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "entry",
+      "label": "入口"
+    },
+    {
+      "id": "engine",
+      "label": "Agent 引擎"
+    },
+    {
+      "id": "tools",
+      "label": "工具执行"
+    },
+    {
+      "id": "guard",
+      "label": "安全阀",
+      "variant": "exception"
+    }
+  ],
+  "groups": [
+    {
+      "id": "loop",
+      "label": "ReAct 循环（每轮一次）",
+      "lane": "engine",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": [
+    "q",
+    "build",
+    "think",
+    "decide",
+    "final"
+  ],
+  "nodes": [
+    {
+      "id": "q",
+      "lane": "entry",
+      "col": 0,
+      "type": "frontend",
+      "label": "用户提问",
+      "sublabel": "POST /agent-chat",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/router/routes_chat.go",
+          "line": 142,
+          "end_line": 145
+        },
+        {
+          "path": "internal/handler/session/qa.go",
+          "line": 1023,
+          "end_line": 1061
+        }
+      ]
+    },
+    {
+      "id": "build",
+      "lane": "entry",
+      "col": 1,
+      "type": "backend",
+      "label": "构建 Agent 引擎",
+      "sublabel": "模型 · 历史 · 工具注册",
+      "width": 150,
+      "sources": [
+        {
+          "path": "internal/application/service/session_agent_qa.go",
+          "line": 24,
+          "end_line": 222
+        },
+        {
+          "path": "internal/application/service/agent_service.go",
+          "line": 197,
+          "end_line": 307
+        }
+      ]
+    },
+    {
+      "id": "think",
+      "lane": "engine",
+      "col": 2,
+      "type": "external",
+      "label": "Think 思考",
+      "sublabel": "调用 LLM · 流式输出",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/agent/engine.go",
+          "line": 701,
+          "end_line": 821
+        },
+        {
+          "path": "internal/agent/think.go",
+          "line": 259,
+          "end_line": 345
+        }
+      ]
+    },
+    {
+      "id": "decide",
+      "lane": "engine",
+      "col": 3,
+      "type": "backend",
+      "label": "要调工具吗？",
+      "sublabel": "看 tool_calls",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/agent/engine.go",
+          "line": 937,
+          "end_line": 1018
+        }
+      ]
+    },
+    {
+      "id": "final",
+      "lane": "engine",
+      "col": 5,
+      "type": "frontend",
+      "label": "最终答案",
+      "sublabel": "推送 answer + complete",
+      "width": 150,
+      "sources": [
+        {
+          "path": "internal/agent/finalize.go",
+          "line": 144,
+          "end_line": 163
+        }
+      ]
+    },
+    {
+      "id": "act",
+      "lane": "tools",
+      "col": 3,
+      "type": "messagebus",
+      "label": "Act 执行工具",
+      "sublabel": "最多 8 个并行",
+      "tag": "默认超时 60s",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/agent/act.go",
+          "line": 226,
+          "end_line": 347
+        },
+        {
+          "path": "internal/agent/act.go",
+          "line": 418,
+          "end_line": 585
+        }
+      ]
+    },
+    {
+      "id": "observe",
+      "lane": "tools",
+      "col": 4,
+      "type": "backend",
+      "label": "Observe 观察",
+      "sublabel": "结果写回上下文",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/agent/observe.go",
+          "line": 913
+        }
+      ]
+    },
+    {
+      "id": "limit",
+      "lane": "guard",
+      "col": 5,
+      "type": "security",
+      "label": "轮数用尽",
+      "sublabel": "默认 20 轮 → 强制总结",
+      "width": 150,
+      "sources": [
+        {
+          "path": "internal/agent/const.go",
+          "line": 25
+        },
+        {
+          "path": "internal/agent/finalize.go",
+          "line": 16,
+          "end_line": 123
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "a1",
+      "from": "q",
+      "to": "build",
+      "variant": "emphasis"
+    },
+    {
+      "id": "a2",
+      "from": "build",
+      "to": "think",
+      "label": "系统提示 + 历史",
+      "variant": "emphasis"
+    },
+    {
+      "id": "a3",
+      "from": "think",
+      "to": "decide",
+      "variant": "emphasis"
+    },
+    {
+      "id": "a4",
+      "from": "decide",
+      "to": "final",
+      "label": "不再调用工具",
+      "variant": "emphasis"
+    },
+    {
+      "id": "a5",
+      "from": "decide",
+      "to": "act",
+      "label": "有工具调用",
+      "variant": "default",
+      "role": "branch"
+    },
+    {
+      "id": "a6",
+      "from": "act",
+      "to": "observe",
+      "label": "工具结果",
+      "variant": "default"
+    },
+    {
+      "id": "a7",
+      "from": "observe",
+      "to": "think",
+      "label": "下一轮",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "a9",
+      "from": "limit",
+      "to": "final",
+      "label": "汇总已有结果",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "ReAct 是什么",
+      "items": [
+        "Reason + Act：模型先想“下一步该做什么”，再调用工具，看到结果后继续想",
+        "直到模型认为信息足够、不再调用工具，就输出最终答案"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "常用工具",
+      "items": [
+        "默认：search_knowledge 查知识库、read_document 读文档、list_documents 列文档、search_conversations 查历史对话",
+        "可选：联网搜索 / 抓网页、知识图谱、数据库查询、数据分析、沙箱 Shell、MCP、本机浏览器、Wiki"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "安全阀",
+      "items": [
+        "最多 20 轮，用完就用已有结果强制总结",
+        "上下文太长会自动压缩历史；输出被截断、重复、空回答都有重试上限",
+        "外部 MCP 工具可配置为需要用户点“同意”才执行"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "中途插话（Steer）",
+      "items": [
+        "Agent 运行中用户还能继续发消息，下一轮开始前会被注入对话"
+      ]
+    }
+  ]
+}

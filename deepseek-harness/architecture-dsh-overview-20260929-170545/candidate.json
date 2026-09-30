@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "DeepSeek Harness 系统架构（Web profile）",
+    "locale": "zh-CN",
+    "output": ".archify/architecture-dsh-overview-20260929-170545/dsh-overview.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/deepseek-ai/deepseek-harness.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "4878cdabd87d4041bdaff61d04c966883b9fd07a"
+    }
+  },
+  "components": [
+    { "id": "cli", "type": "backend", "label": "dsh CLI", "sublabel": "runCli → runProfile", "pos": [40, 60], "size": [130, 64],
+      "sources": [{ "path": "apps/cli/src/bin.ts", "line": 18, "end_line": 38, "label": "profile 模式分发" }] },
+    { "id": "profile", "type": "backend", "label": "Profile 组合", "sublabel": "bundle + patch 层叠", "pos": [250, 60], "size": [150, 64],
+      "sources": [
+        { "path": "apps/cli/src/profile-boot.ts", "line": 185, "end_line": 213, "label": "composeProfile" },
+        { "path": "docs/architecture.md", "line": 27, "end_line": 27, "label": "层叠顺序" }
+      ] },
+    { "id": "loader", "type": "backend", "label": "Cordis Loader", "sublabel": "boot() 挂载插件树", "pos": [500, 60], "size": [150, 64],
+      "sources": [{ "path": "apps/cli/src/profile-boot.ts", "line": 290, "end_line": 312, "label": "boot + provide" }] },
+    { "id": "sysprompt", "type": "backend", "label": "System Prompt", "sublabel": "ctx.systemPrompt", "pos": [990, 60], "size": [170, 64],
+      "sources": [
+        { "path": "packages/core/agent-loop/src/agent.ts", "line": 267, "end_line": 275, "label": "assemble" },
+        { "path": "packages/bundle/base/cordis.patch.yml", "line": 503, "end_line": 507 }
+      ] },
+    { "id": "user", "type": "external", "label": "用户", "sublabel": "浏览器 / 终端", "pos": [40, 220], "size": [120, 64] },
+    { "id": "webui", "type": "frontend", "label": "Web Client", "sublabel": "dsh-web-app", "pos": [250, 220], "size": [150, 64],
+      "sources": [{ "path": "packages/bundle/web-app/cordis.patch.yml", "line": 1, "end_line": 12, "label": "Web bundle" }] },
+    { "id": "gateway", "type": "backend", "label": "API Gateway", "sublabel": "Typert Remote", "pos": [500, 220], "size": [150, 64],
+      "sources": [
+        { "path": "packages/api/gateway/src/index.ts", "line": 1, "end_line": 5, "label": "WebSocket mux" },
+        { "path": "packages/bundle/base/cordis.patch.yml", "line": 52, "end_line": 53 }
+      ] },
+    { "id": "sessionctl", "type": "backend", "label": "Session Controller", "sublabel": "创建/驱动会话", "pos": [710, 220], "size": [160, 64],
+      "sources": [{ "path": "packages/api/session-controller/src/agent.ts", "line": 480, "end_line": 499, "label": "agents.create" }] },
+    { "id": "agentloop", "type": "backend", "label": "Agent Loop", "sublabel": "turn / step 驱动", "pos": [990, 220], "size": [170, 64], "tag": "ctx.agents",
+      "sources": [
+        { "path": "packages/core/agent-loop/src/agent.ts", "line": 296, "end_line": 392, "label": "turn()" },
+        { "path": "packages/core/agent-loop/src/agent.ts", "line": 394, "end_line": 543, "label": "step()" }
+      ] },
+    { "id": "llm", "type": "backend", "label": "LLM 适配层", "sublabel": "ctx.llm", "pos": [1310, 220], "size": [150, 64],
+      "sources": [
+        { "path": "packages/llm/llm/src/index.ts", "line": 936, "end_line": 940, "label": "prepareCall" },
+        { "path": "packages/llm/llm/src/index.ts", "line": 1135, "end_line": 1148, "label": "llm/stream 瀑布" }
+      ] },
+    { "id": "deepseek", "type": "external", "label": "DeepSeek API", "sublabel": "llm-deepseek 适配器", "pos": [1310, 400], "size": [150, 64],
+      "sources": [{ "path": "packages/llm/llm-deepseek/src/host.ts", "line": 30, "end_line": 39, "label": "registerAdapter" }] },
+    { "id": "persistence", "type": "database", "label": "JSONL 持久化", "sublabel": "session.vN.jsonl", "pos": [455, 400], "size": [150, 64],
+      "sources": [
+        { "path": "packages/session/session-persistence-jsonl/src/storage.ts", "line": 534, "end_line": 547, "label": "订阅 session/event" },
+        { "path": "packages/session/session-persistence-jsonl/src/generation.ts", "line": 730, "end_line": 742, "label": "writeFile" }
+      ] },
+    { "id": "sessionlog", "type": "messagebus", "label": "Session 日志", "sublabel": "ctx.sessions", "pos": [710, 400], "size": [160, 64], "tag": "append-only",
+      "sources": [
+        { "path": "packages/core/session/src/index.ts", "line": 1, "end_line": 5, "label": "事件溯源" },
+        { "path": "packages/core/session/src/index.ts", "line": 76, "end_line": 87, "label": "session/event" }
+      ] },
+    { "id": "tools", "type": "backend", "label": "工具注册表", "sublabel": "ctx.tools", "pos": [990, 400], "size": [170, 64],
+      "sources": [
+        { "path": "packages/core/tools/src/index.ts", "line": 150, "end_line": 177, "label": "tools/* 瀑布" },
+        { "path": "packages/core/agent-loop/src/tool-calls.ts", "line": 60, "end_line": 90, "label": "executeToolCalls" }
+      ] },
+    { "id": "approval", "type": "security", "label": "用户审批", "sublabel": "ctx.approval", "pos": [710, 580], "size": [160, 64],
+      "sources": [
+        { "path": "packages/shell/tool-bash/src/index.ts", "line": 223, "end_line": 228, "label": "升级前审批" },
+        { "path": "packages/bundle/base/cordis.patch.yml", "line": 246, "end_line": 249 }
+      ] },
+    { "id": "shell", "type": "security", "label": "Bash 工具 + 沙箱", "sublabel": "ctx.shell / ctx.sandbox", "pos": [990, 580], "size": [170, 64],
+      "sources": [
+        { "path": "packages/shell/tool-bash/src/index.ts", "line": 280, "end_line": 285, "label": "shell.execute" },
+        { "path": "packages/shell/bash-sandbox/src/index.ts", "line": 186, "end_line": 189, "label": "sandbox.confine" }
+      ] },
+    { "id": "subprocess", "type": "backend", "label": "子进程", "sublabel": "ctx.subprocess", "pos": [1310, 580], "size": [150, 64],
+      "sources": [
+        { "path": "packages/shell/bash-local/src/index.ts", "line": 255, "end_line": 260, "label": "subprocess.spawn" },
+        { "path": "packages/bundle/base/cordis.patch.yml", "line": 220, "end_line": 228 }
+      ] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Host 进程 · Cordis 插件树（dsh-base + dsh-web-app）", "wraps": ["loader", "sysprompt", "gateway", "sessionctl", "agentloop", "llm", "persistence", "sessionlog", "tools", "approval", "shell", "subprocess"] },
+    { "kind": "security-group", "label": "沙箱策略 workspace-write + ask", "wraps": ["approval", "shell", "subprocess"] }
+  ],
+  "connections": [
+    { "id": "user-runs-cli", "from": "user", "to": "cli", "label": "dsh web", "fromSide": "top", "toSide": "bottom" },
+    { "id": "cli-to-profile", "from": "cli", "to": "profile", "label": "组合层" },
+    { "id": "profile-to-loader", "from": "profile", "to": "loader", "label": "boot()" },
+    { "id": "loader-mounts", "from": "loader", "to": "gateway", "label": "挂载插件行", "variant": "dashed", "fromSide": "bottom", "toSide": "top" },
+    { "id": "user-opens-web", "from": "user", "to": "webui", "label": "打开 :3080", "variant": "emphasis" },
+    { "id": "web-to-gateway", "from": "webui", "to": "gateway", "label": "WS 多路复用", "variant": "emphasis" },
+    { "id": "gateway-to-ctl", "from": "gateway", "to": "sessionctl", "label": "RPC", "variant": "emphasis" },
+    { "id": "ctl-to-loop", "from": "sessionctl", "to": "agentloop", "label": "agents.create", "variant": "emphasis" },
+    { "id": "loop-to-prompt", "from": "agentloop", "to": "sysprompt", "label": "组装提示词", "fromSide": "top", "toSide": "bottom" },
+    { "id": "loop-to-llm", "from": "agentloop", "to": "llm", "label": "prepareCall/stream", "variant": "emphasis" },
+    { "id": "llm-to-deepseek", "from": "llm", "to": "deepseek", "label": "HTTPS 流式", "fromSide": "bottom", "toSide": "top" },
+    { "id": "loop-to-tools", "from": "agentloop", "to": "tools", "label": "tool/call", "fromSide": "bottom", "toSide": "top" },
+    { "id": "loop-appends-log", "from": "agentloop", "to": "sessionlog", "label": "append 事件", "fromSide": "left", "toSide": "top" },
+    { "id": "log-to-persist", "from": "sessionlog", "to": "persistence", "label": "session/event", "variant": "dashed" },
+    { "id": "tools-to-shell", "from": "tools", "to": "shell", "label": "tools/execute", "fromSide": "bottom", "toSide": "top" },
+    { "id": "shell-to-approval", "from": "shell", "to": "approval", "label": "升级需审批", "variant": "security" },
+    { "id": "shell-to-subprocess", "from": "shell", "to": "subprocess", "label": "confine+spawn" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "启动：一切皆插件", "items": [
+      "dsh --profile <name> 选择 web / headless / sdk / sdk-minimal / acp",
+      "层叠顺序：bundle（dsh-base → dsh-web-app）→ profile patch → home patch → --patch",
+      "Cordis Loader 按 id 挂载每一行；注册均为 effect，卸载时自动回滚"
+    ] },
+    { "dot": "emerald", "title": "运行：Turn / Step", "items": [
+      "Step = 一次模型请求 + 其调用的工具；Turn = 0..n 个 Step",
+      "agent/pre-step、agent/request、llm/stream、tools/* 均为瀑布事件，需调用 next()",
+      "工具还欠请求或有新输入时进入下一 Step"
+    ] },
+    { "dot": "violet", "title": "Session 日志是事实源", "items": [
+      "模型可见 ⟺ 已记录：deriveMessages() 从日志投影历史",
+      "持久化插件订阅 session/event，异步写 JSONL，session/flush 时落盘",
+      "Web 实时增量来自 agent/assistant-stream"
+    ] },
+    { "dot": "rose", "title": "能力接缝（Seam）", "items": [
+      "Service Definition / Provider / Consumer 三角色",
+      "fs 与 subprocess 共享执行世界：换成远程沙箱，Bash/PTY/LSP 一起迁移",
+      "默认 workspace-write 沙箱 + ask 审批策略"
+    ] }
+  ]
+}

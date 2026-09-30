@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "55407b16-8350-4074-8945-58f00cc02742",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/sequence-dsh-turn-tools-20260929-170545/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/sequence-dsh-turn-tools-20260929-170545/dsh-turn-tools.html",
+  "specification": {
+    "sha256": "7d8e9cec333ca2a3defeda44c5012dee267f6e1f432a5958fd630a0361e4d340",
+    "bytes": 5285
+  },
+  "artifact": {
+    "sha256": "484391ca818c90f72650c3bd65271a551abe6fc95a31601f2f05dc0734f48b87",
+    "bytes": 756560
+  }
+}

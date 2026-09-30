@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "3b16df50-7066-47be-91ac-c33d49ff69c7",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/yajun/Documents/opensource/OpenHands/.archify/sequence-send-message-20260930-161259/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/OpenHands/.archify/sequence-send-message-20260930-161259/send-message.html",
+  "specification": {
+    "sha256": "1ae2be7960edf070f172cc351ece7a0a5c3008e406aad4e2ed7f6b3c3c3557f6",
+    "bytes": 7294
+  },
+  "artifact": {
+    "sha256": "9b9445e325445345a9829e8e5f2c41729a233dbfa9bcc5231d6f4229c8e4c993",
+    "bytes": 764665
+  }
+}

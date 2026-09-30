@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "DeepSeek Harness Turn 时序 ②：工具执行与结束",
+    "locale": "zh-CN",
+    "output": ".archify/sequence-dsh-turn-tools-20260929-170545/dsh-turn-tools.html",
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/deepseek-ai/deepseek-harness.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "4878cdabd87d4041bdaff61d04c966883b9fd07a"
+    },
+    "viewBox": [
+      1080,
+      560
+    ]
+  },
+  "participants": [
+    {
+      "id": "caller",
+      "type": "frontend",
+      "label": "调用方",
+      "sublabel": "Web / SDK / headless",
+      "sources": [
+        {
+          "path": "packages/api/session-controller/src/agent.ts",
+          "line": 480,
+          "end_line": 494,
+          "label": "agents.create"
+        }
+      ]
+    },
+    {
+      "id": "loop",
+      "type": "backend",
+      "label": "Agent Loop",
+      "sublabel": "turn / step",
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 296,
+          "end_line": 392,
+          "label": "turn()"
+        },
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 394,
+          "end_line": 543,
+          "label": "step()"
+        }
+      ]
+    },
+    {
+      "id": "plugins",
+      "type": "messagebus",
+      "label": "插件监听器",
+      "sublabel": "agent/* 瀑布",
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 276,
+          "end_line": 285,
+          "label": "agent/pre-step"
+        },
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 576,
+          "end_line": 579,
+          "label": "agent/request"
+        }
+      ]
+    },
+    {
+      "id": "log",
+      "type": "database",
+      "label": "Session 日志",
+      "sublabel": "append-only",
+      "sources": [
+        {
+          "path": "packages/core/session/src/index.ts",
+          "line": 76,
+          "end_line": 87,
+          "label": "session/event"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "工具注册表",
+      "sublabel": "ctx.tools",
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/tool-calls.ts",
+          "line": 60,
+          "end_line": 90,
+          "label": "executeToolCalls"
+        },
+        {
+          "path": "packages/core/tools/src/index.ts",
+          "line": 1600,
+          "end_line": 1608,
+          "label": "tools/execute"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 151,
+      "to": 287,
+      "label": "Step · 工具执行"
+    },
+    {
+      "from": 303,
+      "to": 383,
+      "label": "结束 Turn"
+    }
+  ],
+  "messages": [
+    {
+      "id": "tool-call",
+      "from": "loop",
+      "to": "log",
+      "y": 165,
+      "label": "tool/call",
+      "variant": "dashed"
+    },
+    {
+      "id": "execute",
+      "from": "loop",
+      "to": "tools",
+      "y": 193,
+      "label": "pre → execute → post",
+      "variant": "emphasis",
+      "note": "tools/pre-execute → tools/execute → tools/post-execute"
+    },
+    {
+      "id": "tool-result-ret",
+      "from": "tools",
+      "to": "loop",
+      "y": 221,
+      "label": "ToolExecutionResult",
+      "variant": "return"
+    },
+    {
+      "id": "tool-result",
+      "from": "loop",
+      "to": "log",
+      "y": 249,
+      "label": "tool/result",
+      "variant": "dashed"
+    },
+    {
+      "id": "step-end",
+      "from": "loop",
+      "to": "log",
+      "y": 277,
+      "label": "step/end",
+      "variant": "dashed",
+      "note": "工具还欠请求或有新输入 → 回到 ① 开始下一 Step"
+    },
+    {
+      "id": "turn-stopping",
+      "from": "loop",
+      "to": "plugins",
+      "y": 317,
+      "label": "agent/turn-stopping",
+      "note": "serial 事件，可阻止 turn 结束"
+    },
+    {
+      "id": "turn-end",
+      "from": "loop",
+      "to": "log",
+      "y": 345,
+      "label": "turn/end",
+      "variant": "dashed"
+    },
+    {
+      "id": "broadcast",
+      "from": "log",
+      "to": "caller",
+      "y": 373,
+      "label": "session/event 广播",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "loop",
+      "from": 160,
+      "to": 350,
+      "type": "backend"
+    },
+    {
+      "participant": "tools",
+      "from": 188,
+      "to": 226,
+      "type": "backend"
+    },
+    {
+      "participant": "plugins",
+      "from": 312,
+      "to": 322,
+      "type": "messagebus"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "orange",
+      "title": "扩展点",
+      "items": [
+        "agent/pre-step、agent/request、llm/stream、tools/* 为瀑布，必须调用 next()",
+        "agent/turn-stopping 为 serial，可阻止 turn 结束",
+        "agent/assistant-stream 只是进程内实时帧，不落盘"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "工具管线",
+      "items": [
+        "工具调用按模型顺序写入 tool/call 与 tool/result",
+        "审批与沙箱策略挂在 tools/pre-execute 等瀑布上",
+        "取消时未派发的调用补写中止结果"
+      ]
+    }
+  ]
+}

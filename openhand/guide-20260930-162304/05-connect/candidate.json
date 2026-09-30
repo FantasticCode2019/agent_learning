@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "⑤ 打开会话：预加载历史 + 建立 WebSocket",
+    "locale": "zh-CN",
+    "output": ".archify/guide-20260930-162304/05-connect/connect.html",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      680
+    ],
+    "repository": {
+      "url": "https://github.com/OpenHands/OpenHands",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "1ec86616bc0511b1e56269fd6ba5872438f4fb7f"
+    }
+  },
+  "participants": [
+    {
+      "id": "route",
+      "type": "frontend",
+      "label": "会话页",
+      "sublabel": "conversation.tsx",
+      "sources": [
+        {
+          "path": "src/routes/conversation.tsx",
+          "line": 215,
+          "end_line": 237,
+          "label": "挂载 WS Provider"
+        }
+      ]
+    },
+    {
+      "id": "query",
+      "type": "frontend",
+      "label": "查询层",
+      "sublabel": "TanStack Query",
+      "sources": [
+        {
+          "path": "src/hooks/query/use-active-conversation.ts",
+          "line": 7,
+          "end_line": 46,
+          "label": "会话详情轮询"
+        },
+        {
+          "path": "src/hooks/query/use-conversation-history.ts",
+          "line": 37,
+          "end_line": 124,
+          "label": "历史预加载"
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "事件 Store",
+      "sublabel": "Zustand",
+      "sources": [
+        {
+          "path": "src/stores/use-event-store.ts",
+          "line": 162,
+          "end_line": 195,
+          "label": "addEvents 去重+排序"
+        }
+      ]
+    },
+    {
+      "id": "ws",
+      "type": "frontend",
+      "label": "WS Provider",
+      "sublabel": "useWebSocket",
+      "sources": [
+        {
+          "path": "src/contexts/conversation-websocket-context.tsx",
+          "line": 403,
+          "end_line": 468,
+          "label": "灌入历史后才给 wsUrl"
+        },
+        {
+          "path": "src/hooks/use-websocket.ts",
+          "line": 46,
+          "end_line": 147,
+          "label": "连接、鉴权、重连"
+        }
+      ]
+    },
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "Agent Server",
+      "sublabel": "经 Ingress",
+      "sources": [
+        {
+          "path": "src/utils/websocket-url.ts",
+          "line": 87,
+          "end_line": 115,
+          "label": "/sockets/session/:id"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 240,
+      "label": "拿会话信息"
+    },
+    {
+      "from": 245,
+      "to": 385,
+      "label": "REST 预加载历史"
+    },
+    {
+      "from": 390,
+      "to": 475,
+      "label": "建立 WebSocket"
+    },
+    {
+      "from": 500,
+      "to": 560,
+      "label": "断线重连"
+    }
+  ],
+  "messages": [
+    {
+      "id": "active-conv",
+      "from": "route",
+      "to": "query",
+      "y": 165,
+      "label": "useActiveConversation"
+    },
+    {
+      "id": "get-conv",
+      "from": "query",
+      "to": "agent",
+      "y": 193,
+      "label": "GET 会话详情",
+      "variant": "emphasis"
+    },
+    {
+      "id": "conv-ret",
+      "from": "agent",
+      "to": "query",
+      "y": 221,
+      "label": "conversation_url + key",
+      "variant": "return"
+    },
+    {
+      "id": "use-history",
+      "from": "ws",
+      "to": "query",
+      "y": 256,
+      "label": "useConversationHistory"
+    },
+    {
+      "id": "get-history",
+      "from": "query",
+      "to": "agent",
+      "y": 284,
+      "label": "事件总数 + 最新 50 条",
+      "variant": "emphasis"
+    },
+    {
+      "id": "history-ret",
+      "from": "agent",
+      "to": "query",
+      "y": 312,
+      "label": "events（新→旧）",
+      "variant": "return"
+    },
+    {
+      "id": "history-to-ws",
+      "from": "query",
+      "to": "ws",
+      "y": 340,
+      "label": "正序 events + afterSeq",
+      "variant": "return"
+    },
+    {
+      "id": "seed-store",
+      "from": "ws",
+      "to": "store",
+      "y": 368,
+      "label": "addEvents"
+    },
+    {
+      "id": "ws-open",
+      "from": "ws",
+      "to": "agent",
+      "y": 403,
+      "label": "WS ?after_seq=N",
+      "variant": "emphasis"
+    },
+    {
+      "id": "ws-auth",
+      "from": "ws",
+      "to": "agent",
+      "y": 431,
+      "label": "首帧 auth + key",
+      "variant": "security"
+    },
+    {
+      "id": "replay",
+      "from": "agent",
+      "to": "ws",
+      "y": 459,
+      "label": "补发 seq > N",
+      "variant": "return"
+    },
+    {
+      "id": "ws-close",
+      "from": "agent",
+      "to": "ws",
+      "y": 515,
+      "label": "连接断开",
+      "variant": "dashed"
+    },
+    {
+      "id": "ws-retry",
+      "from": "ws",
+      "to": "agent",
+      "y": 543,
+      "label": "退避重连 1s→30s",
+      "variant": "dashed",
+      "note": "带最新游标，只补缺失的事件"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "query",
+      "from": 160,
+      "to": 346,
+      "type": "frontend"
+    },
+    {
+      "participant": "agent",
+      "from": 193,
+      "to": 221,
+      "type": "backend"
+    },
+    {
+      "participant": "agent",
+      "from": 284,
+      "to": 312,
+      "type": "backend"
+    },
+    {
+      "participant": "ws",
+      "from": 251,
+      "to": 549,
+      "type": "frontend"
+    },
+    {
+      "participant": "store",
+      "from": 363,
+      "to": 374,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "一句话理解",
+      "items": [
+        "先用 REST 把最近的历史拉下来显示，再开 WebSocket 接收之后的新事件",
+        "after_seq 是“我已经看到第几条”，服务端只补发后面的"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "安全",
+      "items": [
+        "Key 不放在 URL 里，连接后第一帧发 {type:auth}",
+        "握手超过 10s 未完成会被主动关闭"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "容错",
+      "items": [
+        "非正常关闭会显示连接错误横幅，可手动重试",
+        "store 按事件 id 去重，重放不会产生重复消息"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "143829ed-b06d-4ddd-b754-e58834a2014f",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/yajun/Documents/opensource/hermes-agent/.archify/architecture-hermes-overview-20260930-120000/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/hermes-agent/.archify/architecture-hermes-overview-20260930-120000/hermes-overview.html",
+  "specification": {
+    "sha256": "15fbc646c0677e5640722492548fb782437a2c098d48d86e289f60c4120e0cba",
+    "bytes": 6441
+  },
+  "artifact": {
+    "sha256": "8916c22dd3fe86bfd9800f1d4b7d6752b45b8cadd7e9fc17dd0fb04fd5e88b17",
+    "bytes": 770047
+  }
+}

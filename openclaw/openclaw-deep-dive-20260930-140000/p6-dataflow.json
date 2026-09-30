@@ -1,0 +1,439 @@
+{
+ "schema_version": 1,
+ "diagram_type": "dataflow",
+ "meta": {
+  "title": "第 6 部分：Agent 内部数据流",
+  "locale": "zh-CN",
+  "output": ".archify/openclaw-deep-dive-20260930-140000/p6-dataflow.html",
+  "quality_profile": "showcase",
+  "repository": {
+   "url": "https://github.com/openclaw/openclaw",
+   "provider": "github",
+   "link_mode": "web",
+   "revision": "63144fe0c4d170902aa50155daa36460af6e8569"
+  },
+  "viewBox": [
+   1080,
+   600
+  ]
+ },
+ "stages": [
+  {
+   "label": "输入"
+  },
+  {
+   "label": "组装"
+  },
+  {
+   "label": "模型调用"
+  },
+  {
+   "label": "输出"
+  },
+  {
+   "label": "落地"
+  }
+ ],
+ "nodes": [
+  {
+   "id": "tools",
+   "type": "backend",
+   "label": "工具定义",
+   "sublabel": "AgentTool · JSON Schema",
+   "stage": 0,
+   "row": 0,
+   "sources": [
+    {
+     "path": "packages/agent-core/src/types.ts",
+     "line": 562,
+     "end_line": 595,
+     "label": "AgentTool"
+    },
+    {
+     "path": "src/agents/agent-tools.ts",
+     "line": 752,
+     "label": "createOpenClawCodingTools"
+    }
+   ],
+   "height": 56,
+   "width": 140
+  },
+  {
+   "id": "user",
+   "type": "frontend",
+   "label": "用户消息",
+   "sublabel": "UserMessage",
+   "stage": 0,
+   "row": 1,
+   "sources": [
+    {
+     "path": "packages/agent-core/src/agent.ts",
+     "line": 490,
+     "end_line": 507,
+     "label": "normalizePromptInput"
+    },
+    {
+     "path": "packages/llm-core/src/types.ts",
+     "line": 366,
+     "end_line": 377,
+     "label": "UserMessage"
+    }
+   ],
+   "height": 56,
+   "width": 140
+  },
+  {
+   "id": "sysprompt",
+   "type": "backend",
+   "label": "系统提示词",
+   "sublabel": "工作区 + 技能 + 工具说明",
+   "stage": 0,
+   "row": 2,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-system-prompt-prepare.ts",
+     "line": 307,
+     "label": "buildAttemptSystemPrompt"
+    }
+   ],
+   "height": 56,
+   "width": 140
+  },
+  {
+   "id": "history",
+   "type": "database",
+   "label": "历史转录",
+   "sublabel": "SQLite",
+   "stage": 0,
+   "row": 3,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-history-prepare.ts",
+     "line": 198,
+     "label": "assembleHarnessContextEngine"
+    }
+   ],
+   "height": 56,
+   "width": 140
+  },
+  {
+   "id": "state",
+   "type": "backend",
+   "label": "AgentState",
+   "sublabel": "messages · tools · model",
+   "stage": 1,
+   "row": 1,
+   "sources": [
+    {
+     "path": "packages/agent-core/src/types.ts",
+     "line": 501,
+     "end_line": 527,
+     "label": "AgentState"
+    }
+   ],
+   "height": 56,
+   "width": 140
+  },
+  {
+   "id": "context",
+   "type": "backend",
+   "label": "LLM Context",
+   "sublabel": "系统提示 + 消息 + 工具",
+   "stage": 1,
+   "row": 2,
+   "sources": [
+    {
+     "path": "packages/agent-core/src/agent-stream-response.ts",
+     "line": 114,
+     "end_line": 127,
+     "label": "convertMessages + Context"
+    },
+    {
+     "path": "packages/agent-core/src/harness/messages.ts",
+     "line": 124,
+     "end_line": 175,
+     "label": "convertToLlm"
+    }
+   ],
+   "height": 56,
+   "width": 140
+  },
+  {
+   "id": "adapter",
+   "type": "messagebus",
+   "label": "provider 适配器",
+   "sublabel": "按 model.api 路由",
+   "stage": 2,
+   "row": 2,
+   "sources": [
+    {
+     "path": "packages/ai/src/api-registry.ts",
+     "line": 63,
+     "end_line": 104,
+     "label": "API 注册表"
+    },
+    {
+     "path": "packages/ai/src/providers/anthropic.ts",
+     "line": 151,
+     "end_line": 277,
+     "label": "streamAnthropic"
+    }
+   ],
+   "height": 56,
+   "width": 140
+  },
+  {
+   "id": "assistant",
+   "type": "backend",
+   "label": "AssistantMessage",
+   "sublabel": "text · thinking · toolCall",
+   "stage": 3,
+   "row": 2,
+   "sources": [
+    {
+     "path": "packages/llm-core/src/types.ts",
+     "line": 390,
+     "end_line": 421,
+     "label": "AssistantMessage"
+    },
+    {
+     "path": "packages/agent-core/src/agent-stream-response.ts",
+     "line": 264,
+     "end_line": 335,
+     "label": "流事件拼装"
+    }
+   ],
+   "height": 56,
+   "width": 140
+  },
+  {
+   "id": "toolexec",
+   "type": "backend",
+   "label": "工具执行",
+   "sublabel": "校验 → execute",
+   "stage": 3,
+   "row": 1,
+   "sources": [
+    {
+     "path": "packages/agent-core/src/agent-loop.ts",
+     "line": 989,
+     "end_line": 1021,
+     "label": "参数校验"
+    },
+    {
+     "path": "packages/agent-core/src/agent-loop.ts",
+     "line": 1136,
+     "label": "tool.execute"
+    },
+    {
+     "path": "packages/agent-core/src/agent-loop.ts",
+     "line": 1453,
+     "end_line": 1475,
+     "label": "ToolResultMessage"
+    }
+   ],
+   "height": 56,
+   "width": 140
+  },
+  {
+   "id": "blocks",
+   "type": "frontend",
+   "label": "分块回复",
+   "sublabel": "发往渠道",
+   "stage": 4,
+   "row": 3,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-subscribe.ts",
+     "line": 150,
+     "label": "EmbeddedBlockChunker"
+    },
+    {
+     "path": "src/agents/embedded-agent-subscribe.handlers.ts",
+     "line": 63,
+     "end_line": 106,
+     "label": "事件分发"
+    }
+   ],
+   "height": 56,
+   "width": 140
+  },
+  {
+   "id": "sqlite",
+   "type": "database",
+   "label": "SQLite 转录",
+   "sublabel": "message_end 持久化",
+   "stage": 4,
+   "row": 2,
+   "sources": [
+    {
+     "path": "src/agents/sessions/agent-session-base.ts",
+     "line": 385,
+     "end_line": 430,
+     "label": "persistAgentSessionMessage"
+    },
+    {
+     "path": "src/config/sessions/session-accessor.sqlite-transcript-message-append.ts",
+     "line": 139,
+     "label": "事务内追加"
+    }
+   ],
+   "height": 56,
+   "width": 140
+  }
+ ],
+ "flows": [
+  {
+   "id": "f-tools",
+   "from": "tools",
+   "to": "state",
+   "label": "工具列表",
+   "fromSide": "right",
+   "toSide": "top",
+   "via": [
+    [
+     315,
+     156
+    ]
+   ]
+  },
+  {
+   "id": "f-user",
+   "from": "user",
+   "to": "state",
+   "label": "追加消息",
+   "variant": "emphasis"
+  },
+  {
+   "id": "f-sys",
+   "from": "sysprompt",
+   "to": "context",
+   "label": "systemPrompt"
+  },
+  {
+   "id": "f-hist",
+   "from": "history",
+   "to": "context",
+   "label": "挑选历史",
+   "fromSide": "right",
+   "toSide": "bottom",
+   "via": [
+    [
+     315,
+     498
+    ]
+   ]
+  },
+  {
+   "id": "f-convert",
+   "from": "state",
+   "to": "context",
+   "label": "convertToLlm",
+   "variant": "emphasis",
+   "labelAt": [
+    315,
+    313
+   ]
+  },
+  {
+   "id": "f-request",
+   "from": "context",
+   "to": "adapter",
+   "label": "流式请求",
+   "variant": "emphasis"
+  },
+  {
+   "id": "f-events",
+   "from": "adapter",
+   "to": "assistant",
+   "label": "增量事件",
+   "variant": "emphasis"
+  },
+  {
+   "id": "f-toolcall",
+   "from": "assistant",
+   "to": "toolexec",
+   "label": "toolCall",
+   "fromSide": "top",
+   "toSide": "bottom",
+   "labelAt": [
+    745,
+    313
+   ]
+  },
+  {
+   "id": "f-blocks",
+   "from": "assistant",
+   "to": "blocks",
+   "label": "文本增量",
+   "variant": "dashed",
+   "fromSide": "bottom",
+   "toSide": "left",
+   "via": [
+    [
+     745,
+     498
+    ]
+   ]
+  },
+  {
+   "id": "f-persist",
+   "from": "assistant",
+   "to": "sqlite",
+   "label": "持久化"
+  },
+  {
+   "id": "f-toolpersist",
+   "from": "toolexec",
+   "to": "sqlite",
+   "label": "持久化",
+   "fromSide": "right",
+   "toSide": "top",
+   "via": [
+    [
+     960,
+     270
+    ]
+   ]
+  },
+  {
+   "id": "f-loop",
+   "from": "toolexec",
+   "to": "state",
+   "label": "ToolResult → 下一轮",
+   "variant": "emphasis",
+   "fromSide": "left",
+   "toSide": "right",
+   "route": "straight"
+  }
+ ],
+ "cards": [
+  {
+   "dot": "cyan",
+   "title": "输入从哪来",
+   "items": [
+    "用户消息、工具定义进入 AgentState",
+    "系统提示词由工作区文件、技能、工具说明拼成",
+    "历史消息由上下文引擎从 SQLite 转录中挑选"
+   ]
+  },
+  {
+   "dot": "emerald",
+   "title": "每轮怎么流动",
+   "items": [
+    "convertToLlm 把内部消息转换成模型认识的格式",
+    "适配器把增量事件拼成 AssistantMessage",
+    "有 toolCall 就执行工具，ToolResult 追加回 AgentState，再调一轮"
+   ]
+  },
+  {
+   "dot": "amber",
+   "title": "输出到哪去",
+   "items": [
+    "文本增量被切成块，实时发往聊天渠道",
+    "每条消息结束（message_end）都写入 SQLite 转录",
+    "下次对话时，这些转录又成为历史输入"
+   ]
+  }
+ ]
+}

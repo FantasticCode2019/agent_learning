@@ -1,0 +1,480 @@
+{
+ "schema_version": 1,
+ "diagram_type": "architecture",
+ "meta": {
+  "title": "第 3 部分：Harness 分层与选择",
+  "locale": "zh-CN",
+  "output": ".archify/openclaw-deep-dive-20260930-140000/p3-harness.html",
+  "quality_profile": "showcase",
+  "repository": {
+   "url": "https://github.com/openclaw/openclaw",
+   "provider": "github",
+   "link_mode": "web",
+   "revision": "63144fe0c4d170902aa50155daa36460af6e8569"
+  }
+ },
+ "components": [
+  {
+   "id": "policy",
+   "type": "database",
+   "label": "运行时策略",
+   "sublabel": "models[...].agentRuntime.id",
+   "pos": [
+    320,
+    40
+   ],
+   "size": [
+    180,
+    64
+   ],
+   "sources": [
+    {
+     "path": "src/agents/model-runtime-policy.ts",
+     "line": 221,
+     "end_line": 288,
+     "label": "resolveModelRuntimePolicy"
+    },
+    {
+     "path": "src/agents/harness/policy.ts",
+     "line": 27,
+     "end_line": 67,
+     "label": "resolveAgentHarnessPolicy"
+    }
+   ]
+  },
+  {
+   "id": "reply",
+   "type": "backend",
+   "label": "回复编排层",
+   "sublabel": "runAgentFallbackCandidates",
+   "pos": [
+    40,
+    200
+   ],
+   "size": [
+    180,
+    64
+   ],
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/agent-runner-fallback-candidate.ts",
+     "line": 46,
+     "label": "runAgentFallbackCandidates"
+    },
+    {
+     "path": "src/auto-reply/reply/agent-runner-fallback-candidate.ts",
+     "line": 327,
+     "end_line": 361,
+     "label": "CLI / 嵌入式分支"
+    }
+   ]
+  },
+  {
+   "id": "selector",
+   "type": "security",
+   "label": "Harness 选择器",
+   "sublabel": "auto → supports() 按优先级",
+   "tag": "无匹配 → openclaw",
+   "pos": [
+    320,
+    200
+   ],
+   "size": [
+    180,
+    64
+   ],
+   "sources": [
+    {
+     "path": "src/agents/harness/selection-decision.ts",
+     "line": 79,
+     "end_line": 182,
+     "label": "resolveAgentHarnessSelectionDecision"
+    },
+    {
+     "path": "src/agents/harness/support.ts",
+     "line": 280,
+     "end_line": 298,
+     "label": "resolveAutoAgentHarnessSelection"
+    },
+    {
+     "path": "src/agents/harness/availability.ts",
+     "line": 34,
+     "end_line": 88,
+     "label": "可用性与回退"
+    }
+   ]
+  },
+  {
+   "id": "run",
+   "type": "backend",
+   "label": "Harness 调用入口",
+   "sublabel": "runAgentHarnessAttempt",
+   "tag": "失败不回退",
+   "pos": [
+    610,
+    200
+   ],
+   "size": [
+    200,
+    64
+   ],
+   "sources": [
+    {
+     "path": "src/agents/harness/selection.ts",
+     "line": 185,
+     "end_line": 454,
+     "label": "runAgentHarnessAttempt"
+    },
+    {
+     "path": "src/agents/harness/lifecycle.ts",
+     "line": 257,
+     "end_line": 353,
+     "label": "runAgentHarnessLifecycleAttempt"
+    },
+    {
+     "path": "src/agents/harness/selection.ts",
+     "line": 507,
+     "end_line": 517,
+     "label": "插件失败直接抛出"
+    }
+   ]
+  },
+  {
+   "id": "builtin",
+   "type": "backend",
+   "label": "内置 harness",
+   "sublabel": "id: openclaw · runEmbeddedAttempt",
+   "pos": [
+    920,
+    200
+   ],
+   "size": [
+    190,
+    64
+   ],
+   "sources": [
+    {
+     "path": "src/agents/harness/builtin-openclaw.ts",
+     "line": 87,
+     "end_line": 101,
+     "label": "createOpenClawAgentHarness"
+    },
+    {
+     "path": "src/agents/harness/builtin-openclaw-metadata.ts",
+     "line": 5,
+     "end_line": 13,
+     "label": "supports 恒为 true"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt.ts",
+     "line": 64,
+     "label": "runEmbeddedAttempt"
+    }
+   ]
+  },
+  {
+   "id": "cli",
+   "type": "backend",
+   "label": "CLI 后端",
+   "sublabel": "claude-cli · gemini-cli 子进程",
+   "pos": [
+    40,
+    380
+   ],
+   "size": [
+    180,
+    64
+   ],
+   "sources": [
+    {
+     "path": "src/agents/cli-runner.ts",
+     "line": 140,
+     "end_line": 156,
+     "label": "runCliAgent"
+    },
+    {
+     "path": "extensions/anthropic/register.runtime.ts",
+     "line": 653,
+     "label": "registerCliBackend"
+    }
+   ]
+  },
+  {
+   "id": "plugin",
+   "type": "backend",
+   "label": "插件 harness",
+   "sublabel": "codex · copilot · acp-* · agentsapi",
+   "pos": [
+    610,
+    380
+   ],
+   "size": [
+    200,
+    64
+   ],
+   "sources": [
+    {
+     "path": "src/plugins/registry-registrars-providers.ts",
+     "line": 62,
+     "end_line": 110,
+     "label": "api.registerAgentHarness"
+    },
+    {
+     "path": "extensions/codex/index.ts",
+     "line": 275,
+     "label": "注册 codex harness"
+    },
+    {
+     "path": "extensions/copilot/index.ts",
+     "line": 47,
+     "label": "注册 copilot harness"
+    }
+   ]
+  },
+  {
+   "id": "loop",
+   "type": "backend",
+   "label": "agent-core 循环",
+   "sublabel": "AgentSession → Agent.prompt",
+   "pos": [
+    920,
+    380
+   ],
+   "size": [
+    190,
+    64
+   ],
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-execution-phase.ts",
+     "line": 122,
+     "label": "activeSession.prompt"
+    },
+    {
+     "path": "packages/agent-core/src/agent.ts",
+     "line": 442,
+     "label": "Agent.prompt"
+    },
+    {
+     "path": "packages/agent-core/src/agent-loop.ts",
+     "line": 68,
+     "label": "runAgentLoop"
+    }
+   ]
+  },
+  {
+   "id": "llm",
+   "type": "external",
+   "label": "模型 API",
+   "sublabel": "packages/ai 适配器",
+   "pos": [
+    1220,
+    380
+   ],
+   "size": [
+    150,
+    64
+   ],
+   "sources": [
+    {
+     "path": "packages/ai/src/stream.ts",
+     "line": 14,
+     "end_line": 57,
+     "label": "createLlmRuntime"
+    },
+    {
+     "path": "packages/ai/src/providers/anthropic.ts",
+     "line": 241,
+     "label": "messages.create 流式"
+    }
+   ]
+  },
+  {
+   "id": "codexapp",
+   "type": "external",
+   "label": "Codex app-server",
+   "sublabel": "独立进程 · 自管线程/压缩",
+   "pos": [
+    610,
+    560
+   ],
+   "size": [
+    200,
+    64
+   ],
+   "sources": [
+    {
+     "path": "extensions/codex/src/app-server/transport-stdio.ts",
+     "line": 150,
+     "end_line": 160,
+     "label": "spawn 子进程"
+    },
+    {
+     "path": "extensions/codex/src/app-server/client.ts",
+     "line": 336,
+     "end_line": 356,
+     "label": "initialize 握手"
+    },
+    {
+     "path": "extensions/codex/src/app-server/run-attempt.ts",
+     "line": 23,
+     "end_line": 163,
+     "label": "runCodexAppServerAttempt"
+    }
+   ]
+  },
+  {
+   "id": "tools",
+   "type": "backend",
+   "label": "OpenClaw 工具面",
+   "sublabel": "exec · browser · message…",
+   "pos": [
+    920,
+    560
+   ],
+   "size": [
+    190,
+    64
+   ],
+   "sources": [
+    {
+     "path": "src/agents/agent-tools.ts",
+     "line": 752,
+     "label": "createOpenClawCodingTools"
+    },
+    {
+     "path": "extensions/codex/src/app-server/dynamic-tools.ts",
+     "line": 218,
+     "label": "Codex 动态工具桥"
+    },
+    {
+     "path": "extensions/codex/src/app-server/run-attempt-server-requests.ts",
+     "line": 161,
+     "end_line": 240,
+     "label": "item/tool/call 处理"
+    }
+   ]
+  }
+ ],
+ "boundaries": [
+  {
+   "kind": "region",
+   "label": "Gateway 进程",
+   "wraps": [
+    "policy",
+    "reply",
+    "selector",
+    "run",
+    "builtin",
+    "cli",
+    "plugin",
+    "loop",
+    "tools"
+   ]
+  }
+ ],
+ "connections": [
+  {
+   "id": "embedded-path",
+   "from": "reply",
+   "to": "selector",
+   "label": "嵌入式路径",
+   "variant": "emphasis"
+  },
+  {
+   "id": "cli-path",
+   "from": "reply",
+   "to": "cli",
+   "label": "useCliExecution",
+   "variant": "dashed"
+  },
+  {
+   "id": "read-policy",
+   "from": "policy",
+   "to": "selector",
+   "label": "agentRuntime.id"
+  },
+  {
+   "id": "select",
+   "from": "selector",
+   "to": "run",
+   "label": "选中 harness",
+   "variant": "emphasis"
+  },
+  {
+   "id": "run-builtin",
+   "from": "run",
+   "to": "builtin",
+   "label": "runAttempt",
+   "variant": "emphasis"
+  },
+  {
+   "id": "run-plugin",
+   "from": "run",
+   "to": "plugin",
+   "label": "runAttempt"
+  },
+  {
+   "id": "builtin-loop",
+   "from": "builtin",
+   "to": "loop",
+   "label": "agent.prompt",
+   "variant": "emphasis"
+  },
+  {
+   "id": "loop-llm",
+   "from": "loop",
+   "to": "llm",
+   "label": "streamSimple",
+   "variant": "emphasis"
+  },
+  {
+   "id": "loop-tools",
+   "from": "loop",
+   "to": "tools",
+   "label": "tool.execute"
+  },
+  {
+   "id": "plugin-codex",
+   "from": "plugin",
+   "to": "codexapp",
+   "label": "JSON-RPC stdio"
+  },
+  {
+   "id": "codex-tools",
+   "from": "codexapp",
+   "to": "tools",
+   "label": "工具回调",
+   "variant": "dashed"
+  }
+ ],
+ "cards": [
+  {
+   "dot": "cyan",
+   "title": "Harness 是什么",
+   "items": [
+    "一次 agent 回合的底层执行器，不是模型提供方，也不是渠道",
+    "契约：supports() 判断能否运行 + runAttempt() 执行一次尝试",
+    "输入统一为 AttemptParams，输出统一为 AttemptResult"
+   ]
+  },
+  {
+   "dot": "violet",
+   "title": "如何选择",
+   "items": [
+    "先看模型级、再看提供方级 agentRuntime.id",
+    "auto：询问已注册 harness 的 supports()，按优先级取第一个",
+    "都不支持 → 内置 openclaw；插件 harness 一旦接手，失败不重放"
+   ]
+  },
+  {
+   "dot": "amber",
+   "title": "三种执行方式",
+   "items": [
+    "内置 openclaw：进程内 agent-core 循环",
+    "codex：子进程 app-server，经 JSON-RPC 回调 OpenClaw 工具",
+    "CLI 后端：在选 harness 之前分流，直接起 claude/gemini 进程"
+   ]
+  }
+ ]
+}

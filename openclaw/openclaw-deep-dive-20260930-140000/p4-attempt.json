@@ -1,0 +1,382 @@
+{
+ "schema_version": 2,
+ "diagram_type": "workflow",
+ "meta": {
+  "title": "第 4 部分：内置 harness 执行一次 attempt",
+  "locale": "zh-CN",
+  "output": ".archify/openclaw-deep-dive-20260930-140000/p4-attempt.html",
+  "quality_profile": "showcase",
+  "repository": {
+   "url": "https://github.com/openclaw/openclaw",
+   "provider": "github",
+   "link_mode": "web",
+   "revision": "63144fe0c4d170902aa50155daa36460af6e8569"
+  }
+ },
+ "lanes": [
+  {
+   "id": "prep",
+   "label": "① 准备能力"
+  },
+  {
+   "id": "sess",
+   "label": "② 建立会话"
+  },
+  {
+   "id": "exec",
+   "label": "③ 执行回合"
+  },
+  {
+   "id": "fin",
+   "label": "④ 提交与收尾"
+  }
+ ],
+ "mainPath": [
+  "setup",
+  "skills",
+  "tools",
+  "sysprompt",
+  "session",
+  "history",
+  "subscribe",
+  "submit",
+  "result"
+ ],
+ "nodes": [
+  {
+   "id": "setup",
+   "lane": "prep",
+   "col": 0,
+   "type": "security",
+   "label": "工作区与沙箱",
+   "sublabel": "sandbox · workspace",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt.ts",
+     "line": 107,
+     "end_line": 121,
+     "label": "prepareEmbeddedAttemptSetup"
+    }
+   ]
+  },
+  {
+   "id": "skills",
+   "lane": "prep",
+   "col": 1,
+   "type": "backend",
+   "label": "加载技能",
+   "sublabel": "skills 快照",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt.ts",
+     "line": 187,
+     "end_line": 218,
+     "label": "prepareEmbeddedSkills"
+    }
+   ]
+  },
+  {
+   "id": "tools",
+   "lane": "prep",
+   "col": 2,
+   "type": "backend",
+   "label": "组装工具",
+   "sublabel": "核心 · 插件 · MCP/LSP",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt.ts",
+     "line": 241,
+     "end_line": 297,
+     "label": "工具基座"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt.ts",
+     "line": 313,
+     "end_line": 326,
+     "label": "MCP/LSP 工具"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt.ts",
+     "line": 330,
+     "end_line": 350,
+     "label": "工具目录"
+    }
+   ]
+  },
+  {
+   "id": "sysprompt",
+   "lane": "sess",
+   "col": 2,
+   "type": "backend",
+   "label": "构建系统提示词",
+   "sublabel": "工作区文件 + 技能 + 工具",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt.ts",
+     "line": 298,
+     "end_line": 305,
+     "label": "工作区上下文文件"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt.ts",
+     "line": 351,
+     "end_line": 368,
+     "label": "系统提示词阶段"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-system-prompt-prepare.ts",
+     "line": 307,
+     "label": "buildAttemptSystemPrompt"
+    }
+   ]
+  },
+  {
+   "id": "session",
+   "lane": "sess",
+   "col": 3,
+   "type": "backend",
+   "label": "打开转录 · 建会话",
+   "sublabel": "SessionManager + AgentSession",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt.ts",
+     "line": 376,
+     "end_line": 401,
+     "label": "会话运行时阶段"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-session-prepare.ts",
+     "line": 202,
+     "label": "createAgentSessionForEmbeddedRunner"
+    }
+   ]
+  },
+  {
+   "id": "transcript",
+   "lane": "sess",
+   "col": 4,
+   "type": "database",
+   "label": "SQLite 转录",
+   "sublabel": "历史消息",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/config/sessions/session-accessor.sqlite-transcript-message-append.ts",
+     "line": 139,
+     "label": "追加转录消息"
+    }
+   ]
+  },
+  {
+   "id": "history",
+   "lane": "exec",
+   "col": 3,
+   "type": "backend",
+   "label": "组装历史上下文",
+   "sublabel": "context engine",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-execution-phase.ts",
+     "line": 71,
+     "end_line": 83,
+     "label": "prepareEmbeddedAttemptHistory"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-history-prepare.ts",
+     "line": 198,
+     "label": "assembleHarnessContextEngine"
+    }
+   ]
+  },
+  {
+   "id": "subscribe",
+   "lane": "exec",
+   "col": 4,
+   "type": "messagebus",
+   "label": "订阅事件流",
+   "sublabel": "流式分块回复",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-execution-phase.ts",
+     "line": 136,
+     "end_line": 169,
+     "label": "prepareEmbeddedAttemptStream"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-stream-prepare.ts",
+     "line": 313,
+     "label": "subscribeEmbeddedAgentSession"
+    }
+   ]
+  },
+  {
+   "id": "submit",
+   "lane": "fin",
+   "col": 4,
+   "type": "backend",
+   "label": "提交 prompt · 等待结算",
+   "sublabel": "agent 循环运行 → settle",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-prompt-phase.ts",
+     "line": 405,
+     "label": "submitEmbeddedAttemptPrompt"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-settle.ts",
+     "line": 152,
+     "end_line": 194,
+     "label": "提交并等待事件"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-settle.ts",
+     "line": 295,
+     "end_line": 300,
+     "label": "completeEmbeddedAttemptAfterTurn"
+    }
+   ]
+  },
+  {
+   "id": "result",
+   "lane": "fin",
+   "col": 5,
+   "type": "backend",
+   "label": "返回 AttemptResult",
+   "sublabel": "terminal · 文本 · usage",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt-settle.ts",
+     "line": 403,
+     "end_line": 412,
+     "label": "completeEmbeddedAttemptResult"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/run/types.ts",
+     "line": 270,
+     "label": "EmbeddedRunAttemptResult"
+    }
+   ]
+  },
+  {
+   "id": "cleanup",
+   "lane": "exec",
+   "col": 5,
+   "type": "security",
+   "label": "finally 清理",
+   "sublabel": "会话 · 工具 · 技能环境",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run/attempt.ts",
+     "line": 491,
+     "end_line": 588,
+     "label": "清理与错误归类"
+    }
+   ]
+  }
+ ],
+ "edges": [
+  {
+   "id": "e1",
+   "from": "setup",
+   "to": "skills",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e2",
+   "from": "skills",
+   "to": "tools",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e3",
+   "from": "tools",
+   "to": "sysprompt",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e4",
+   "from": "sysprompt",
+   "to": "session",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e5",
+   "from": "session",
+   "to": "history",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e6",
+   "from": "history",
+   "to": "subscribe",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e7",
+   "from": "subscribe",
+   "to": "submit",
+   "variant": "emphasis"
+  },
+  {
+   "id": "read-transcript",
+   "from": "session",
+   "to": "transcript",
+   "label": "读取",
+   "variant": "dashed",
+   "role": "branch"
+  },
+  {
+   "id": "finally",
+   "from": "result",
+   "to": "cleanup",
+   "label": "finally",
+   "variant": "dashed",
+   "role": "branch"
+  },
+  {
+   "id": "e8",
+   "from": "submit",
+   "to": "result",
+   "variant": "emphasis"
+  }
+ ],
+ "cards": [
+  {
+   "dot": "cyan",
+   "title": "① 准备能力",
+   "items": [
+    "确定工作目录，必要时进入 Docker/Podman 沙箱",
+    "加载技能，组装核心、插件、MCP/LSP 工具",
+    "把工作区文件、技能、工具说明拼成系统提示词"
+   ]
+  },
+  {
+   "dot": "emerald",
+   "title": "②③ 会话与执行",
+   "items": [
+    "从 SQLite 打开会话转录，创建 AgentSession",
+    "上下文引擎挑选要带给模型的历史消息",
+    "先订阅事件，再提交 prompt，保证不漏掉流式输出"
+   ]
+  },
+  {
+   "dot": "amber",
+   "title": "④ 收尾",
+   "items": [
+    "等待 agent 循环结束、事件全部落盘",
+    "打包 AttemptResult：终态、文本、工具记录、用量",
+    "finally 块总会清理会话、工具和技能环境"
+   ]
+  }
+ ]
+}

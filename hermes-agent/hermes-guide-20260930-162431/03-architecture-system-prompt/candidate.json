@@ -1,0 +1,357 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "系统提示词是怎么拼出来的",
+    "output": ".archify/hermes-guide-20260930-162431/03-architecture-system-prompt/system-prompt.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/NousResearch/hermes-agent.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "f42f579cf8bac4918ac9599bece71618afadd846"
+    }
+  },
+  "components": [
+    {
+      "id": "soul",
+      "type": "external",
+      "label": "身份与守则",
+      "sublabel": "SOUL.md · 工具指南",
+      "pos": [
+        20,
+        40
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/system_prompt.py",
+          "line": 544,
+          "label": "_identity_parts"
+        },
+        {
+          "path": "agent/system_prompt.py",
+          "line": 553,
+          "label": "_guidance_parts"
+        }
+      ]
+    },
+    {
+      "id": "ctxfiles",
+      "type": "external",
+      "label": "项目说明文件",
+      "sublabel": "AGENTS.md / CLAUDE.md",
+      "pos": [
+        20,
+        170
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/system_prompt.py",
+          "line": 713,
+          "label": "_context_files_part"
+        },
+        {
+          "path": "agent/prompt_builder.py",
+          "line": 1805,
+          "label": "build_context_files_prompt"
+        }
+      ]
+    },
+    {
+      "id": "mem",
+      "type": "database",
+      "label": "记忆与技能",
+      "sublabel": "MEMORY.md · skills 索引",
+      "pos": [
+        20,
+        300
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/system_prompt.py",
+          "line": 516,
+          "end_line": 540,
+          "label": "_memory_parts"
+        },
+        {
+          "path": "tools/memory_tool_store.py",
+          "line": 463,
+          "end_line": 466,
+          "label": "冻结快照"
+        },
+        {
+          "path": "agent/system_prompt.py",
+          "line": 301,
+          "end_line": 314,
+          "label": "_skills_prompt"
+        }
+      ]
+    },
+    {
+      "id": "stable",
+      "type": "backend",
+      "label": "稳定层 stable",
+      "sublabel": "几乎永不变",
+      "pos": [
+        270,
+        40
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/system_prompt.py",
+          "line": 734,
+          "end_line": 778
+        }
+      ]
+    },
+    {
+      "id": "context",
+      "type": "backend",
+      "label": "上下文层 context",
+      "sublabel": "随项目变化",
+      "pos": [
+        270,
+        170
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/system_prompt.py",
+          "line": 772,
+          "end_line": 774
+        }
+      ]
+    },
+    {
+      "id": "volatile",
+      "type": "backend",
+      "label": "易变层 volatile",
+      "sublabel": "记忆·技能·时间·环境",
+      "pos": [
+        270,
+        300
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/system_prompt.py",
+          "line": 783,
+          "end_line": 797
+        },
+        {
+          "path": "agent/system_prompt.py",
+          "line": 489,
+          "label": "_timestamp_line"
+        }
+      ]
+    },
+    {
+      "id": "join",
+      "type": "backend",
+      "label": "拼成一段文本",
+      "sublabel": "build_system_prompt",
+      "pos": [
+        530,
+        40
+      ],
+      "size": [
+        150,
+        324
+      ],
+      "sources": [
+        {
+          "path": "agent/system_prompt.py",
+          "line": 800,
+          "end_line": 805
+        }
+      ]
+    },
+    {
+      "id": "cache",
+      "type": "security",
+      "label": "内存缓存",
+      "sublabel": "_cached_system_prompt",
+      "pos": [
+        780,
+        170
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/turn_context.py",
+          "line": 1095,
+          "end_line": 1096,
+          "label": "为空才构建"
+        }
+      ],
+      "tag": "整场不变"
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "state.db",
+      "sublabel": "会话行里存一份",
+      "pos": [
+        780,
+        330
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/conversation_loop.py",
+          "line": 686,
+          "end_line": 692,
+          "label": "_persist_system_prompt"
+        },
+        {
+          "path": "agent/conversation_loop.py",
+          "line": 745,
+          "end_line": 822,
+          "label": "恢复存档"
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "cloud",
+      "label": "API 请求",
+      "sublabel": "第一条 system 消息",
+      "pos": [
+        1050,
+        170
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/turn_context.py",
+          "line": 1193,
+          "label": "build_api_messages"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "c-soul",
+      "from": "soul",
+      "to": "stable",
+      "label": "身份"
+    },
+    {
+      "id": "c-ctx",
+      "from": "ctxfiles",
+      "to": "context",
+      "label": "项目规则"
+    },
+    {
+      "id": "c-mem",
+      "from": "mem",
+      "to": "volatile",
+      "label": "开局快照"
+    },
+    {
+      "id": "c-stable",
+      "from": "stable",
+      "to": "join",
+      "label": "第 1 段"
+    },
+    {
+      "id": "c-context",
+      "from": "context",
+      "to": "join",
+      "label": "第 2 段"
+    },
+    {
+      "id": "c-volatile",
+      "from": "volatile",
+      "to": "join",
+      "label": "第 3 段"
+    },
+    {
+      "id": "c-build",
+      "from": "join",
+      "to": "cache",
+      "label": "首轮构建",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c-persist",
+      "from": "join",
+      "to": "db",
+      "label": "存档",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c-restore",
+      "from": "db",
+      "to": "cache",
+      "label": "续聊恢复",
+      "variant": "dashed"
+    },
+    {
+      "id": "c-send",
+      "from": "cache",
+      "to": "api",
+      "label": "每轮原样发送",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "为什么分三层",
+      "items": [
+        "越不容易变的内容放越前面：身份 → 项目规则 → 记忆/技能/时间",
+        "服务商按“最长相同前缀”做缓存，前面稳定，命中率就高"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "何时构建、何时复用",
+      "items": [
+        "新会话第一轮：拼接并存进 state.db",
+        "续聊（如网关重启后）：模型、服务商、目录都没变，就原样恢复旧文本"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "何时会重建",
+      "items": [
+        "上下文压缩之后；CLI 执行 /new、重置会话时",
+        "对话中途写入的记忆，要到下次重建才出现在提示词里"
+      ]
+    }
+  ]
+}

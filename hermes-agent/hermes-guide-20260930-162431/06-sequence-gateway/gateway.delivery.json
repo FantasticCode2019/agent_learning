@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "92fb9e38-89f8-4da0-8eb3-b6a9b6a1949e",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/06-sequence-gateway/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/06-sequence-gateway/gateway.html",
+  "specification": {
+    "sha256": "f827ade1a81c428af8cbad0e2060788e4ff55e9ef39907f75d43bba51f1dd3c9",
+    "bytes": 6234
+  },
+  "artifact": {
+    "sha256": "a32e12b5dcfa1c836ea1430e3f5f108eb6b32027d979488a63cd83f70063300b",
+    "bytes": 765493
+  }
+}

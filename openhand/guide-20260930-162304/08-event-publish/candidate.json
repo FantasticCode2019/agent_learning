@@ -1,0 +1,307 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "⑧ 事件的一生：产生 → 落盘 → 广播",
+    "locale": "zh-CN",
+    "output": ".archify/guide-20260930-162304/08-event-publish/event-publish.html",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1070,
+      540
+    ],
+    "repository": {
+      "url": "https://github.com/OpenHands/software-agent-sdk",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "fcc102a697874d54a357e36004e02c95040dbdc0"
+    }
+  },
+  "stages": [
+    {
+      "label": "产生"
+    },
+    {
+      "label": "落盘"
+    },
+    {
+      "label": "广播"
+    },
+    {
+      "label": "订阅者"
+    },
+    {
+      "label": "客户端"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "emit",
+      "type": "backend",
+      "label": "Agent / 会话",
+      "sublabel": "emit 事件",
+      "stage": 0,
+      "row": 1,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/impl/local_conversation.py",
+          "line": 416,
+          "end_line": 469,
+          "label": "回调链组装"
+        }
+      ]
+    },
+    {
+      "id": "tokens",
+      "type": "cloud",
+      "label": "LLM token 流",
+      "sublabel": "stream=true 时",
+      "stage": 0,
+      "row": 2,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/stream_context.py",
+          "line": 104,
+          "end_line": 146,
+          "label": "StreamContext"
+        },
+        {
+          "path": "openhands-agent-server/openhands/agent_server/event_service.py",
+          "line": 1077,
+          "end_line": 1131,
+          "label": "流式回调"
+        }
+      ]
+    },
+    {
+      "id": "eventlog",
+      "type": "database",
+      "label": "EventLog",
+      "sublabel": "events/*.json",
+      "stage": 1,
+      "row": 1,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/state.py",
+          "line": 315,
+          "end_line": 337,
+          "label": "append_event"
+        },
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/event_store.py",
+          "line": 188,
+          "end_line": 215,
+          "label": "加锁写文件"
+        }
+      ]
+    },
+    {
+      "id": "statefile",
+      "type": "database",
+      "label": "base_state.json",
+      "sublabel": "状态自动保存",
+      "stage": 1,
+      "row": 0,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/state.py",
+          "line": 596,
+          "end_line": 648,
+          "label": "字段变化即保存"
+        }
+      ]
+    },
+    {
+      "id": "pubsub",
+      "type": "messagebus",
+      "label": "PubSub",
+      "sublabel": "并发通知",
+      "stage": 2,
+      "row": 1,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/utils/async_utils.py",
+          "line": 19,
+          "end_line": 74,
+          "label": "跨线程投递"
+        },
+        {
+          "path": "openhands-agent-server/openhands/agent_server/pub_sub.py",
+          "line": 85,
+          "end_line": 108,
+          "label": "PubSub.__call__"
+        }
+      ]
+    },
+    {
+      "id": "streampub",
+      "type": "messagebus",
+      "label": "流式进度广播",
+      "sublabel": "不落盘",
+      "stage": 2,
+      "row": 2,
+      "sources": [
+        {
+          "path": "openhands-agent-server/openhands/agent_server/event_service.py",
+          "line": 144,
+          "end_line": 148,
+          "label": "_stream_pub_sub"
+        }
+      ]
+    },
+    {
+      "id": "others",
+      "type": "backend",
+      "label": "内部订阅者",
+      "sublabel": "标题/Webhook/遥测",
+      "stage": 3,
+      "row": 0,
+      "sources": [
+        {
+          "path": "openhands-agent-server/openhands/agent_server/conversation_service.py",
+          "line": 2474,
+          "end_line": 2497,
+          "label": "注册订阅者"
+        }
+      ]
+    },
+    {
+      "id": "sessionsub",
+      "type": "messagebus",
+      "label": "会话 Socket",
+      "sublabel": "缓冲 + 单写者",
+      "stage": 3,
+      "row": 1,
+      "sources": [
+        {
+          "path": "openhands-agent-server/openhands/agent_server/session_socket.py",
+          "line": 186,
+          "end_line": 260,
+          "label": "Durable / 流式帧"
+        },
+        {
+          "path": "openhands-agent-server/openhands/agent_server/session_socket.py",
+          "line": 361,
+          "end_line": 415,
+          "label": "先补历史再直播"
+        }
+      ]
+    },
+    {
+      "id": "client",
+      "type": "frontend",
+      "label": "Canvas 前端",
+      "sublabel": "见第 ⑨ 张",
+      "stage": 4,
+      "row": 1
+    }
+  ],
+  "flows": [
+    {
+      "id": "emit-log",
+      "from": "emit",
+      "to": "eventlog",
+      "label": "① 先写磁盘",
+      "variant": "emphasis",
+      "route": "straight"
+    },
+    {
+      "id": "emit-state",
+      "from": "emit",
+      "to": "statefile",
+      "label": "状态变化",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "left",
+      "via": [
+        [
+          100,
+          157
+        ]
+      ]
+    },
+    {
+      "id": "log-pub",
+      "from": "eventlog",
+      "to": "pubsub",
+      "label": "② 再广播",
+      "variant": "emphasis",
+      "route": "straight"
+    },
+    {
+      "id": "pub-others",
+      "from": "pubsub",
+      "to": "others",
+      "label": "事件",
+      "variant": "default",
+      "fromSide": "top",
+      "toSide": "left",
+      "via": [
+        [
+          530,
+          157
+        ]
+      ]
+    },
+    {
+      "id": "pub-session",
+      "from": "pubsub",
+      "to": "sessionsub",
+      "label": "事件帧",
+      "variant": "emphasis",
+      "route": "straight"
+    },
+    {
+      "id": "tokens-stream",
+      "from": "tokens",
+      "to": "streampub",
+      "label": "增量片段",
+      "variant": "dashed",
+      "route": "straight"
+    },
+    {
+      "id": "stream-session",
+      "from": "streampub",
+      "to": "sessionsub",
+      "label": "Delta",
+      "variant": "dashed",
+      "route": "straight"
+    },
+    {
+      "id": "session-client",
+      "from": "sessionsub",
+      "to": "client",
+      "label": "帧",
+      "classification": "带 seq 序号",
+      "variant": "emphasis",
+      "route": "straight"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "一句话理解",
+      "items": [
+        "每个事件先写成磁盘上的一个 JSON 文件，写成功后才通知订阅者",
+        "所以前端断线后，总能从磁盘把漏掉的事件补回来"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "两条流",
+      "items": [
+        "正式事件：落盘，带 seq 序号，走 DurableFrame",
+        "打字机效果的 token 片段：不落盘，走 ItemStarted / Delta 帧",
+        "正式事件到达后，前端按 id 收起临时片段"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "背压保护",
+      "items": [
+        "每个连接一个写线程，队列上限 16 MiB",
+        "消费太慢时直接断开连接（1013），不会拖慢 Agent"
+      ]
+    }
+  ]
+}

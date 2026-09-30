@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "0136466b-a61c-4061-983e-40edc04ff503",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Users/yajun/Documents/opensource/WeKnora/.archify/workflow-weknora-startup-20260930-172606/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/WeKnora/.archify/workflow-weknora-startup-20260930-172606/weknora-startup.html",
+  "specification": {
+    "sha256": "ba0989c07897ded3fdf8870b146a99b5650b6e12f79e3bd9c77a7011fb58be51",
+    "bytes": 6557
+  },
+  "artifact": {
+    "sha256": "d19581abc251444c9dde8df6664b647f909282c7532cabe3d59ab663b63df37e",
+    "bytes": 759048
+  }
+}

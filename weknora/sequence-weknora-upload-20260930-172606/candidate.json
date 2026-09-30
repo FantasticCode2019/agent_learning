@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "③ 上传文档：点击上传后立刻发生了什么",
+    "output": ".archify/sequence-weknora-upload-20260930-172606/weknora-upload.html",
+    "locale": "zh-CN",
+    "viewBox": [
+      1080,
+      560
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Tencent/WeKnora.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "bccb4b151bae403508da77fbb174efc79dc47c1a"
+    },
+    "legend": {
+      "entries": {
+        "emphasis": {
+          "label": "关键步骤"
+        },
+        "dashed": {
+          "label": "异步投递"
+        },
+        "default": {
+          "label": "普通调用"
+        },
+        "return": {
+          "label": "返回"
+        }
+      }
+    }
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "frontend",
+      "label": "用户 / 前端",
+      "sublabel": "选择文件上传"
+    },
+    {
+      "id": "handler",
+      "type": "backend",
+      "label": "上传 Handler",
+      "sublabel": "knowledge.go",
+      "sources": [
+        {
+          "path": "internal/handler/knowledge.go",
+          "line": 304,
+          "end_line": 452
+        }
+      ]
+    },
+    {
+      "id": "svc",
+      "type": "backend",
+      "label": "知识服务",
+      "sublabel": "CreateKnowledgeFromFile",
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_create.go",
+          "line": 25,
+          "end_line": 291
+        }
+      ]
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "knowledges 表"
+    },
+    {
+      "id": "file",
+      "type": "database",
+      "label": "文件存储",
+      "sublabel": "本地 / MinIO / COS"
+    },
+    {
+      "id": "redis",
+      "type": "messagebus",
+      "label": "Redis 队列",
+      "sublabel": "Asynq"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 268,
+      "label": "校验与查重"
+    },
+    {
+      "from": 276,
+      "to": 366,
+      "label": "保存与入队"
+    },
+    {
+      "from": 376,
+      "to": 444,
+      "label": "立即返回"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "user",
+      "to": "handler",
+      "y": 165,
+      "label": "POST …/knowledge/file",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m2",
+      "from": "handler",
+      "to": "svc",
+      "y": 195,
+      "label": "权限 + 大小校验后调用",
+      "variant": "default"
+    },
+    {
+      "id": "m3",
+      "from": "svc",
+      "to": "pg",
+      "y": 225,
+      "label": "按 MD5 查重",
+      "variant": "default"
+    },
+    {
+      "id": "m4",
+      "from": "pg",
+      "to": "svc",
+      "y": 256,
+      "label": "已存在则返回 409",
+      "variant": "return"
+    },
+    {
+      "id": "m5",
+      "from": "svc",
+      "to": "file",
+      "y": 290,
+      "label": "SaveFile 保存原文件",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m6",
+      "from": "svc",
+      "to": "pg",
+      "y": 320,
+      "label": "插入记录 status=pending",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m7",
+      "from": "svc",
+      "to": "redis",
+      "y": 352,
+      "label": "入队 document:process",
+      "variant": "dashed"
+    },
+    {
+      "id": "m8",
+      "from": "svc",
+      "to": "handler",
+      "y": 394,
+      "label": "返回 Knowledge",
+      "variant": "return"
+    },
+    {
+      "id": "m9",
+      "from": "handler",
+      "to": "user",
+      "y": 424,
+      "label": "200 · 显示“处理中”",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "handler",
+      "from": 165,
+      "to": 429,
+      "type": "backend"
+    },
+    {
+      "participant": "svc",
+      "from": 195,
+      "to": 399,
+      "type": "backend"
+    },
+    {
+      "participant": "pg",
+      "from": 220,
+      "to": 325,
+      "type": "database"
+    },
+    {
+      "participant": "file",
+      "from": 285,
+      "to": 297,
+      "type": "database"
+    },
+    {
+      "participant": "redis",
+      "from": 347,
+      "to": 359,
+      "type": "messagebus"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "为什么这么快就返回",
+      "items": [
+        "上传接口只做三件事：存文件、记一条“待处理”记录、投递后台任务",
+        "真正耗时的解析和向量化交给后台 Worker，用户不用干等"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "查重与校验",
+      "items": [
+        "文件大小受 MAX_FILE_SIZE_MB 限制；只有管理员 / 编辑可上传",
+        "用文件的 MD5 + 名称 + 大小判断是否重复，重复直接返回 409"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "失败怎么办",
+      "items": [
+        "写库失败会删掉刚存的文件，避免孤儿文件",
+        "入队失败把记录标成 failed，但仍把记录返回给前端"
+      ]
+    }
+  ]
+}

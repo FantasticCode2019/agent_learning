@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "lifecycle",
+  "quality": "showcase",
+  "specification": {
+    "path": "/Users/yajun/Documents/opensource/WeKnora/.archify/lifecycle-weknora-parse-status-20260930-172606/candidate.json",
+    "sha256": "239b22fcabc6d39e62a92216a0b2d2f42f0f68f9458bf9eaa86724d6057e8e3f",
+    "bytes": 4277
+  },
+  "artifact": {
+    "path": "/Users/yajun/Documents/opensource/WeKnora/.archify/lifecycle-weknora-parse-status-20260930-172606/weknora-parse-status.html",
+    "sha256": "0e6e38d3252ef48fb94395748df5927f6f8d3b8a54ab3d453f8fe0ea13a7cf12",
+    "bytes": 763105
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/Users/yajun/Documents/opensource/WeKnora/.archify/lifecycle-weknora-parse-status-20260930-172606/weknora-parse-status.finalize.json",
+    "summaryReceipt": "/Users/yajun/Documents/opensource/WeKnora/.archify/lifecycle-weknora-parse-status-20260930-172606/weknora-parse-status.finalize-summary.json",
+    "browserCheckReceipt": "/Users/yajun/Documents/opensource/WeKnora/.archify/lifecycle-weknora-parse-status-20260930-172606/weknora-parse-status.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.0.1",
+    "releaseNotes": null,
+    "checkedAt": "2026-09-29T09:06:25.980Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 1986
+}

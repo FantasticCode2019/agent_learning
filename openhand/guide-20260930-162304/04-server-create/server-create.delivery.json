@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "0867537a-2aea-47ca-a4f6-ed2ceec9d943",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/04-server-create/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/04-server-create/server-create.html",
+  "specification": {
+    "sha256": "3b825c3e26dd9bf459d99c1cad871b2ee3a0307eb114379f93f9218fb0df0add",
+    "bytes": 6571
+  },
+  "artifact": {
+    "sha256": "fe5d885c2513bd5ccce5c7713d04cb9cee48b49ef3de95495c46b0de90ecef74",
+    "bytes": 763702
+  }
+}

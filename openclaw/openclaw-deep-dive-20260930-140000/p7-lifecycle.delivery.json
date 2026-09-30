@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "4265fa78-48fb-4b8c-8137-cd4b4590a510",
+  "status": "current",
+  "command": "deliver",
+  "type": "lifecycle",
+  "input": "/private/tmp/claude-501/-Users-yajun-Documents-opensource-openclaw/822bc09c-850c-4e26-82f3-63ca35d1b4ce/scratchpad/.archify/openclaw-deep-dive-20260930-140000/p7-lifecycle.json",
+  "output": "/private/tmp/claude-501/-Users-yajun-Documents-opensource-openclaw/822bc09c-850c-4e26-82f3-63ca35d1b4ce/scratchpad/.archify/openclaw-deep-dive-20260930-140000/p7-lifecycle.html",
+  "specification": {
+    "sha256": "05099098d9e58b98ab8c9ca3149657f8ca246404bb513f2eef6d1de870e02e38",
+    "bytes": 6813
+  },
+  "artifact": {
+    "sha256": "7412b440a2bd4638068a552b0777ac9c5ec005e64cddc92072abc4ec117abb95",
+    "bytes": 776390
+  }
+}

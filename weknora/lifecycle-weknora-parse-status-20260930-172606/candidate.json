@@ -1,0 +1,49 @@
+{
+  "schema_version": 2,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "⑤ 文档状态：前端显示的“处理中 / 完成 / 失败”从哪来",
+    "output": ".archify/lifecycle-weknora-parse-status-20260930-172606/weknora-parse-status.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": { "url": "https://github.com/Tencent/WeKnora.git", "provider": "github", "link_mode": "web", "revision": "bccb4b151bae403508da77fbb174efc79dc47c1a" }
+  },
+  "lanes": [
+    { "id": "main", "label": "正常流程" },
+    { "id": "manual", "label": "手动编辑" },
+    { "id": "terminal", "label": "失败 / 取消 / 删除" }
+  ],
+  "states": [
+    { "id": "pending", "type": "start", "label": "pending", "sublabel": "已上传，排队中", "lane": "main", "col": 0, "step": "01",
+      "sources": [{ "path": "internal/application/service/knowledge_create.go", "line": 167, "end_line": 185 }] },
+    { "id": "processing", "type": "active", "label": "processing", "sublabel": "解析 · 分块 · 索引", "lane": "main", "col": 1, "step": "02",
+      "sources": [{ "path": "internal/application/service/knowledge_process.go", "line": 252, "end_line": 256 }, { "path": "internal/application/service/knowledge_process.go", "line": 3626 }] },
+    { "id": "finalizing", "type": "waiting", "label": "finalizing", "sublabel": "等待后处理子任务", "lane": "main", "col": 3, "step": "03",
+      "sources": [{ "path": "internal/application/repository/knowledge.go", "line": 758, "end_line": 780 }] },
+    { "id": "completed", "type": "success", "label": "completed", "sublabel": "全部完成", "lane": "main", "col": 4, "step": "04",
+      "sources": [{ "path": "internal/application/repository/knowledge.go", "line": 675, "end_line": 750 }, { "path": "internal/application/repository/knowledge.go", "line": 782 }] },
+    { "id": "draft", "type": "neutral", "label": "draft", "sublabel": "手写文档草稿", "lane": "manual", "col": 0,
+      "sources": [{ "path": "internal/application/service/knowledge_create.go", "line": 798, "end_line": 813 }] },
+    { "id": "failed", "type": "failure", "label": "failed", "sublabel": "看 error_message", "lane": "terminal", "col": 1,
+      "sources": [{ "path": "internal/application/service/knowledge_process.go", "line": 4224, "end_line": 4245 }, { "path": "internal/router/task.go", "line": 371, "end_line": 386 }] },
+    { "id": "cancelled", "type": "failure", "label": "cancelled", "sublabel": "用户取消解析", "lane": "terminal", "col": 2,
+      "sources": [{ "path": "internal/application/service/knowledge_process.go", "line": 3006, "end_line": 3048 }] },
+    { "id": "deleting", "type": "neutral", "label": "deleting", "sublabel": "正在删除", "lane": "terminal", "col": 4,
+      "sources": [{ "path": "internal/application/service/knowledge_delete.go", "line": 441 }] }
+  ],
+  "transitions": [
+    { "from": "pending", "to": "processing", "label": "Worker 开始" },
+    { "from": "processing", "to": "finalizing", "label": "有后处理" },
+    { "from": "finalizing", "to": "completed", "label": "子任务清零" },
+    { "from": "processing", "to": "completed", "label": "无需后处理", "variant": "dashed", "route": "top-channel" },
+    { "from": "draft", "to": "pending", "label": "发布" },
+    { "from": "processing", "to": "failed", "label": "重试用尽", "variant": "security" },
+    { "from": "processing", "to": "cancelled", "label": "取消", "variant": "security" },
+    { "from": "completed", "to": "deleting", "label": "删除", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "怎么读这张图", "items": ["每个方框是数据库 knowledges 表里 parse_status 的一个取值", "箭头是触发状态变化的事件"] },
+    { "dot": "amber", "title": "processing 之后的两条路", "items": ["没有开启摘要 / 出题 / 看图等后处理：直接 completed", "有后处理：先进入 finalizing，记下待完成子任务数，每完成一个减 1，减到 0 才 completed"] },
+    { "dot": "rose", "title": "failed 的常见来源", "items": ["解析在最后一次重试时仍失败、写分块或写索引失败、存储空间不足", "长时间卡在 processing 的记录会被定时清扫任务标成 failed"] }
+  ]
+}

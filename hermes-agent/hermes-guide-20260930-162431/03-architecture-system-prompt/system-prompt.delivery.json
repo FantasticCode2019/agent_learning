@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "04fed1e5-3baf-4ad5-a571-a62e8eedf743",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/03-architecture-system-prompt/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/03-architecture-system-prompt/system-prompt.html",
+  "specification": {
+    "sha256": "4053d10e368bed70e8c20c4d3252943a06ab2b9c3414869053679631394474d2",
+    "bytes": 7343
+  },
+  "artifact": {
+    "sha256": "4865dfa02ff0ee0ed8c310320e5ae36a2a786505ed92e70338f326e8b18a7817",
+    "bytes": 767043
+  }
+}

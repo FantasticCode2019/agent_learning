@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "bbc45613-4531-4072-a174-9499c8189f06",
+  "status": "current",
+  "command": "deliver",
+  "type": "dataflow",
+  "input": "/Users/yajun/Documents/opensource/WeKnora/.archify/dataflow-weknora-rag-20260930-171426/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/WeKnora/.archify/dataflow-weknora-rag-20260930-171426/weknora-dataflow.html",
+  "specification": {
+    "sha256": "110c81526d0a794f8013c9c60719214f1c823a546da56825ea282d95622d4e6d",
+    "bytes": 8168
+  },
+  "artifact": {
+    "sha256": "b605b0e3696944fc3d6ed558cbbf0470f6106202d2e900f5474cf82e54acbf05",
+    "bytes": 766826
+  }
+}

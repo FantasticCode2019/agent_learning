@@ -1,0 +1,275 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "上下文压缩：对话太长时怎么办",
+    "output": ".archify/hermes-guide-20260930-162431/08-workflow-compression/compression.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/NousResearch/hermes-agent.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "f42f579cf8bac4918ac9599bece71618afadd846"
+    }
+  },
+  "lanes": [
+    {
+      "id": "trig",
+      "label": "① 什么时候触发"
+    },
+    {
+      "id": "steps",
+      "label": "② 压缩四步"
+    },
+    {
+      "id": "after",
+      "label": "③ 压缩之后"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "trigger",
+      "lane": "trig",
+      "col": 0,
+      "type": "external",
+      "label": "需要压缩",
+      "sublabel": "超阈值/报超长/手动",
+      "width": 170,
+      "sources": [
+        {
+          "path": "agent/agent_init.py",
+          "line": 1477,
+          "label": "默认 0.50"
+        },
+        {
+          "path": "agent/turn_overflow.py",
+          "line": 366,
+          "end_line": 453,
+          "label": "_recover_context_length"
+        },
+        {
+          "path": "agent/conversation_compression_manual.py",
+          "line": 77,
+          "end_line": 139,
+          "label": "compress_now"
+        }
+      ]
+    },
+    {
+      "id": "prune",
+      "lane": "steps",
+      "col": 1,
+      "type": "backend",
+      "label": "裁剪旧工具输出",
+      "sublabel": "不调模型，最便宜",
+      "width": 170,
+      "sources": [
+        {
+          "path": "agent/context_compressor.py",
+          "line": 3156,
+          "label": "_prune_old_tool_results"
+        }
+      ]
+    },
+    {
+      "id": "boundary",
+      "lane": "steps",
+      "col": 2,
+      "type": "backend",
+      "label": "划定范围",
+      "sublabel": "保留开头和最近几轮",
+      "width": 170,
+      "sources": [
+        {
+          "path": "agent/context_compressor.py",
+          "line": 5090,
+          "end_line": 5106,
+          "label": "_compress_window"
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "lane": "steps",
+      "col": 3,
+      "type": "cloud",
+      "label": "生成摘要",
+      "sublabel": "辅助模型总结中间段",
+      "width": 170,
+      "sources": [
+        {
+          "path": "agent/context_compressor.py",
+          "line": 3858,
+          "label": "_generate_summary"
+        },
+        {
+          "path": "agent/context_compressor_summary.py",
+          "line": 30,
+          "end_line": 73
+        }
+      ]
+    },
+    {
+      "id": "static",
+      "lane": "steps",
+      "col": 4,
+      "type": "security",
+      "label": "兜底摘要",
+      "sublabel": "规则生成，不调模型",
+      "width": 170,
+      "sources": [
+        {
+          "path": "agent/context_compressor.py",
+          "line": 3464,
+          "label": "_build_static_fallback_summary"
+        },
+        {
+          "path": "agent/context_compressor.py",
+          "line": 4061,
+          "label": "_on_summary_failure"
+        }
+      ]
+    },
+    {
+      "id": "assemble",
+      "lane": "after",
+      "col": 3,
+      "type": "backend",
+      "label": "拼回对话",
+      "sublabel": "开头 + 摘要 + 结尾",
+      "width": 170,
+      "sources": [
+        {
+          "path": "agent/context_compressor.py",
+          "line": 5464,
+          "end_line": 5493
+        },
+        {
+          "path": "agent/context_compressor.py",
+          "line": 5300,
+          "end_line": 5357,
+          "label": "修复工具配对"
+        }
+      ]
+    },
+    {
+      "id": "rebuild",
+      "lane": "after",
+      "col": 2,
+      "type": "security",
+      "label": "重建系统提示词",
+      "sublabel": "唯一允许的缓存重置",
+      "width": 170,
+      "sources": [
+        {
+          "path": "agent/conversation_compression.py",
+          "line": 3161,
+          "end_line": 3216,
+          "label": "_rebuild_system_prompt_at_boundary"
+        }
+      ]
+    },
+    {
+      "id": "archive",
+      "lane": "after",
+      "col": 1,
+      "type": "database",
+      "label": "旧消息归档",
+      "sublabel": "会话 ID 不变",
+      "width": 170,
+      "sources": [
+        {
+          "path": "agent/conversation_compression.py",
+          "line": 3740,
+          "end_line": 3792,
+          "label": "archive_and_compact"
+        },
+        {
+          "path": "agent/conversation_compression.py",
+          "line": 4121,
+          "label": "默认原地压缩"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "c1",
+      "from": "trigger",
+      "to": "prune",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c4",
+      "from": "prune",
+      "to": "boundary",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c5",
+      "from": "boundary",
+      "to": "summary",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c6",
+      "from": "summary",
+      "to": "assemble",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c7",
+      "from": "summary",
+      "to": "static",
+      "label": "失败",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "c8",
+      "from": "static",
+      "to": "assemble",
+      "variant": "security"
+    },
+    {
+      "id": "c9",
+      "from": "assemble",
+      "to": "rebuild",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c10",
+      "from": "rebuild",
+      "to": "archive",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "① 触发",
+      "items": [
+        "自动：每次请求前、工具结果回来后检查，超过阈值就压缩（小窗口模型阈值至少 75%）",
+        "服务商报“超长”时也会压缩后重试，最多 3 次；用户可以随时 /compress"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "② 四步",
+      "items": [
+        "先把很旧的工具输出剪短（不花钱）",
+        "保留开头几条和最近一段对话，只总结中间部分",
+        "用辅助模型写结构化摘要，再拼成“开头 + 摘要 + 结尾”"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "③ 为什么说它特殊",
+      "items": [
+        "压缩是唯一允许改动历史、重建系统提示词的操作，会让提示词缓存重新开始",
+        "默认原地压缩：旧消息归档，会话 ID 不变；网关另有 85% 的“会话卫生”压缩兜底"
+      ]
+    }
+  ]
+}

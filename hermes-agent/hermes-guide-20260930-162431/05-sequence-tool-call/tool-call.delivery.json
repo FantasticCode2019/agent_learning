@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "9275446b-bbe1-4def-a2c5-74e883d785cd",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/05-sequence-tool-call/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/05-sequence-tool-call/tool-call.html",
+  "specification": {
+    "sha256": "15c0f3638b5813dc3a961b4eccaf8e65de4d776dfb39868ed58ad6340895d10b",
+    "bytes": 8099
+  },
+  "artifact": {
+    "sha256": "d2d71fa85e317525ce2ab3d750eae20e55c630d7e2cfc08e6d82bdc9af4def4e",
+    "bytes": 767487
+  }
+}

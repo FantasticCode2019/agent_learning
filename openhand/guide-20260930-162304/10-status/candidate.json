@@ -1,0 +1,260 @@
+{
+  "schema_version": 2,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "⑩ 会话执行状态的生命周期",
+    "locale": "zh-CN",
+    "output": ".archify/guide-20260930-162304/10-status/status.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/OpenHands/software-agent-sdk",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "fcc102a697874d54a357e36004e02c95040dbdc0"
+    }
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "主流程"
+    },
+    {
+      "id": "waiting",
+      "label": "等待人"
+    },
+    {
+      "id": "terminal",
+      "label": "异常结束"
+    }
+  ],
+  "states": [
+    {
+      "id": "idle",
+      "type": "start",
+      "label": "IDLE",
+      "sublabel": "等待用户输入",
+      "lane": "main",
+      "col": 0,
+      "step": "01",
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/state.py",
+          "line": 48,
+          "end_line": 79,
+          "label": "状态枚举"
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "type": "active",
+      "label": "RUNNING",
+      "sublabel": "循环执行 step",
+      "lane": "main",
+      "col": 1,
+      "step": "02",
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/impl/local_conversation.py",
+          "line": 1920,
+          "end_line": 1927,
+          "label": "进入 RUNNING"
+        },
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/impl/local_conversation.py",
+          "line": 2149,
+          "end_line": 2197,
+          "label": "循环检查"
+        }
+      ]
+    },
+    {
+      "id": "finished",
+      "type": "success",
+      "label": "FINISHED",
+      "sublabel": "任务完成",
+      "lane": "main",
+      "col": 3,
+      "step": "03",
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "line": 340,
+          "end_line": 371,
+          "label": "Finish 工具"
+        },
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/response_dispatch.py",
+          "line": 248,
+          "end_line": 261,
+          "label": "纯文本回复"
+        }
+      ]
+    },
+    {
+      "id": "waiting",
+      "type": "waiting",
+      "label": "WAITING",
+      "sublabel": "等人工确认动作",
+      "lane": "waiting",
+      "col": 1,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/agent/agent.py",
+          "line": 1046,
+          "end_line": 1087,
+          "label": "需确认时暂停"
+        },
+        {
+          "path": "openhands-agent-server/openhands/agent_server/event_service.py",
+          "line": 1662,
+          "end_line": 1684,
+          "label": "接受 / 拒绝"
+        }
+      ]
+    },
+    {
+      "id": "paused",
+      "type": "waiting",
+      "label": "PAUSED",
+      "sublabel": "用户点了停止",
+      "lane": "waiting",
+      "col": 2,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/impl/local_conversation.py",
+          "line": 2711,
+          "end_line": 2769,
+          "label": "pause / interrupt"
+        }
+      ]
+    },
+    {
+      "id": "error",
+      "type": "failure",
+      "label": "ERROR",
+      "sublabel": "异常 / 超出迭代或预算",
+      "lane": "terminal",
+      "col": 2,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/impl/local_conversation.py",
+          "line": 2013,
+          "end_line": 2085,
+          "label": "超限与异常"
+        }
+      ]
+    },
+    {
+      "id": "stuck",
+      "type": "failure",
+      "label": "STUCK",
+      "sublabel": "检测到原地打转",
+      "lane": "terminal",
+      "col": 3,
+      "sources": [
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/impl/local_conversation.py",
+          "line": 735,
+          "end_line": 758,
+          "label": "卡死检测"
+        },
+        {
+          "path": "openhands-sdk/openhands/sdk/conversation/stuck_detector.py",
+          "line": 104,
+          "end_line": 153,
+          "label": "五种模式"
+        }
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "from": "idle",
+      "to": "running",
+      "label": "run()",
+      "variant": "emphasis"
+    },
+    {
+      "from": "running",
+      "to": "finished",
+      "label": "完成",
+      "variant": "emphasis"
+    },
+    {
+      "from": "running",
+      "to": "waiting",
+      "label": "需确认",
+      "variant": "security"
+    },
+    {
+      "from": "waiting",
+      "to": "running",
+      "label": "接受"
+    },
+    {
+      "from": "waiting",
+      "to": "idle",
+      "label": "拒绝",
+      "variant": "dashed"
+    },
+    {
+      "from": "running",
+      "to": "paused",
+      "label": "停止",
+      "variant": "dashed"
+    },
+    {
+      "from": "paused",
+      "to": "running",
+      "label": "继续"
+    },
+    {
+      "from": "running",
+      "to": "error",
+      "label": "异常",
+      "variant": "security"
+    },
+    {
+      "from": "running",
+      "to": "stuck",
+      "label": "打转",
+      "variant": "security"
+    },
+    {
+      "from": "finished",
+      "to": "idle",
+      "label": "新消息",
+      "variant": "dashed",
+      "route": "top-channel",
+      "fromSide": "top",
+      "toSide": "top"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "一句话理解",
+      "items": [
+        "每个会话都有一个执行状态，随事件推送给前端，决定界面上显示什么按钮",
+        "发新消息会把 FINISHED / STUCK 重置为 IDLE"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "恢复路径",
+      "items": [
+        "WAITING：接受 → 回到 RUNNING 并执行动作；拒绝 → IDLE",
+        "PAUSED / ERROR / STUCK 再次 run() 都会回到 RUNNING"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "前端怎么显示",
+      "items": [
+        "IDLE→等待输入，RUNNING→停止按钮，PAUSED→继续按钮",
+        "WAITING→确认/拒绝按钮，ERROR / STUCK→错误图标"
+      ]
+    }
+  ]
+}

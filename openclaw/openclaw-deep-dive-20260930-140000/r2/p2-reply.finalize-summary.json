@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "workflow",
+  "quality": "showcase",
+  "specification": {
+    "path": "/private/tmp/claude-501/-Users-yajun-Documents-opensource-openclaw/822bc09c-850c-4e26-82f3-63ca35d1b4ce/scratchpad/.archify/openclaw-deep-dive-20260930-140000/p2-reply.json",
+    "sha256": "bb333bc8e7569f1b91a9763aa45f3f7f99289346b3dd18e946cc8cff7d2a22b3",
+    "bytes": 8174
+  },
+  "artifact": {
+    "path": "/private/tmp/claude-501/-Users-yajun-Documents-opensource-openclaw/822bc09c-850c-4e26-82f3-63ca35d1b4ce/scratchpad/.archify/openclaw-deep-dive-20260930-140000/r2/p2-reply.html",
+    "sha256": "4b7aa6384b4dc636e60052905e91bdc10200c8eb1623f5cecd31a48911122240",
+    "bytes": 766703
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/private/tmp/claude-501/-Users-yajun-Documents-opensource-openclaw/822bc09c-850c-4e26-82f3-63ca35d1b4ce/scratchpad/.archify/openclaw-deep-dive-20260930-140000/r2/p2-reply.finalize.json",
+    "summaryReceipt": "/private/tmp/claude-501/-Users-yajun-Documents-opensource-openclaw/822bc09c-850c-4e26-82f3-63ca35d1b4ce/scratchpad/.archify/openclaw-deep-dive-20260930-140000/r2/p2-reply.finalize-summary.json",
+    "browserCheckReceipt": "/private/tmp/claude-501/-Users-yajun-Documents-opensource-openclaw/822bc09c-850c-4e26-82f3-63ca35d1b4ce/scratchpad/.archify/openclaw-deep-dive-20260930-140000/r2/p2-reply.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.0.1",
+    "releaseNotes": null,
+    "checkedAt": "2026-09-29T09:06:25.980Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 1900
+}

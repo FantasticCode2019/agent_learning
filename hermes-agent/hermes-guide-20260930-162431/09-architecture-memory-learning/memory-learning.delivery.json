@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "d70be18a-0198-4537-a6ac-8bb088019d55",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/09-architecture-memory-learning/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/hermes-agent/.archify/hermes-guide-20260930-162431/09-architecture-memory-learning/memory-learning.html",
+  "specification": {
+    "sha256": "84aad52a7f561f54f09fae7cb5bdc71dbb6a3a21466cc497b4466ba6099ff963",
+    "bytes": 4903
+  },
+  "artifact": {
+    "sha256": "088ef3ee72c2ea6104ccfe9ce5bb4045cdcf796af1bd8c5c19cf8d0f857f23fa",
+    "bytes": 761479
+  }
+}

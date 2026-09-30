@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "sequence",
+  "quality": "showcase",
+  "specification": {
+    "path": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/06-server-run/candidate.json",
+    "sha256": "f6e236f48653f3307b019c0e017d83f9ee53dd4e2d17564eb4033c2d5485e2c4",
+    "bytes": 5897
+  },
+  "artifact": {
+    "path": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/06-server-run/server-run.html",
+    "sha256": "70c67372f11daa81fe68a86e81b0cc4d81f1de169f760f01bc2b4ce069e4bbac",
+    "bytes": 766596
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/06-server-run/server-run.finalize.json",
+    "summaryReceipt": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/06-server-run/server-run.finalize-summary.json",
+    "browserCheckReceipt": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/06-server-run/server-run.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.0.1",
+    "releaseNotes": null,
+    "checkedAt": "2026-09-29T09:06:25.980Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 2182
+}

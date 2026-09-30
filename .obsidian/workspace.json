@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "4fcfc0d7347263c8",
+        "id": "6b06088abd156616",
         "type": "tabs",
         "children": [
           {
-            "id": "5f083be4d697a5ed",
+            "id": "cfb36cb19a1e6002",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "A2A.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "A2A"
+              "title": "新标签页"
             }
           }
         ]
@@ -78,7 +74,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "e5daedd0ccf5bf58",
@@ -180,8 +177,21 @@
       "bases:新建数据库": false
     }
   },
-  "active": "5f083be4d697a5ed",
+  "active": "cfb36cb19a1e6002",
   "lastOpenFiles": [
+    "未命名.canvas",
+    "MTP投机解码.md",
+    "outputs/20260623_180121/reviews/Qwen3-30B-A3B/mmlu_pro_computer science.jsonl",
+    "outputs/20260623_180121/predictions/Qwen3-30B-A3B/mmlu_pro_computer science.jsonl",
+    "outputs/20260623_180121/predictions/Qwen3-30B-A3B",
+    "outputs/20260623_180121/predictions",
+    "outputs/20260623_180121/reviews/Qwen3-30B-A3B",
+    "outputs/20260623_180121/reviews",
+    "outputs/20260623_180121/logs/eval_log.log",
+    "outputs/20260623_180121/configs/task_config.yaml",
+    "outputs/20260623_180121/logs",
+    "outputs/20260623_180121/configs",
+    "A2A.md",
     "A2A（Agent-to-Agent）协议系统性详解.md",
     "vLLM 核心原理与使用指南.md",
     "SGLang：高性能结构化大语言模型推理框架详细指南.md",
@@ -190,12 +200,10 @@
     "video-generation-capcut-prd.md",
     "vLLM、Ollama 与 llama.cpp 推理引擎技术对比报告.md",
     "llm推理.md",
-    "A2A.md",
     "video-generation-capcut-prd_副本.md",
     "img/2.png",
     "img/1.png",
     "1.png",
-    "img",
     "agent-sync-task.md",
     "k8s.md",
     "Kubernetes 入门核心概念总结：从一个 Web 应用案例理解 K8s.md"

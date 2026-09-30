@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "c36b11a1-1331-4462-902f-5b71a60cc91f",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/yajun/Documents/opensource/WeKnora/.archify/sequence-weknora-sse-20260930-172606/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/WeKnora/.archify/sequence-weknora-sse-20260930-172606/weknora-sse.html",
+  "specification": {
+    "sha256": "d9b9db4369aff074dc3e0cd155d95f59dd959c574c28c26ddaecc8098e16278d",
+    "bytes": 7078
+  },
+  "artifact": {
+    "sha256": "40564b4f7484374c8690cac539c7e28d3b61bad24c8942dea58c4c81bb73de85",
+    "bytes": 763554
+  }
+}

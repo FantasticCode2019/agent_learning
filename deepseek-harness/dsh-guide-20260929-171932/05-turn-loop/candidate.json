@@ -1,0 +1,524 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "⑤ Turn / Step 循环：Agent 一轮工作的完整流程",
+    "locale": "zh-CN",
+    "output": ".archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/deepseek-ai/deepseek-harness.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "4878cdabd87d4041bdaff61d04c966883b9fd07a"
+    }
+  },
+  "lanes": [
+    {
+      "id": "inbox",
+      "label": "Inbox 收件箱"
+    },
+    {
+      "id": "hooks",
+      "label": "插件扩展点（瀑布事件）",
+      "variant": "exception"
+    },
+    {
+      "id": "loop",
+      "label": "Agent Loop 驱动"
+    },
+    {
+      "id": "log",
+      "label": "Session 日志（落盘事实）"
+    }
+  ],
+  "phases": [
+    {
+      "id": "ph-open",
+      "label": "开启 turn",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "ph-model",
+      "label": "Step：问模型",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "ph-tools",
+      "label": "Step：用工具 · 收尾",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "msgin",
+    "claim",
+    "route",
+    "stream",
+    "tools",
+    "decide",
+    "tend"
+  ],
+  "nodes": [
+    {
+      "id": "msgin",
+      "lane": "inbox",
+      "col": 0,
+      "type": "messagebus",
+      "label": "有待处理消息",
+      "sublabel": "next-turn 队列",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/inbox.ts",
+          "line": 74,
+          "end_line": 114,
+          "label": "ReactLoopInbox"
+        }
+      ]
+    },
+    {
+      "id": "ctxq",
+      "lane": "inbox",
+      "col": 4,
+      "type": "messagebus",
+      "label": "next-step 队列",
+      "sublabel": "工具附加的上下文",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 534,
+          "end_line": 537,
+          "label": "acceptContext"
+        }
+      ]
+    },
+    {
+      "id": "prestep",
+      "lane": "hooks",
+      "col": 1,
+      "type": "security",
+      "label": "agent/pre-step",
+      "sublabel": "enter 或 reject",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 276,
+          "end_line": 285
+        },
+        {
+          "path": "packages/core/agent/src/runtime-types.ts",
+          "line": 112,
+          "end_line": 119,
+          "label": "PreStepDecision"
+        }
+      ]
+    },
+    {
+      "id": "areq",
+      "lane": "hooks",
+      "col": 2,
+      "type": "security",
+      "label": "agent/request",
+      "sublabel": "选 provider/model",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 547,
+          "end_line": 583
+        }
+      ]
+    },
+    {
+      "id": "reqerr",
+      "lane": "hooks",
+      "col": 3,
+      "type": "security",
+      "label": "agent/request-error",
+      "sublabel": "llm-retry 退避",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 488,
+          "end_line": 510
+        },
+        {
+          "path": "packages/llm/llm-retry/src/index.ts",
+          "line": 199,
+          "end_line": 252
+        }
+      ]
+    },
+    {
+      "id": "tstop",
+      "lane": "hooks",
+      "col": 5,
+      "type": "security",
+      "label": "agent/turn-stopping",
+      "sublabel": "serial，可续命",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 358,
+          "end_line": 364
+        }
+      ]
+    },
+    {
+      "id": "claim",
+      "lane": "loop",
+      "col": 1,
+      "type": "backend",
+      "label": "认领 + 组装",
+      "sublabel": "prompt/工具/运行时上下文",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 267,
+          "end_line": 286,
+          "label": "preStep"
+        }
+      ]
+    },
+    {
+      "id": "route",
+      "lane": "loop",
+      "col": 2,
+      "type": "backend",
+      "label": "准备请求",
+      "sublabel": "prepareCall + 冻结",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 584,
+          "end_line": 596,
+          "label": "prepareCall"
+        },
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 599,
+          "end_line": 687,
+          "label": "buildRequest"
+        }
+      ]
+    },
+    {
+      "id": "stream",
+      "lane": "loop",
+      "col": 3,
+      "type": "backend",
+      "label": "流式调用模型",
+      "sublabel": "逐块推送实时帧",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 425,
+          "end_line": 486
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "lane": "loop",
+      "col": 4,
+      "type": "backend",
+      "label": "执行工具调用",
+      "sublabel": "并行或独占",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/tool-calls.ts",
+          "line": 60,
+          "end_line": 102,
+          "label": "executeToolCalls"
+        },
+        {
+          "path": "packages/core/agent-loop/src/tool-calls.ts",
+          "line": 122,
+          "end_line": 247,
+          "label": "runGroup"
+        }
+      ]
+    },
+    {
+      "id": "decide",
+      "lane": "loop",
+      "col": 5,
+      "type": "backend",
+      "label": "step/end",
+      "sublabel": "还欠模型一次请求?",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 336,
+          "end_line": 365
+        }
+      ]
+    },
+    {
+      "id": "tstart",
+      "lane": "log",
+      "col": 1,
+      "type": "database",
+      "label": "turn/start",
+      "sublabel": "step/start",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 303,
+          "end_line": 309
+        },
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 329
+        }
+      ]
+    },
+    {
+      "id": "inputs",
+      "lane": "log",
+      "col": 2,
+      "type": "database",
+      "label": "输入事件",
+      "sublabel": "system/user/request",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 409,
+          "end_line": 424
+        },
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 615,
+          "end_line": 666
+        }
+      ]
+    },
+    {
+      "id": "amsg",
+      "lane": "log",
+      "col": 3,
+      "type": "database",
+      "label": "assistant/message",
+      "sublabel": "失败则 attempt",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 512,
+          "end_line": 528
+        }
+      ]
+    },
+    {
+      "id": "tlog",
+      "lane": "log",
+      "col": 4,
+      "type": "database",
+      "label": "tool/call · result",
+      "sublabel": "按模型顺序提交",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/tool-calls.ts",
+          "line": 147,
+          "end_line": 161,
+          "label": "commitReady"
+        },
+        {
+          "path": "packages/core/agent-loop/src/tool-calls.ts",
+          "line": 263,
+          "end_line": 290
+        }
+      ]
+    },
+    {
+      "id": "tend",
+      "lane": "log",
+      "col": 5,
+      "type": "database",
+      "label": "turn/end",
+      "sublabel": "记录结束原因",
+      "width": 128,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 366,
+          "end_line": 389
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "w-wake",
+      "from": "msgin",
+      "to": "claim",
+      "label": "唤醒",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "left"
+    },
+    {
+      "id": "w-tstart",
+      "from": "claim",
+      "to": "tstart",
+      "label": "写入",
+      "variant": "dashed",
+      "role": "branch",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
+    },
+    {
+      "id": "w-prestep",
+      "from": "claim",
+      "to": "prestep",
+      "label": "决策",
+      "variant": "security",
+      "role": "branch"
+    },
+    {
+      "id": "w-route",
+      "from": "claim",
+      "to": "route",
+      "label": "enter"
+    },
+    {
+      "id": "w-areq",
+      "from": "route",
+      "to": "areq",
+      "label": "路由",
+      "variant": "security",
+      "role": "branch"
+    },
+    {
+      "id": "w-inputs",
+      "from": "route",
+      "to": "inputs",
+      "label": "写入",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "w-stream",
+      "from": "route",
+      "to": "stream",
+      "label": "冻结请求",
+      "variant": "emphasis"
+    },
+    {
+      "id": "w-reqerr",
+      "from": "stream",
+      "to": "reqerr",
+      "label": "失败",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "w-amsg",
+      "from": "stream",
+      "to": "amsg",
+      "label": "落盘",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "w-tools",
+      "from": "stream",
+      "to": "tools",
+      "label": "有 tool-call",
+      "variant": "emphasis"
+    },
+    {
+      "id": "w-tlog",
+      "from": "tools",
+      "to": "tlog",
+      "label": "落盘",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "w-ctx",
+      "from": "tools",
+      "to": "ctxq",
+      "label": "附加上下文",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "w-decide",
+      "from": "tools",
+      "to": "decide"
+    },
+    {
+      "id": "w-tstop",
+      "from": "decide",
+      "to": "tstop",
+      "label": "准备结束",
+      "variant": "security",
+      "role": "branch"
+    },
+    {
+      "id": "w-tend",
+      "from": "decide",
+      "to": "tend",
+      "label": "结束",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "先弄懂两个词",
+      "items": [
+        "Step（步）= 一次模型请求 + 它要求调用的工具",
+        "Turn（轮）= 0 到多个 Step：从认领用户消息开始，到“模型不再需要工具、也没有新输入”为止",
+        "一次对话里用户发一条消息，通常就是一个 Turn，里面可能有好几个 Step"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "一个 Step 里发生什么（按列从左到右）",
+      "items": [
+        "认领：拿走 next-step 全部 + next-turn 一条消息；组装系统提示词、工具 schema、运行时上下文（沙箱/审批策略等）",
+        "agent/pre-step 让插件改写或拒绝输入；agent/request 让插件改模型；然后 prepareCall 并把 system/user/request 事件写入日志",
+        "请求消息由 deriveMessages() 从日志派生并冻结，再流式调用模型；结束写 assistant/message",
+        "模型要调工具就执行，写 tool/call 与 tool/result；工具还能往 next-step 塞上下文"
+      ]
+    },
+    {
+      "dot": "orange",
+      "title": "什么时候进下一个 Step / 结束",
+      "items": [
+        "执行了工具 → 模型还欠一次回答 → 回到“认领 + 组装”开始下一 Step（代码里 target 从 next-turn 变为 next-step）",
+        "模型没调工具（completed）或输出被截断（max-tokens）→ 触发 agent/turn-stopping，插件可往 next-step 塞消息让它继续",
+        "pre-step 返回 reject → blocked；中途取消 → aborted；异常 → error；都会写 turn/end"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "失败重试",
+      "items": [
+        "模型流以 error 结束时，先写 assistant/attempt（只进日志不进历史），再发 agent/request-error",
+        "llm-retry 对 RATE_LIMIT / SERVER / TIMEOUT / TRANSPORT / EMPTY_RESPONSE 默认最多重试 5 次，指数退避 0.5s→10s",
+        "重试回到“准备请求”，不会重复写 user/message，也不会重新组装提示词"
+      ]
+    }
+  ]
+}

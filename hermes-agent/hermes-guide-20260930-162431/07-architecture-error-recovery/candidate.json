@@ -1,0 +1,300 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "调用模型出错了怎么办",
+    "output": ".archify/hermes-guide-20260930-162431/07-architecture-error-recovery/error-recovery.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/NousResearch/hermes-agent.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "f42f579cf8bac4918ac9599bece71618afadd846"
+    }
+  },
+  "components": [
+    {
+      "id": "apicall",
+      "type": "cloud",
+      "label": "请求模型",
+      "sublabel": "报错了",
+      "pos": [
+        20,
+        170
+      ],
+      "size": [
+        140,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/turn_api_error.py",
+          "line": 51,
+          "end_line": 207,
+          "label": "handle_api_error"
+        }
+      ]
+    },
+    {
+      "id": "classify",
+      "type": "security",
+      "label": "错误分类",
+      "sublabel": "classify_api_error",
+      "pos": [
+        220,
+        162
+      ],
+      "size": [
+        150,
+        80
+      ],
+      "sources": [
+        {
+          "path": "agent/error_classifier.py",
+          "line": 961,
+          "label": "classify_api_error"
+        },
+        {
+          "path": "agent/error_classifier.py",
+          "line": 459,
+          "end_line": 477,
+          "label": "各类错误的处理建议"
+        }
+      ]
+    },
+    {
+      "id": "backoff",
+      "type": "backend",
+      "label": "等一会再试",
+      "sublabel": "2s 起，最长 60s",
+      "pos": [
+        470,
+        40
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/turn_recovery.py",
+          "line": 1384,
+          "end_line": 1422,
+          "label": "compute_error_backoff"
+        },
+        {
+          "path": "agent/agent_init.py",
+          "line": 1450,
+          "label": "默认重试 3 次"
+        }
+      ]
+    },
+    {
+      "id": "rotate",
+      "type": "backend",
+      "label": "换一个密钥",
+      "sublabel": "凭据池轮换",
+      "pos": [
+        470,
+        170
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/agent_runtime_helpers.py",
+          "line": 879,
+          "end_line": 1005,
+          "label": "recover_with_credential_pool"
+        }
+      ]
+    },
+    {
+      "id": "compress",
+      "type": "backend",
+      "label": "压缩上下文",
+      "sublabel": "最多尝试 3 次",
+      "pos": [
+        470,
+        300
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/turn_overflow.py",
+          "line": 366,
+          "end_line": 463,
+          "label": "_recover_context_length"
+        }
+      ]
+    },
+    {
+      "id": "retry",
+      "type": "frontend",
+      "label": "重新请求",
+      "sublabel": "回到主循环重试",
+      "pos": [
+        740,
+        40
+      ],
+      "size": [
+        150,
+        324
+      ],
+      "sources": [
+        {
+          "path": "agent/turn_iteration_prep.py",
+          "line": 418,
+          "end_line": 541,
+          "label": "apply_retry_restarts"
+        }
+      ]
+    },
+    {
+      "id": "fallback",
+      "type": "messagebus",
+      "label": "切换备用模型",
+      "sublabel": "按 fallback 链",
+      "pos": [
+        740,
+        440
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/chat_completion_helpers.py",
+          "line": 2074,
+          "label": "try_activate_fallback"
+        },
+        {
+          "path": "agent/turn_recovery.py",
+          "line": 1754,
+          "label": "route_classified_error"
+        }
+      ]
+    },
+    {
+      "id": "giveup",
+      "type": "security",
+      "label": "结束并报错",
+      "sublabel": "告诉用户原因",
+      "pos": [
+        1000,
+        440
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "agent/turn_api_error.py",
+          "line": 283,
+          "end_line": 379,
+          "label": "不可恢复 / 重试用尽"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "r1",
+      "from": "apicall",
+      "to": "classify",
+      "variant": "emphasis"
+    },
+    {
+      "id": "r2",
+      "from": "classify",
+      "to": "backoff",
+      "label": "超时/过载"
+    },
+    {
+      "id": "r3",
+      "from": "classify",
+      "to": "rotate",
+      "label": "限流/欠费"
+    },
+    {
+      "id": "r4",
+      "from": "classify",
+      "to": "compress",
+      "label": "超长"
+    },
+    {
+      "id": "r5",
+      "from": "backoff",
+      "to": "retry",
+      "variant": "emphasis"
+    },
+    {
+      "id": "r6",
+      "from": "rotate",
+      "to": "retry",
+      "variant": "emphasis"
+    },
+    {
+      "id": "r7",
+      "from": "compress",
+      "to": "retry",
+      "variant": "emphasis"
+    },
+    {
+      "id": "r8",
+      "from": "classify",
+      "to": "fallback",
+      "label": "403/模型不可用",
+      "variant": "dashed"
+    },
+    {
+      "id": "r9",
+      "from": "fallback",
+      "to": "retry",
+      "label": "切换成功",
+      "variant": "emphasis"
+    },
+    {
+      "id": "r10",
+      "from": "fallback",
+      "to": "giveup",
+      "label": "无备用",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "先分类",
+      "items": [
+        "根据状态码、错误码和错误文字判断原因，给出建议：能否重试、要不要换密钥、要不要压缩、要不要换模型"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "三种自救",
+      "items": [
+        "超时/过载/服务端错误：按退避时间等待后重试（服务端给了 Retry-After 就听它的）",
+        "限流/欠费/401：在凭据池里换一个 API Key；401 会先尝试刷新",
+        "上下文超长：采用服务商报告的真实上限，压缩后重试"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "最后一道保险",
+      "items": [
+        "不可重试的错误（403、模型不存在等），以及重试用尽、密钥换完时，会切到配置的备用模型",
+        "临时故障还有“自动恢复阶梯”：15/30/60 秒再等几次；仍失败才向用户报错",
+        "上下文已经压不动时，回合以错误结束"
+      ]
+    }
+  ]
+}

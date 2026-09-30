@@ -1,0 +1,342 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "⑥ 知识问答：RAG 流水线每一步在做什么",
+    "output": ".archify/workflow-weknora-rag-pipeline-20260930-172606/weknora-rag-pipeline.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1230,
+      786
+    ],
+    "repository": {
+      "url": "https://github.com/Tencent/WeKnora.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "bccb4b151bae403508da77fbb174efc79dc47c1a"
+    },
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "用户 / 入口"
+        },
+        "backend": {
+          "label": "处理步骤"
+        },
+        "database": {
+          "label": "存储 / 数据"
+        },
+        "security": {
+          "label": "校验 / 异常"
+        },
+        "messagebus": {
+          "label": "队列 / 任务"
+        },
+        "external": {
+          "label": "模型调用"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "prep",
+      "label": "准备上下文"
+    },
+    {
+      "id": "understand",
+      "label": "理解问题"
+    },
+    {
+      "id": "retrieve",
+      "label": "检索资料"
+    },
+    {
+      "id": "gen",
+      "label": "生成答案"
+    },
+    {
+      "id": "alt",
+      "label": "分支 / 兜底",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "entry",
+    "history",
+    "qu",
+    "search",
+    "rerank",
+    "prompt",
+    "llm"
+  ],
+  "nodes": [
+    {
+      "id": "entry",
+      "lane": "prep",
+      "col": 0,
+      "type": "backend",
+      "label": "组装流水线",
+      "sublabel": "有知识库或联网？",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/application/service/session_knowledge_qa.go",
+          "line": 190,
+          "end_line": 229
+        }
+      ]
+    },
+    {
+      "id": "history",
+      "lane": "prep",
+      "col": 1,
+      "type": "database",
+      "label": "历史 + 记忆",
+      "sublabel": "LOAD_HISTORY · MEMORY",
+      "width": 150,
+      "sources": [
+        {
+          "path": "internal/application/service/chat_pipeline/load_history.go",
+          "line": 32,
+          "end_line": 73
+        },
+        {
+          "path": "internal/application/service/chat_pipeline/memory_recall.go",
+          "line": 52,
+          "end_line": 99
+        }
+      ]
+    },
+    {
+      "id": "qu",
+      "lane": "understand",
+      "col": 2,
+      "type": "backend",
+      "label": "查询理解",
+      "sublabel": "改写问题 · 判断意图",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/application/service/chat_pipeline/query_understand.go",
+          "line": 61,
+          "end_line": 168
+        },
+        {
+          "path": "internal/types/chat_manage.go",
+          "line": 94,
+          "end_line": 116
+        }
+      ]
+    },
+    {
+      "id": "search",
+      "lane": "retrieve",
+      "col": 3,
+      "type": "database",
+      "label": "并行混合检索",
+      "sublabel": "向量 · 关键词 · 图谱 · 联网",
+      "width": 160,
+      "sources": [
+        {
+          "path": "internal/application/service/chat_pipeline/search_parallel.go",
+          "line": 90,
+          "end_line": 179
+        },
+        {
+          "path": "internal/application/service/chat_pipeline/search.go",
+          "line": 62,
+          "end_line": 163
+        }
+      ]
+    },
+    {
+      "id": "rerank",
+      "lane": "retrieve",
+      "col": 4,
+      "type": "backend",
+      "label": "Rerank + 合并",
+      "sublabel": "精排 · 补上下文 · Top-K",
+      "width": 160,
+      "sources": [
+        {
+          "path": "internal/application/service/chat_pipeline/rerank.go",
+          "line": 33,
+          "end_line": 156
+        },
+        {
+          "path": "internal/application/service/chat_pipeline/merge.go",
+          "line": 44,
+          "end_line": 98
+        },
+        {
+          "path": "internal/application/service/chat_pipeline/filter_top_k.go",
+          "line": 27,
+          "end_line": 71
+        }
+      ]
+    },
+    {
+      "id": "prompt",
+      "lane": "gen",
+      "col": 4,
+      "type": "backend",
+      "label": "拼装 Prompt",
+      "sublabel": "问题 + <context> 分块",
+      "width": 160,
+      "sources": [
+        {
+          "path": "internal/application/service/chat_pipeline/into_chat_message.go",
+          "line": 34,
+          "end_line": 209
+        }
+      ]
+    },
+    {
+      "id": "llm",
+      "lane": "gen",
+      "col": 5,
+      "type": "external",
+      "label": "LLM 流式生成",
+      "sublabel": "带引用 · 逐字推送",
+      "width": 150,
+      "sources": [
+        {
+          "path": "internal/application/service/chat_pipeline/chat_completion_stream.go",
+          "line": 55,
+          "end_line": 283
+        }
+      ]
+    },
+    {
+      "id": "chat",
+      "lane": "alt",
+      "col": 1,
+      "type": "backend",
+      "label": "纯聊天",
+      "sublabel": "不查知识库",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/application/service/session_knowledge_qa.go",
+          "line": 195,
+          "end_line": 214
+        }
+      ]
+    },
+    {
+      "id": "fallback",
+      "lane": "alt",
+      "col": 3,
+      "type": "security",
+      "label": "兜底回答",
+      "sublabel": "固定话术或模型作答",
+      "width": 160,
+      "sources": [
+        {
+          "path": "internal/application/service/session_knowledge_qa.go",
+          "line": 796,
+          "end_line": 805
+        },
+        {
+          "path": "internal/application/service/session_knowledge_qa.go",
+          "line": 1039,
+          "end_line": 1099
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "p1",
+      "from": "entry",
+      "to": "history",
+      "label": "需要检索",
+      "variant": "emphasis"
+    },
+    {
+      "id": "p2",
+      "from": "history",
+      "to": "qu",
+      "variant": "emphasis"
+    },
+    {
+      "id": "p3",
+      "from": "qu",
+      "to": "search",
+      "label": "要查资料",
+      "variant": "emphasis"
+    },
+    {
+      "id": "p4",
+      "from": "search",
+      "to": "rerank",
+      "label": "候选分块",
+      "variant": "emphasis"
+    },
+    {
+      "id": "p5",
+      "from": "rerank",
+      "to": "prompt",
+      "label": "最相关几段",
+      "variant": "emphasis"
+    },
+    {
+      "id": "p6",
+      "from": "prompt",
+      "to": "llm",
+      "variant": "emphasis"
+    },
+    {
+      "id": "p7",
+      "from": "entry",
+      "to": "chat",
+      "label": "无知识库",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "p8",
+      "from": "rerank",
+      "to": "fallback",
+      "label": "一条都没找到",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "1 · 准备",
+      "items": [
+        "先看这次对话有没有选知识库、有没有开联网，没有就只做纯聊天",
+        "取出最近几轮对话和用户长期记忆，让模型听得懂“那它呢？”"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "2 · 理解问题",
+      "items": [
+        "一次小模型调用：把追问改写成完整问题，并判断意图",
+        "问候 / 闲聊等意图会跳过后面的检索步骤，直接进入生成"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "3 · 检索",
+      "items": [
+        "问题先转成向量，同时做向量检索和 BM25 关键词检索，再用 RRF 融合（0.7 / 0.3）",
+        "Rerank 模型精排后：去重、把子块换成父块、补上相邻分块，最后保留 Top-K"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "4 · 生成",
+      "items": [
+        "把分块按 <context id=N> 塞进模板，连同问题一起交给大模型",
+        "答案通过事件总线一段段推给前端；最终内容和引用写回消息表"
+      ]
+    }
+  ]
+}

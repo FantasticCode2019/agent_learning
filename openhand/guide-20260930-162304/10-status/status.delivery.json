@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "5ba0bbac-ad8c-4f8c-878a-d0afff2e41f0",
+  "status": "current",
+  "command": "deliver",
+  "type": "lifecycle",
+  "input": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/10-status/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/10-status/status.html",
+  "specification": {
+    "sha256": "4ad58799ec985b58a188b575a6a5fb3bcaf80a57711f66f9e2d5da233303033d",
+    "bytes": 6101
+  },
+  "artifact": {
+    "sha256": "72020595498b185832a6ed4ee6a01ce8937f48b4f8993fa2b2a03b2e4eeadaaa",
+    "bytes": 764316
+  }
+}

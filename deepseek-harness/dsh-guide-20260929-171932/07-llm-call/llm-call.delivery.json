@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "a94f696c-8e55-4492-b087-c98bcabcf0d5",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/07-llm-call/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/07-llm-call/llm-call.html",
+  "specification": {
+    "sha256": "b89de5da27460d619837ace9ecd92e2286dadb51bcd85d1bbc3212325b7c16fb",
+    "bytes": 8707
+  },
+  "artifact": {
+    "sha256": "f066839e7499adfe9cfa1908f0cfa4d54602cdd530e7f4725a4db2564105317a",
+    "bytes": 767721
+  }
+}

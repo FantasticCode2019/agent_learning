@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "WeKnora 系统架构总览",
+    "output": ".archify/architecture-weknora-overview-20260930-171426/weknora-overview.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Tencent/WeKnora.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "bccb4b151bae403508da77fbb174efc79dc47c1a"
+    }
+  },
+  "components": [
+    {
+      "id": "users",
+      "type": "frontend",
+      "label": "用户 / Web UI",
+      "sublabel": "Vue 前端 · IM · API",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docker-compose.yml",
+          "line": 2,
+          "end_line": 12,
+          "label": "frontend 服务"
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "API 服务",
+      "sublabel": "Go · Gin :8080",
+      "pos": [
+        290,
+        240
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "cmd/server/main.go",
+          "line": 58,
+          "end_line": 76,
+          "label": "构建容器并启动 HTTP"
+        },
+        {
+          "path": "internal/router/routes_chat.go",
+          "line": 138,
+          "end_line": 144,
+          "label": "问答路由"
+        }
+      ]
+    },
+    {
+      "id": "filestore",
+      "type": "database",
+      "label": "文件存储",
+      "sublabel": "本地 / MinIO / COS",
+      "pos": [
+        290,
+        80
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_create.go",
+          "line": 196,
+          "end_line": 202,
+          "label": "SaveFile 保存原文件"
+        }
+      ]
+    },
+    {
+      "id": "pipeline",
+      "type": "backend",
+      "label": "问答编排",
+      "sublabel": "RAG 流水线 · Agent",
+      "pos": [
+        540,
+        240
+      ],
+      "size": [
+        170,
+        64
+      ],
+      "sources": [
+        {
+          "path": "internal/application/service/session_knowledge_qa.go",
+          "line": 216,
+          "end_line": 229,
+          "label": "组装 RAG 阶段"
+        },
+        {
+          "path": "internal/application/service/session_agent_qa.go",
+          "line": 24,
+          "end_line": 28,
+          "label": "Agent 问答入口"
+        }
+      ]
+    },
+    {
+      "id": "index",
+      "type": "database",
+      "label": "检索引擎",
+      "sublabel": "向量 + 关键词索引",
+      "pos": [
+        540,
+        400
+      ],
+      "size": [
+        170,
+        64
+      ],
+      "tag": "默认 ParadeDB",
+      "sources": [
+        {
+          "path": "internal/application/service/knowledgebase_search.go",
+          "line": 125,
+          "label": "HybridSearch"
+        },
+        {
+          "path": "internal/container/engine_factory.go",
+          "line": 161,
+          "label": "Postgres 检索引擎"
+        }
+      ]
+    },
+    {
+      "id": "redis",
+      "type": "messagebus",
+      "label": "Redis 任务队列",
+      "sublabel": "Asynq",
+      "pos": [
+        290,
+        560
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_create.go",
+          "line": 219,
+          "end_line": 262,
+          "label": "投递 document:process"
+        },
+        {
+          "path": "docker-compose.yml",
+          "line": 557,
+          "label": "redis 服务"
+        }
+      ]
+    },
+    {
+      "id": "worker",
+      "type": "backend",
+      "label": "文档处理 Worker",
+      "sublabel": "解析 → 分块 → 索引",
+      "pos": [
+        540,
+        560
+      ],
+      "size": [
+        170,
+        64
+      ],
+      "sources": [
+        {
+          "path": "internal/router/task.go",
+          "line": 229,
+          "end_line": 269,
+          "label": "注册任务处理器"
+        },
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 3683,
+          "label": "处理管线"
+        }
+      ]
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "知识 / 分块 / 会话",
+      "pos": [
+        540,
+        720
+      ],
+      "size": [
+        170,
+        64
+      ],
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 633,
+          "label": "CreateChunks"
+        },
+        {
+          "path": "docker-compose.yml",
+          "line": 536,
+          "end_line": 537,
+          "label": "postgres 服务"
+        }
+      ]
+    },
+    {
+      "id": "docreader",
+      "type": "backend",
+      "label": "DocReader",
+      "sublabel": "Python gRPC · anydoc",
+      "pos": [
+        290,
+        720
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "internal/infrastructure/docparser/engine_registry.go",
+          "line": 63,
+          "end_line": 88,
+          "label": "选择解析引擎"
+        },
+        {
+          "path": "docker-compose.yml",
+          "line": 412,
+          "label": "docreader 服务"
+        }
+      ]
+    },
+    {
+      "id": "llm",
+      "type": "external",
+      "label": "模型服务",
+      "sublabel": "LLM · Embedding · Rerank",
+      "pos": [
+        880,
+        240
+      ],
+      "size": [
+        170,
+        384
+      ],
+      "sources": [
+        {
+          "path": "internal/application/service/chat_pipeline/chat_completion_stream.go",
+          "line": 101,
+          "label": "ChatStream"
+        },
+        {
+          "path": "internal/application/service/chat_pipeline/rerank.go",
+          "line": 111,
+          "label": "Rerank"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "ask",
+      "from": "users",
+      "to": "api",
+      "label": "HTTP / SSE",
+      "variant": "emphasis"
+    },
+    {
+      "id": "save-file",
+      "from": "api",
+      "to": "filestore",
+      "label": "存原文件",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "qa",
+      "from": "api",
+      "to": "pipeline",
+      "label": "提问",
+      "variant": "emphasis"
+    },
+    {
+      "id": "retrieve",
+      "from": "pipeline",
+      "to": "index",
+      "label": "混合检索",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "generate",
+      "from": "pipeline",
+      "to": "llm",
+      "label": "Rerank+生成",
+      "variant": "emphasis"
+    },
+    {
+      "id": "enqueue",
+      "from": "api",
+      "to": "redis",
+      "label": "上传后入队",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "consume",
+      "from": "redis",
+      "to": "worker",
+      "label": "取任务",
+      "variant": "dashed"
+    },
+    {
+      "id": "write-index",
+      "from": "worker",
+      "to": "index",
+      "label": "BatchIndex",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "embed",
+      "from": "worker",
+      "to": "llm",
+      "label": "Embedding",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "save-chunks",
+      "from": "worker",
+      "to": "pg",
+      "label": "写分块",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "parse",
+      "from": "worker",
+      "to": "docreader",
+      "label": "解析为 Markdown",
+      "fromSide": "left",
+      "toSide": "right"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "问答（同步路径）",
+      "items": [
+        "用户提问经 API 进入问答编排，SSE 流式返回",
+        "RAG：查询理解 → 并行检索 → Rerank → 合并 → 大模型生成",
+        "Agent 模式：大模型多步推理，把知识检索当作工具调用"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "入库（异步路径）",
+      "items": [
+        "上传只保存文件并记一条 Knowledge，随即返回",
+        "API、问答编排和 Worker 都跑在同一个 app 容器（同一 Go 进程）里",
+        "Asynq Worker 后台解析、分块、向量化并写索引",
+        "失败最多重试 3 次，状态写回 Knowledge"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "可替换组件",
+      "items": [
+        "检索引擎：Postgres / ES / OpenSearch / Qdrant / Milvus / Weaviate 等",
+        "文件存储、模型厂商都可以通过配置更换"
+      ]
+    }
+  ]
+}

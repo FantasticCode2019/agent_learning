@@ -1,0 +1,367 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "WeKnora 数据流：文档入库与检索问答",
+    "output": ".archify/dataflow-weknora-rag-20260930-171426/weknora-dataflow.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Tencent/WeKnora.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "bccb4b151bae403508da77fbb174efc79dc47c1a"
+    },
+    "viewBox": [
+      1070,
+      560
+    ]
+  },
+  "stages": [
+    {
+      "label": "来源"
+    },
+    {
+      "label": "接入"
+    },
+    {
+      "label": "加工"
+    },
+    {
+      "label": "存储 / 召回"
+    },
+    {
+      "label": "输出"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "docs",
+      "type": "external",
+      "label": "文档与数据源",
+      "sublabel": "PDF · Word · 网页 · 飞书",
+      "stage": 0,
+      "row": 0,
+      "tag": "入库",
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_create.go",
+          "line": 25,
+          "label": "CreateKnowledgeFromFile"
+        }
+      ]
+    },
+    {
+      "id": "enqueue",
+      "type": "messagebus",
+      "label": "API + 任务队列",
+      "sublabel": "存文件 · Asynq",
+      "stage": 1,
+      "row": 0,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_create.go",
+          "line": 219,
+          "end_line": 262,
+          "label": "入队 document:process"
+        }
+      ]
+    },
+    {
+      "id": "parse",
+      "type": "backend",
+      "label": "DocReader 解析",
+      "sublabel": "转成 Markdown",
+      "stage": 2,
+      "row": 0,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 4065,
+          "end_line": 4110,
+          "label": "convert"
+        },
+        {
+          "path": "internal/infrastructure/docparser/engine_registry.go",
+          "line": 63,
+          "end_line": 88
+        }
+      ]
+    },
+    {
+      "id": "chunk",
+      "type": "backend",
+      "label": "Chunker 分块",
+      "sublabel": "图片落盘 · 父子块",
+      "stage": 2,
+      "row": 1,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 3887,
+          "end_line": 3945,
+          "label": "存图片 + 分块"
+        }
+      ]
+    },
+    {
+      "id": "pgchunks",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "分块原文记录",
+      "stage": 3,
+      "row": 0,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 633,
+          "label": "CreateChunks"
+        }
+      ]
+    },
+    {
+      "id": "index",
+      "type": "database",
+      "label": "检索引擎",
+      "sublabel": "向量 + 关键词",
+      "stage": 3,
+      "row": 1,
+      "tag": "可替换",
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 724,
+          "label": "BatchIndex"
+        },
+        {
+          "path": "internal/container/engine_factory.go",
+          "line": 161
+        }
+      ]
+    },
+    {
+      "id": "question",
+      "type": "frontend",
+      "label": "用户提问",
+      "sublabel": "问题 + 历史对话",
+      "stage": 0,
+      "row": 2,
+      "tag": "问答",
+      "sources": [
+        {
+          "path": "internal/handler/session/qa.go",
+          "line": 993,
+          "label": "KnowledgeQA"
+        }
+      ]
+    },
+    {
+      "id": "understand",
+      "type": "backend",
+      "label": "查询理解",
+      "sublabel": "改写 · 意图识别",
+      "stage": 1,
+      "row": 2,
+      "sources": [
+        {
+          "path": "internal/application/service/session_knowledge_qa.go",
+          "line": 216,
+          "end_line": 229,
+          "label": "RAG 阶段顺序"
+        }
+      ]
+    },
+    {
+      "id": "search",
+      "type": "backend",
+      "label": "并行混合检索",
+      "sublabel": "多知识库 · 可选联网",
+      "stage": 2,
+      "row": 2,
+      "sources": [
+        {
+          "path": "internal/application/service/chat_pipeline/search.go",
+          "line": 579,
+          "label": "HybridSearch"
+        }
+      ]
+    },
+    {
+      "id": "rerank",
+      "type": "backend",
+      "label": "Rerank + 合并",
+      "sublabel": "重排 · 取 Top-K",
+      "stage": 4,
+      "row": 1,
+      "sources": [
+        {
+          "path": "internal/application/service/chat_pipeline/rerank.go",
+          "line": 111,
+          "label": "Rerank"
+        }
+      ]
+    },
+    {
+      "id": "answer",
+      "type": "external",
+      "label": "大模型生成",
+      "sublabel": "SSE 流式 · 带引用",
+      "stage": 4,
+      "row": 2,
+      "sources": [
+        {
+          "path": "internal/application/service/chat_pipeline/chat_completion_stream.go",
+          "line": 101,
+          "label": "ChatStream"
+        }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "f-upload",
+      "from": "docs",
+      "to": "enqueue",
+      "label": "上传",
+      "classification": "原始文件",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f-task",
+      "from": "enqueue",
+      "to": "parse",
+      "label": "后台任务",
+      "classification": "异步",
+      "variant": "dashed"
+    },
+    {
+      "id": "f-md",
+      "from": "parse",
+      "to": "chunk",
+      "label": "Markdown",
+      "classification": "全文",
+      "labelAt": [
+        530,
+        214
+      ]
+    },
+    {
+      "id": "f-rows",
+      "from": "chunk",
+      "to": "pgchunks",
+      "label": "分块记录",
+      "classification": "原文",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [
+        [
+          612,
+          271
+        ],
+        [
+          612,
+          157
+        ]
+      ],
+      "labelAt": [
+        612,
+        214
+      ]
+    },
+    {
+      "id": "f-vec",
+      "from": "chunk",
+      "to": "index",
+      "label": "Embedding",
+      "classification": "向量",
+      "variant": "emphasis",
+      "route": "straight",
+      "labelAt": [
+        652,
+        258
+      ]
+    },
+    {
+      "id": "f-q",
+      "from": "question",
+      "to": "understand",
+      "label": "问题",
+      "classification": "文本",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f-rewrite",
+      "from": "understand",
+      "to": "search",
+      "label": "改写查询",
+      "classification": "文本",
+      "variant": "emphasis"
+    },
+    {
+      "id": "f-lookup",
+      "from": "search",
+      "to": "index",
+      "label": "向量 + 关键词查询",
+      "classification": "召回",
+      "fromSide": "right",
+      "toSide": "bottom",
+      "via": [
+        [
+          745,
+          385
+        ]
+      ]
+    },
+    {
+      "id": "f-cands",
+      "from": "index",
+      "to": "rerank",
+      "label": "候选分块",
+      "classification": "Top-N",
+      "route": "straight"
+    },
+    {
+      "id": "f-ctx",
+      "from": "rerank",
+      "to": "answer",
+      "label": "拼入 Prompt",
+      "classification": "上下文",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight",
+      "labelAt": [
+        960,
+        328
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "上半部分：入库",
+      "items": [
+        "文件先保存、再入队，上传接口立即返回",
+        "Worker 把文档解析成 Markdown，再切成小块",
+        "每块文字存 PostgreSQL，向量写进检索引擎"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "下半部分：问答",
+      "items": [
+        "先理解并改写问题，再同时查向量和关键词",
+        "Rerank 模型按相关度重排，只保留最有用的几块",
+        "大模型参考这些分块作答，并标出出处"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "两条路径的交汇点",
+      "items": [
+        "检索引擎：入库时写入，问答时读取",
+        "两边必须使用同一个 Embedding 模型，向量才能对得上"
+      ]
+    }
+  ]
+}

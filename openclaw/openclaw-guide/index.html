@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenClaw 架构导读</title>
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --text: #1d232b; --muted: #5b6573; --line: #e2e6eb;
+  --accent: #0f8a6a; --accent-soft: #e5f4ef; --code-bg: #f0f2f5; --warn: #b4531a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161b; --panel: #1a2027; --text: #e4e8ee; --muted: #9aa5b3; --line: #2c343e;
+    --accent: #3cc49c; --accent-soft: #173229; --code-bg: #232b34; --warn: #e79a62;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161b; --panel: #1a2027; --text: #e4e8ee; --muted: #9aa5b3; --line: #2c343e;
+  --accent: #3cc49c; --accent-soft: #173229; --code-bg: #232b34; --warn: #e79a62;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 16px/1.75 -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 32px 16px 80px; }
+header h1 { font-size: 30px; margin: 0 0 6px; }
+header p { color: var(--muted); margin: 0; }
+nav.toc { margin: 24px 0 8px; display: flex; flex-wrap: wrap; gap: 8px; }
+nav.toc a { text-decoration: none; color: var(--text); background: var(--panel); border: 1px solid var(--line);
+  padding: 6px 12px; border-radius: 999px; font-size: 14px; }
+nav.toc a:hover { border-color: var(--accent); color: var(--accent); }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-top: 28px; }
+section h2 { margin: 0 0 4px; font-size: 22px; }
+section .lead { color: var(--muted); margin: 0 0 16px; }
+.frame { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg); }
+.frame iframe { display: block; width: 100%; height: 960px; border: 0; }
+.open { display: inline-block; margin: 8px 0 0; font-size: 14px; color: var(--accent); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px; }
+@media (max-width: 820px) { .cols { grid-template-columns: 1fr; } .frame iframe { height: 640px; } }
+h3 { font-size: 17px; margin: 0 0 8px; }
+ol, ul { margin: 0; padding-left: 22px; }
+li { margin: 4px 0; }
+code { background: var(--code-bg); padding: 1px 6px; border-radius: 5px; font-size: 13.5px;
+  font-family: "SF Mono", Menlo, Consolas, monospace; word-break: break-all; }
+.analogy { background: var(--accent-soft); border-radius: 10px; padding: 12px 16px; margin-top: 16px; }
+.analogy b { color: var(--accent); }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; width: 22%; }
+.note { color: var(--warn); font-size: 14px; margin-top: 12px; }
+footer { color: var(--muted); font-size: 13px; margin-top: 32px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>OpenClaw 架构导读：从一条消息到 Agent 回复</h1>
+  <p>基于提交 63144fe0 的源码。共 8 张图，由粗到细：先看全局，再逐层深入到 harness 和 agent 循环内部。图中每个方框右上角的“来源”可以点开，跳到 GitHub 上对应的代码行。</p>
+</header>
+
+<nav class="toc">
+  <a href="#glossary">术语表</a>
+  <a href="#p0">0 · 系统总览</a>
+  <a href="#p1">1 · 一条消息的旅程</a>
+  <a href="#p2">2 · 回复编排</a>
+  <a href="#p3">3 · Harness 分层</a>
+  <a href="#p4">4 · 一次 attempt</a>
+  <a href="#p5">5 · Agent 循环</a>
+  <a href="#p6">6 · 数据流</a>
+  <a href="#p7">7 · 生命周期</a>
+</nav>
+
+<section id="glossary">
+  <h2>先认识几个词</h2>
+  <p class="lead">后面的图反复出现这些概念，先有个印象就好。</p>
+  <table>
+    <tr><th>Gateway</th><td>OpenClaw 的常驻主进程，默认监听 18789 端口。所有渠道、客户端、agent 都在它里面运行或连接到它。</td></tr>
+    <tr><th>渠道（Channel）</th><td>消息进出的地方，比如 Telegram、Discord、Slack。每个渠道是一个插件。</td></tr>
+    <tr><th>模型提供方（Provider）</th><td>负责“怎么调用某家模型 API”，比如 anthropic、openai。也是插件。</td></tr>
+    <tr><th>会话 / 转录</th><td>会话（session）是一段持续的对话；转录（transcript）是这段对话所有消息的记录，存在 SQLite 里。</td></tr>
+    <tr><th>回合（turn）</th><td>用户发一条消息、agent 给出完整回复，这算一个回合。一个回合里可能多次调用模型和工具。</td></tr>
+    <tr><th>Attempt</th><td>回合的一次“尝试”。出错重试、切换模型时，同一个回合会有多次 attempt。</td></tr>
+    <tr><th>Harness</th><td>执行一次 attempt 的底层引擎。内置的叫 <code>openclaw</code>；插件可以提供别的（如 <code>codex</code>）。</td></tr>
+    <tr><th>工具（Tool）</th><td>模型可以调用的能力，比如执行命令、打开浏览器、发消息。模型说“我要调用某工具”，由程序真正执行。</td></tr>
+    <tr><th>Steer / Follow-up</th><td>agent 正在忙时又来了新消息：steer 是把它插进正在进行的回合，follow-up 是排队等下一个回合。</td></tr>
+    <tr><th>压缩（Compaction）</th><td>对话太长、超出模型上下文窗口时，把旧消息总结成摘要，腾出空间。</td></tr>
+    <tr><th>回退（Fallback）</th><td>主模型不可用（限流、认证失败等）时，按配置换备用模型继续。</td></tr>
+  </table>
+</section>
+
+<section id="p0">
+  <h2>第 0 部分 · 系统总览</h2>
+  <p class="lead">先看大图：谁连到 Gateway，消息从哪进、到哪去。</p>
+  <div class="frame"><iframe src="diagrams/p0-overview.html" loading="lazy" title="系统总览"></iframe></div>
+  <a class="open" href="diagrams/p0-overview.html" target="_blank">在新标签页打开 ↗</a>
+  <div class="cols">
+    <div>
+      <h3>怎么读这张图</h3>
+      <ol>
+        <li>左上：控制端（网页 Control UI、命令行、手机/电脑 App）通过 WebSocket 连到 <b>Gateway</b>。</li>
+        <li>左下：IM 用户在 Telegram 等平台发消息，由对应的<b>渠道插件</b>接收。</li>
+        <li>两条入口最终都进入中间的<b>渠道回合 + Auto-reply</b>，这是统一的消息处理管线。</li>
+        <li>管线调用 <b>Agent 运行时</b>，它再去调用<b>模型提供方</b>并执行<b>工具</b>。</li>
+        <li>会话和转录写入 <b>SQLite</b>。</li>
+      </ol>
+    </div>
+    <div>
+      <h3>要点</h3>
+      <ul>
+        <li>OpenClaw 核心很小，渠道、模型、工具、记忆大多是插件，插件只能通过 <code>openclaw/plugin-sdk/*</code> 与核心交互。</li>
+        <li>Gateway 启动时由 <code>loadGatewayPlugins</code> 加载插件，再由 ChannelManager 启动各渠道账号。</li>
+        <li>数据库读写在 worker 线程里做，主线程不阻塞。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="analogy"><b>类比：</b>Gateway 像一家餐厅的前台。渠道是不同的点餐入口（电话、外卖 App、堂食），Auto-reply 是统一的后厨调度，Agent 是厨师，模型 API 是厨师请教的“大脑”，工具是厨房里的各种器具。</div>
+</section>
+
+<section id="p1">
+  <h2>第 1 部分 · 一条消息的旅程</h2>
+  <p class="lead">以 Telegram 为例，按时间顺序看一条消息怎么变成回复。</p>
+  <div class="frame"><iframe src="diagrams/p1-message.html" loading="lazy" title="消息时序"></iframe></div>
+  <a class="open" href="diagrams/p1-message.html" target="_blank">在新标签页打开 ↗</a>
+  <div class="cols">
+    <div>
+      <h3>逐步讲解</h3>
+      <ol>
+        <li><b>入站：</b>Telegram 插件用 grammY 库收到消息，调用 <code>runChannelInboundEvent</code> 交给核心。</li>
+        <li><b>记录：</b>渠道回合先调用 <code>recordInboundSession</code>，把“收到一条消息”写进会话存储。</li>
+        <li><b>调度：</b><code>dispatchInboundMessage</code> 进入 Auto-reply 管线，最终调用 <code>runReplyAgent</code>。</li>
+        <li><b>思考与行动：</b>Agent 流式请求模型；模型可能要求调用工具，执行后把结果交回模型，直到模型给出最终文本。</li>
+        <li><b>回复：</b>回复沿原路返回，由 <code>deliverReply</code> 调用 Telegram Bot API 的 <code>sendText</code> 发给用户。</li>
+      </ol>
+    </div>
+    <div>
+      <h3>要点</h3>
+      <ul>
+        <li>回复是<b>流式</b>的：模型边生成，渠道边发送分块，用户不用等全部生成完。</li>
+        <li>发送期间还会并行显示“正在输入…”状态和草稿预览。</li>
+        <li>Control UI 的 <code>chat.send</code> 从 Gateway 进入，汇入同一条 Auto-reply 管线，只是回复通过 WebSocket 事件推回。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="p2">
+  <h2>第 2 部分 · 回复编排（进入 harness 之前）</h2>
+  <p class="lead">放大第 1 部分中间的“Auto-reply”：在真正调用模型之前，OpenClaw 做了哪些判断。</p>
+  <div class="frame"><iframe src="diagrams/p2-reply.html" loading="lazy" title="回复编排"></iframe></div>
+  <a class="open" href="diagrams/p2-reply.html" target="_blank">在新标签页打开 ↗</a>
+  <div class="cols">
+    <div>
+      <h3>逐步讲解</h3>
+      <ol>
+        <li><b>渠道调度：</b>渠道把消息交给 <code>getReplyFromConfig</code>，这是回复逻辑的总入口。</li>
+        <li><b>解析上下文：</b>确定由哪个 agent 回复、属于哪个会话、默认用哪个模型、在哪个工作目录运行。</li>
+        <li><b>指令与命令：</b>识别 <code>/model</code>、<code>/think</code>、<code>/queue</code>、<code>/status</code> 等。如果消息只有命令，直接回复结果，<b>不调用模型</b>。</li>
+        <li><b>队列策略：</b>检查这个会话是否正有 agent 在运行。空闲就 <code>run-now</code>；正忙则按配置 steer（插进当前回合，默认）、follow-up（排队）、collect（合并）或 interrupt（打断）。</li>
+        <li><b>runReplyAgent：</b>启动“正在输入”状态，建立分块回复管线；必要时先 flush 记忆、预压缩过长的历史。</li>
+        <li><b>模型回退：</b>按“请求的模型 → 配置的备用模型 → 主模型”顺序准备候选，逐个尝试，还可在同一模型下轮换多个 API 凭据。</li>
+        <li><b>runEmbeddedAgent：</b>每个候选都要先在“会话 lane”和“全局 lane”排队（控制并发），然后交给 harness（第 3 部分）。</li>
+        <li><b>投递：</b>产生的回复块经 <code>ReplyDispatcher</code> 发回渠道。</li>
+      </ol>
+    </div>
+    <div>
+      <h3>要点</h3>
+      <ul>
+        <li>同一个会话同一时刻只允许一个回合在跑，保证对话顺序不乱。</li>
+        <li>“会话忙”时默认用 steer：用户的补充消息会被注入正在进行的回合，agent 能在下一次思考时看到。</li>
+        <li>回退只针对可恢复错误（限流、过载、认证等）；上下文溢出这类错误先走压缩，不直接换模型。</li>
+      </ul>
+      <p class="note">有一个分支图中没画：模型运行时配置为 CLI 后端（如 <code>claude-cli</code>）时，这里会改为启动外部 CLI 进程，见第 3 部分。</p>
+    </div>
+  </div>
+</section>
+
+<section id="p3">
+  <h2>第 3 部分 · Harness 分层与选择</h2>
+  <p class="lead">回答“harness 层面怎么体现”：谁来真正执行一个回合，是怎么选出来的。</p>
+  <div class="frame"><iframe src="diagrams/p3-harness.html" loading="lazy" title="Harness 分层"></iframe></div>
+  <a class="open" href="diagrams/p3-harness.html" target="_blank">在新标签页打开 ↗</a>
+  <div class="cols">
+    <div>
+      <h3>Harness 是什么</h3>
+      <ul>
+        <li>Harness 是<b>执行一次 attempt 的底层引擎</b>。它不是模型提供方，也不是渠道，也不是工具注册表。</li>
+        <li>它的契约（<code>AgentHarnessContract</code>）核心只有两个方法：
+          <br><code>supports(ctx)</code>：“这个模型/路由我能不能跑？”
+          <br><code>runAttempt(params)</code>：“跑一次，返回结果。”</li>
+        <li>输入统一是 <code>AttemptParams</code>（会话、模型、凭据、工具策略、各种流式回调），输出统一是 <code>AttemptResult</code>（终态、文本、工具记录、用量、压缩次数等）。</li>
+      </ul>
+      <h3 style="margin-top:16px">怎么选</h3>
+      <ol>
+        <li>先看配置里模型级的 <code>agentRuntime.id</code>，再看提供方级。</li>
+        <li>没配置（<code>auto</code>）：逐个询问已注册 harness 的 <code>supports()</code>，按优先级选第一个说“能”的。</li>
+        <li>都不支持：用内置的 <code>openclaw</code>，它对任何模型都返回“能”。</li>
+        <li>插件 harness 一旦接手，失败了也<b>不会</b>偷偷换内置 harness 重跑，避免重复副作用。</li>
+      </ol>
+    </div>
+    <div>
+      <h3>三种执行方式</h3>
+      <ul>
+        <li><b>内置 openclaw：</b>在 Gateway 进程内运行 OpenClaw 自己的 agent-core 循环（第 4、5 部分详细展开）。</li>
+        <li><b>插件 harness（如 codex）：</b>启动 <code>codex app-server</code> 子进程，通过标准输入输出上的 JSON-RPC 通信。Codex 自己管理线程和压缩；需要 OpenClaw 的工具时，它发回 <code>item/tool/call</code> 请求，由 OpenClaw 执行后回复。</li>
+        <li><b>CLI 后端（如 claude-cli）：</b>不属于 harness。它在回复编排层就分流了，直接启动外部 CLI 进程，工具通过本地回环 MCP 提供。</li>
+      </ul>
+      <h3 style="margin-top:16px">核心始终负责</h3>
+      <ul>
+        <li>模型与凭据解析、思考等级、上下文预算</li>
+        <li>OpenClaw 转录文件、工作区、沙箱、工具策略</li>
+        <li>渠道回复回调、模型回退策略</li>
+      </ul>
+    </div>
+  </div>
+  <div class="analogy"><b>类比：</b>核心是餐厅前台，负责接单、核对忌口、选择厨房。Harness 是厨房，大家都认同一种“点单格式”（AttemptParams）和“出餐格式”（AttemptResult）。内置 openclaw 是自家后厨；codex 是隔壁的加盟厨房，通过对讲机（JSON-RPC）沟通，缺什么食材（工具）就回头找前台要。CLI 后端则是外包的餐饮公司，前台选厨房之前就把单子转给它了。</div>
+</section>
+
+<section id="p4">
+  <h2>第 4 部分 · 内置 harness 执行一次 attempt</h2>
+  <p class="lead">放大第 3 部分的“内置 harness”：<code>runEmbeddedAttempt</code> 从头到尾做了什么。</p>
+  <div class="frame"><iframe src="diagrams/p4-attempt.html" loading="lazy" title="Attempt 步骤"></iframe></div>
+  <a class="open" href="diagrams/p4-attempt.html" target="_blank">在新标签页打开 ↗</a>
+  <div class="cols">
+    <div>
+      <h3>逐步讲解</h3>
+      <ol>
+        <li><b>工作区与沙箱：</b>确定 agent 在哪个目录工作；如果配置了沙箱，就准备 Docker/Podman 环境。</li>
+        <li><b>加载技能：</b>读取技能（skills）快照，技能是一组可复用的说明和脚本。</li>
+        <li><b>组装工具：</b>核心工具（执行命令、读写文件等）、插件工具（如浏览器）、MCP/LSP 工具，再建立工具目录。</li>
+        <li><b>构建系统提示词：</b>把工作区上下文文件、技能说明、工具说明拼成发给模型的“角色设定”。</li>
+        <li><b>打开转录、建会话：</b>从 SQLite 打开这段对话的历史，创建 <code>AgentSession</code>（包着 agent-core 的 <code>Agent</code>）。</li>
+        <li><b>组装历史上下文：</b>上下文引擎决定带哪些历史消息给模型，避免超出窗口。</li>
+        <li><b>订阅事件流：</b>先订阅 agent 的事件，把文本增量切成块实时发给渠道。<b>先订阅再提交</b>，才不会漏掉开头的输出。</li>
+        <li><b>提交 prompt、等待结算：</b>调用 <code>activeSession.prompt()</code>，agent 循环开始运行（第 5 部分），等它结束、事件全部处理完。</li>
+        <li><b>返回 AttemptResult：</b>打包终态（成功/中止/超时/失败）、回复文本、工具记录和用量。</li>
+        <li><b>finally 清理：</b>不管成功失败，都会清理会话、注册过的工具和技能环境变量。</li>
+      </ol>
+    </div>
+    <div>
+      <h3>要点</h3>
+      <ul>
+        <li>前 4 步是“准备能力”：决定这次模型能看到什么、能做什么。</li>
+        <li>第 5～7 步是“建立会话”：把历史和实时输出通道接好。</li>
+        <li>真正的“思考—行动”循环发生在第 8 步里面，下一张图展开。</li>
+        <li>每一步都包在 <code>prepare("attempt.xxx")</code> 里计时，方便诊断哪一步慢。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="p5">
+  <h2>第 5 部分 · Agent 循环一次完整运行</h2>
+  <p class="lead">放大第 4 部分的“提交 prompt”：模型调用、工具调用怎么一轮轮交替进行。</p>
+  <div class="frame"><iframe src="diagrams/p5-loop.html" loading="lazy" title="Agent 循环"></iframe></div>
+  <a class="open" href="diagrams/p5-loop.html" target="_blank">在新标签页打开 ↗</a>
+  <div class="cols">
+    <div>
+      <h3>逐步讲解</h3>
+      <ol>
+        <li><b>发起：</b>runner 调用 <code>AgentSession.prompt(text)</code>。AgentSession 先跑扩展钩子、检查是否需要压缩，再把文本包装成 <code>UserMessage</code> 交给 <code>Agent.prompt</code>。用户消息同时写入 SQLite。</li>
+        <li><b>第一轮模型调用：</b>Agent 把“系统提示词 + 历史消息 + 工具定义”打包成 <code>Context</code>，调用 <code>streamSimple</code>。</li>
+        <li><b>选适配器：</b><code>packages/ai</code> 根据模型的 <code>api</code> 字段（如 <code>anthropic-messages</code>）找到对应适配器，发起 HTTP 流式请求。</li>
+        <li><b>流式返回：</b>模型以 SSE 流返回增量；适配器把它们转成统一的事件（text、thinking、toolcall、done）。</li>
+        <li><b>边收边发：</b>Agent 把增量拼成 <code>AssistantMessage</code>，同时发出 <code>message_update</code> 事件，runner 据此把文本分块发给用户。</li>
+        <li><b>工具调用：</b>如果模型停在 <code>stopReason=toolUse</code>，Agent 取出工具调用，先按 JSON Schema 校验参数，再执行（默认并行），得到 <code>ToolResult</code>。</li>
+        <li><b>持久化：</b>每条消息结束（<code>message_end</code>）时，AgentSession 把助手消息和工具结果写入 SQLite。</li>
+        <li><b>下一轮：</b>工具结果追加进上下文，再调一次模型。如此循环。</li>
+        <li><b>结束：</b>模型返回 <code>stopReason=stop</code>、且没有排队的 steer/follow-up 消息时，发出 <code>agent_end</code>。AgentSession 再检查是否需要压缩或重试，然后结算。</li>
+      </ol>
+    </div>
+    <div>
+      <h3>要点</h3>
+      <ul>
+        <li>一“轮”（turn）= 一次模型调用 + 可能的工具执行。一个回合可能包含很多轮。</li>
+        <li>循环<b>没有最大轮数限制</b>。结束条件是：没有更多工具要执行、出错、被中止、钩子要求停止，或工具循环检测判定陷入死循环。</li>
+        <li>参数校验失败不会让程序崩溃，而是作为错误结果返回给模型，让它自己修正。</li>
+        <li>steer 消息在“检查点”被注入：每轮开始前、工具执行间隙都会检查。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="p6">
+  <h2>第 6 部分 · Agent 内部数据流</h2>
+  <p class="lead">换个角度，只看数据：信息从哪来、在哪拼装、最后流向哪里。</p>
+  <div class="frame"><iframe src="diagrams/p6-dataflow.html" loading="lazy" title="数据流"></iframe></div>
+  <a class="open" href="diagrams/p6-dataflow.html" target="_blank">在新标签页打开 ↗</a>
+  <div class="cols">
+    <div>
+      <h3>五个阶段</h3>
+      <ol>
+        <li><b>输入：</b>工具定义（每个工具的名字、说明、参数 JSON Schema）、用户消息、系统提示词、历史转录。</li>
+        <li><b>组装：</b>工具和用户消息进入 <code>AgentState</code>（agent 的内存状态：messages、tools、model、思考等级）。<code>convertToLlm</code> 把内部消息（包括压缩摘要、分支摘要等自定义类型）转换成模型认识的格式，加上系统提示词和历史，得到 <code>LLM Context</code>。</li>
+        <li><b>模型调用：</b>provider 适配器把 Context 翻译成对应厂商的请求格式，发出流式请求，把响应翻译回统一事件。</li>
+        <li><b>输出：</b>事件被拼成 <code>AssistantMessage</code>，里面可以有文本、思考过程和工具调用。有工具调用就进入“工具执行”，结果（<code>ToolResult</code>）追加回 AgentState，开始下一轮。</li>
+        <li><b>落地：</b>文本增量实时发往渠道；每条完整消息都写入 SQLite 转录。</li>
+      </ol>
+    </div>
+    <div>
+      <h3>核心数据结构</h3>
+      <ul>
+        <li><code>UserMessage</code>：<code>{role:"user", content:[文本, 图片…]}</code></li>
+        <li><code>AssistantMessage</code>：content 可含 text / thinking / toolCall，另带 provider、model、usage、<code>stopReason</code>。</li>
+        <li><code>ToolResultMessage</code>：<code>{role:"toolResult", toolCallId, toolName, content, isError}</code></li>
+        <li><code>stopReason</code> 取值：stop（正常结束）、toolUse（要调工具）、length（超长）、error、aborted。</li>
+      </ul>
+      <p class="note">这是一个闭环：本次写入 SQLite 的转录，就是下次对话时“历史转录”的输入。</p>
+    </div>
+  </div>
+</section>
+
+<section id="p7">
+  <h2>第 7 部分 · 一次回复运行的生命周期</h2>
+  <p class="lead">从状态的角度看：一次运行会经历哪些状态，出错时如何恢复，最后以什么结束。</p>
+  <div class="frame"><iframe src="diagrams/p7-lifecycle.html" loading="lazy" title="生命周期"></iframe></div>
+  <a class="open" href="diagrams/p7-lifecycle.html" target="_blank">在新标签页打开 ↗</a>
+  <div class="cols">
+    <div>
+      <h3>正常路径</h3>
+      <ol>
+        <li><b>排队中（queued）：</b>运行被创建，等待开始。</li>
+        <li><b>预压缩：</b>历史太长时，先 flush 记忆、压缩上下文（<code>memory_flushing</code> / <code>preflight_compacting</code>）。</li>
+        <li><b>运行中（running）：</b>run-loop 反复派发 attempt。全局并发满时进入“等待全局 lane”，拿到容量再继续。</li>
+        <li><b>结算回复：</b>记录用量、生成最终回复内容。</li>
+        <li><b>已完成（completed）。</b></li>
+      </ol>
+    </div>
+    <div>
+      <h3>出错时怎么办</h3>
+      <ul>
+        <li><b>瞬时错误</b>（网络抖动、限流）：退避后重试，或轮换 API 凭据，或降低思考等级。</li>
+        <li><b>上下文溢出</b>：压缩历史后重试，最多 3 次；还不行就截断过长的工具结果。</li>
+        <li><b>不可恢复</b>（凭据全部失效、持续过载）：抛出 <code>FailoverError</code>，换下一个候选模型。</li>
+        <li><b>终态：</b>所有候选都失败或运行卡死 → 失败；用户中止或被新运行替代 → 已中止（任何阶段都可能发生）。</li>
+      </ul>
+      <p class="note">“排队中、预压缩、运行中、等待 lane、已完成、失败、已中止”是代码里 <code>ReplyOperationPhase</code> 的真实状态；“重试、压缩上下文、切换备用模型”是 run-loop 内部的恢复分支，不是枚举值。</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  源码版本：openclaw/openclaw @ 63144fe0c4d170902aa50155daa36460af6e8569。图由 archify 生成，每张图都通过了 schema、源码引用、浏览器渲染检查。
+</footer>
+</div>
+</body>
+</html>

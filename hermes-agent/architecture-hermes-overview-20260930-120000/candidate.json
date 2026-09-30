@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Hermes Agent 整体架构",
+    "output": ".archify/architecture-hermes-overview-20260930-120000/hermes-overview.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/NousResearch/hermes-agent.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "f42f579cf8bac4918ac9599bece71618afadd846"
+    }
+  },
+  "components": [
+    { "id": "user", "type": "external", "label": "用户", "sublabel": "你本人", "pos": [20, 210], "size": [110, 100] },
+    { "id": "cli", "type": "frontend", "label": "CLI / TUI / 桌面", "sublabel": "cli.py · tui_gateway", "pos": [250, 130], "size": [170, 60],
+      "sources": [
+        { "path": "hermes_cli/cli_agent_setup_mixin.py", "line": 666, "label": "CLI 创建 AIAgent" },
+        { "path": "tui_gateway/server.py", "line": 2627, "label": "TUI/桌面 创建 AIAgent" }
+      ] },
+    { "id": "gateway", "type": "backend", "label": "消息网关", "sublabel": "gateway/ · 20+ 聊天平台", "pos": [250, 230], "size": [170, 60],
+      "sources": [
+        { "path": "gateway/platforms/base.py", "line": 1866, "label": "平台适配器基类" },
+        { "path": "gateway/run_inbound.py", "line": 1312, "label": "_handle_message" },
+        { "path": "gateway/run_turn.py", "line": 2458, "label": "网关创建 AIAgent" }
+      ] },
+    { "id": "cron", "type": "backend", "label": "定时任务", "sublabel": "cron/scheduler.py", "pos": [250, 330], "size": [170, 60],
+      "sources": [
+        { "path": "cron/scheduler_tick.py", "line": 7, "label": "tick 定时触发" },
+        { "path": "cron/scheduler.py", "line": 2415, "label": "cron 创建 AIAgent" }
+      ] },
+    { "id": "agent", "type": "backend", "label": "AIAgent 智能体核心", "sublabel": "run_agent.py · conversation_loop.py 回合循环", "tag": "思考→调工具→再思考", "pos": [530, 200], "size": [360, 120],
+      "sources": [
+        { "path": "run_agent.py", "line": 241, "label": "class AIAgent" },
+        { "path": "agent/conversation_loop.py", "line": 1636, "end_line": 1683, "label": "主循环 while" },
+        { "path": "agent/system_prompt.py", "line": 734, "end_line": 797, "label": "系统提示词三层" }
+      ] },
+    { "id": "memory", "type": "database", "label": "记忆与技能", "sublabel": "MEMORY.md · USER.md · skills/", "pos": [530, 20], "size": [170, 64],
+      "sources": [
+        { "path": "tools/memory_tool.py", "line": 1, "end_line": 12, "label": "记忆文件" },
+        { "path": "agent/system_prompt.py", "line": 516, "label": "_memory_parts" },
+        { "path": "tools/skills_tool.py", "line": 573, "label": "skill_view" }
+      ] },
+    { "id": "llm", "type": "external", "label": "大模型提供方", "sublabel": "OpenAI / Anthropic …", "pos": [740, 20], "size": [150, 64],
+      "sources": [
+        { "path": "agent/chat_completion_helpers.py", "line": 788, "end_line": 794, "label": "发起模型请求" },
+        { "path": "agent/transports/anthropic.py", "line": 1, "label": "各家传输适配" }
+      ] },
+    { "id": "sessiondb", "type": "database", "label": "会话数据库", "sublabel": "state.db · SQLite", "pos": [530, 440], "size": [170, 64],
+      "sources": [
+        { "path": "hermes_state.py", "line": 451, "label": "class SessionDB" },
+        { "path": "agent/session_persistence.py", "line": 294, "label": "批量写入消息" }
+      ] },
+    { "id": "tools", "type": "backend", "label": "工具系统", "sublabel": "model_tools · registry", "pos": [740, 440], "size": [150, 64],
+      "sources": [
+        { "path": "model_tools.py", "line": 873, "label": "handle_function_call" },
+        { "path": "tools/registry.py", "line": 893, "label": "registry.dispatch" },
+        { "path": "tools/file_tools.py", "line": 1390, "label": "工具自注册示例" }
+      ] },
+    { "id": "env", "type": "cloud", "label": "执行环境", "sublabel": "local / docker / ssh / modal", "pos": [1000, 440], "size": [170, 64],
+      "sources": [
+        { "path": "tools/terminal_tool_backends.py", "line": 238, "label": "_create_environment" },
+        { "path": "tools/terminal_tool.py", "line": 1631, "label": "terminal 工具" }
+      ] }
+  ],
+  "connections": [
+    { "id": "user-cli", "from": "user", "to": "cli", "label": "命令行", "variant": "emphasis" },
+    { "id": "user-gateway", "from": "user", "to": "gateway", "label": "聊天消息", "variant": "emphasis" },
+    { "id": "user-cron", "from": "user", "to": "cron", "label": "预约任务", "variant": "dashed" },
+    { "id": "cli-agent", "from": "cli", "to": "agent" },
+    { "id": "gateway-agent", "from": "gateway", "to": "agent", "variant": "emphasis" },
+    { "id": "cron-agent", "from": "cron", "to": "agent" },
+    { "id": "memory-agent", "from": "memory", "to": "agent", "label": "开局注入提示词" },
+    { "id": "agent-llm", "from": "agent", "to": "llm", "label": "请求 ⇄ 回复", "variant": "emphasis" },
+    { "id": "agent-sessiondb", "from": "agent", "to": "sessiondb", "label": "逐条落盘" },
+    { "id": "agent-tools", "from": "agent", "to": "tools", "label": "执行 tool_calls", "variant": "emphasis" },
+    { "id": "tools-env", "from": "tools", "to": "env", "label": "shell 命令" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "入口（谁在用它）", "items": [
+      "CLI、TUI、桌面 App、聊天网关、定时任务、IDE(ACP) 都复用同一个 AIAgent",
+      "网关把 Telegram/Discord/Slack 等消息统一成 MessageEvent 再交给智能体"
+    ] },
+    { "dot": "emerald", "title": "核心循环", "items": [
+      "每轮：组装请求 → 调模型 → 有 tool_calls 就执行工具并把结果放回 → 再调模型",
+      "没有工具调用时，模型文本就是最终回复；CLI 默认最多 500 轮"
+    ] },
+    { "dot": "violet", "title": "学习与记忆", "items": [
+      "memory 工具把要点写进 MEMORY.md / USER.md，下次会话开局读入",
+      "系统提示词整场对话保持不变，保护提示词缓存；只有上下文压缩例外"
+    ] },
+    { "dot": "amber", "title": "扩展方式", "items": [
+      "工具在 tools/*.py 中自注册到 registry；按 toolset 开关",
+      "平台、模型提供方、记忆后端等以 plugins/ 插件形式接入",
+      "delegate_task 可派生子 AIAgent 并行干活"
+    ] }
+  ]
+}

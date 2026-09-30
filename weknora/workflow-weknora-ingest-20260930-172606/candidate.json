@@ -1,0 +1,366 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "④ 后台处理：一份文档如何变成可检索的知识",
+    "output": ".archify/workflow-weknora-ingest-20260930-172606/weknora-ingest.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Tencent/WeKnora.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "bccb4b151bae403508da77fbb174efc79dc47c1a"
+    },
+    "viewBox": [
+      1230,
+      786
+    ],
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "用户 / 入口"
+        },
+        "backend": {
+          "label": "处理步骤"
+        },
+        "database": {
+          "label": "存储 / 数据"
+        },
+        "security": {
+          "label": "校验 / 异常"
+        },
+        "messagebus": {
+          "label": "队列 / 任务"
+        },
+        "external": {
+          "label": "模型调用"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "sched",
+      "label": "任务调度"
+    },
+    {
+      "id": "parse",
+      "label": "解析 DocReader"
+    },
+    {
+      "id": "split",
+      "label": "分块入库"
+    },
+    {
+      "id": "vector",
+      "label": "向量索引"
+    },
+    {
+      "id": "err",
+      "label": "异常分支",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "task",
+    "check",
+    "engine",
+    "markdown",
+    "chunk",
+    "index",
+    "post"
+  ],
+  "nodes": [
+    {
+      "id": "task",
+      "lane": "sched",
+      "col": 0,
+      "type": "messagebus",
+      "label": "Worker 取任务",
+      "sublabel": "document:process",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/router/task.go",
+          "line": 269
+        },
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 3490,
+          "end_line": 3511
+        }
+      ]
+    },
+    {
+      "id": "check",
+      "lane": "sched",
+      "col": 1,
+      "type": "backend",
+      "label": "状态检查",
+      "sublabel": "改为 processing",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 3548,
+          "end_line": 3627
+        }
+      ]
+    },
+    {
+      "id": "engine",
+      "lane": "parse",
+      "col": 2,
+      "type": "backend",
+      "label": "选择解析引擎",
+      "sublabel": "Go 简单格式 / anydoc / gRPC",
+      "width": 150,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 4065,
+          "end_line": 4084
+        },
+        {
+          "path": "internal/infrastructure/docparser/engine_registry.go",
+          "line": 63,
+          "end_line": 89
+        },
+        {
+          "path": "docreader/main.py",
+          "line": 150,
+          "end_line": 228
+        }
+      ]
+    },
+    {
+      "id": "markdown",
+      "lane": "parse",
+      "col": 3,
+      "type": "backend",
+      "label": "得到 Markdown",
+      "sublabel": "音频 ASR · 图片落盘",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 3806,
+          "end_line": 3858,
+          "label": "ASR"
+        },
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 3893,
+          "end_line": 3920,
+          "label": "图片存储"
+        }
+      ]
+    },
+    {
+      "id": "chunk",
+      "lane": "split",
+      "col": 4,
+      "type": "database",
+      "label": "Chunker 分块",
+      "sublabel": "写入 chunks 表",
+      "tag": "512 字 · 重叠 80",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 3927,
+          "end_line": 3968
+        },
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 630,
+          "end_line": 649,
+          "label": "CreateChunks"
+        }
+      ]
+    },
+    {
+      "id": "index",
+      "lane": "vector",
+      "col": 5,
+      "type": "database",
+      "label": "向量化 + 建索引",
+      "sublabel": "Embedding · BatchIndex",
+      "width": 150,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 662,
+          "end_line": 753
+        },
+        {
+          "path": "internal/application/service/retriever/keywords_vector_hybrid_indexer.go",
+          "line": 88,
+          "end_line": 199
+        }
+      ]
+    },
+    {
+      "id": "post",
+      "lane": "sched",
+      "col": 5,
+      "type": "messagebus",
+      "label": "投递后处理",
+      "sublabel": "看图 · 摘要 · 问题 · 图谱",
+      "width": 150,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 795,
+          "end_line": 829
+        },
+        {
+          "path": "internal/application/service/knowledge_post_process.go",
+          "line": 216,
+          "end_line": 252
+        }
+      ]
+    },
+    {
+      "id": "skip",
+      "lane": "err",
+      "col": 1,
+      "type": "security",
+      "label": "直接结束",
+      "sublabel": "已删除 / 取消 / 完成",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 3548,
+          "end_line": 3568
+        }
+      ]
+    },
+    {
+      "id": "fail",
+      "lane": "err",
+      "col": 3,
+      "type": "security",
+      "label": "失败处理",
+      "sublabel": "重试 ≤3 次后 failed",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/application/service/knowledge_process.go",
+          "line": 4224,
+          "end_line": 4245
+        },
+        {
+          "path": "internal/router/task.go",
+          "line": 371,
+          "end_line": 386
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "w1",
+      "from": "task",
+      "to": "check",
+      "variant": "emphasis"
+    },
+    {
+      "id": "w2",
+      "from": "check",
+      "to": "engine",
+      "label": "需要处理",
+      "variant": "emphasis"
+    },
+    {
+      "id": "w3",
+      "from": "engine",
+      "to": "markdown",
+      "label": "解析",
+      "variant": "emphasis"
+    },
+    {
+      "id": "w4",
+      "from": "markdown",
+      "to": "chunk",
+      "label": "切块",
+      "variant": "emphasis"
+    },
+    {
+      "id": "w5",
+      "from": "chunk",
+      "to": "index",
+      "label": "逐块向量化",
+      "variant": "emphasis"
+    },
+    {
+      "id": "w6",
+      "from": "index",
+      "to": "post",
+      "label": "可以检索了",
+      "variant": "emphasis"
+    },
+    {
+      "id": "w7",
+      "from": "check",
+      "to": "skip",
+      "label": "无需处理",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "w8",
+      "from": "engine",
+      "to": "fail",
+      "label": "解析出错",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "w9",
+      "from": "index",
+      "to": "fail",
+      "label": "索引出错",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "第 1 步 · 解析",
+      "items": [
+        "txt / md / csv 等简单格式直接用 Go 读取",
+        "Office、PDF 优先交给进程内的 anydoc，或走 Python DocReader（gRPC）",
+        "输出统一是 Markdown；音频先语音转文字，图片单独存储"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "第 2 步 · 分块",
+      "items": [
+        "按段落、换行、句号切成约 512 字的小块，相邻块重叠 80 字防止断句",
+        "开启父子块时：小块（384）用于检索，大块（4096）给大模型看"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "第 3 步 · 索引",
+      "items": [
+        "每块文字调用 Embedding 模型得到向量",
+        "默认存进 PostgreSQL 的 embeddings 表：pgvector 存向量、BM25 做关键词",
+        "失败会清理已写的分块和索引，避免“半截数据”"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "第 4 步 · 后处理（可选）",
+      "items": [
+        "图片 OCR / 看图描述、文档摘要、自动出题、自动打标签、知识图谱",
+        "全部完成后文档状态才变为 completed"
+      ]
+    }
+  ]
+}

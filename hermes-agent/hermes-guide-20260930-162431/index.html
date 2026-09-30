@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hermes 架构导读</title>
+<style>
+:root{
+  --bg:#f7f8fa; --panel:#ffffff; --text:#1f2430; --muted:#5b6475; --line:#e3e6ec;
+  --accent:#0f8a6a; --accent-soft:#e3f4ee; --warn:#b4531b; --warn-soft:#fbeee4;
+  --code-bg:#f0f2f5; --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11141a; --panel:#181c24; --text:#e6e8ee; --muted:#9aa3b5; --line:#2a303c;
+    --accent:#3cc59b; --accent-soft:#16302a; --warn:#f0a36b; --warn-soft:#33241a;
+    --code-bg:#222834; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11141a; --panel:#181c24; --text:#e6e8ee; --muted:#9aa3b5; --line:#2a303c;
+  --accent:#3cc59b; --accent-soft:#16302a; --warn:#f0a36b; --warn-soft:#33241a;
+  --code-bg:#222834; --shadow:none;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+a{color:var(--accent)}
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr);max-width:1480px;margin:0 auto}
+nav{position:sticky;top:0;height:100vh;overflow:auto;padding:28px 18px;border-right:1px solid var(--line)}
+nav h1{font-size:17px;margin:0 0 4px}
+nav .sub{color:var(--muted);font-size:12px;margin-bottom:18px}
+nav ol{list-style:none;padding:0;margin:0;counter-reset:n}
+nav li a{display:block;padding:6px 10px;border-radius:6px;color:var(--text);text-decoration:none;font-size:14px}
+nav li a:hover{background:var(--accent-soft)}
+nav li a span{color:var(--muted);font-variant-numeric:tabular-nums;margin-right:6px}
+main{padding:32px 40px 80px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:28px 32px;margin-bottom:28px;box-shadow:var(--shadow)}
+section h2{margin:0 0 6px;font-size:22px}
+.lead{color:var(--muted);margin:0 0 18px;font-size:15px}
+h3{font-size:16px;margin:22px 0 8px}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;position:relative;padding:4px 0 8px 36px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:5px;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.steps b{color:var(--text)}
+.tip{background:var(--warn-soft);border-left:3px solid var(--warn);padding:10px 14px;border-radius:6px;margin:16px 0}
+.analogy{background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 14px;border-radius:6px;margin:12px 0}
+.frame{margin-top:18px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.frame iframe{display:block;width:100%;height:880px;border:0;background:var(--bg)}
+.frame .bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.src{font-size:13px;color:var(--muted)}
+.src code{font-size:12px}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg)}
+.toggle{margin-top:16px;font-size:12px;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:6px;padding:4px 10px;cursor:pointer}
+@media (max-width:900px){
+  .layout{display:block}
+  nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:16px}
+  main{padding:16px}
+  section{padding:18px 16px}
+  .frame iframe{height:620px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav>
+  <h1>Hermes 架构导读</h1>
+  <div class="sub">给新手的 10 张图 · 基于提交 f42f579</div>
+  <ol>
+    <li><a href="#s0"><span>00</span>先看这里</a></li>
+    <li><a href="#s1"><span>01</span>整体架构</a></li>
+    <li><a href="#s2"><span>02</span>一条消息的旅程</a></li>
+    <li><a href="#s3"><span>03</span>AIAgent 启动</a></li>
+    <li><a href="#s4"><span>04</span>系统提示词</a></li>
+    <li><a href="#s5"><span>05</span>主循环（核心）</a></li>
+    <li><a href="#s6"><span>06</span>工具调用</a></li>
+    <li><a href="#s7"><span>07</span>消息网关</a></li>
+    <li><a href="#s8"><span>08</span>出错恢复</a></li>
+    <li><a href="#s9"><span>09</span>上下文压缩</a></li>
+    <li><a href="#s10"><span>10</span>记忆与学习</a></li>
+    <li><a href="#s11"><span>11</span>名词小词典</a></li>
+  </ol>
+  <button class="toggle" id="themeBtn" type="button">切换深浅色</button>
+</nav>
+<main>
+
+<section id="s0">
+  <h2>00 · 先看这里</h2>
+  <p class="lead">Hermes 是一个“会动手的 AI 助理”：不仅能聊天，还能自己跑命令、读写文件、上网、操作浏览器，并且会记住你。</p>
+  <div class="analogy">打个比方：Hermes 像一位私人助理。<b>大模型</b>是它请教的专家顾问，<b>工具</b>是它手边的工具箱，<b>执行环境</b>是它干活的工位，<b>记忆文件</b>是它的笔记本，<b>state.db</b> 是聊天档案柜。</div>
+  <h3>建议阅读顺序</h3>
+  <ol class="steps">
+    <li><b>01–02</b>：先建立全局印象，知道有哪些部分、一条消息怎么走完全程。</li>
+    <li><b>03–06</b>：钻进 Agent 内部，看它怎么启动、怎么准备提示词、怎么循环、怎么调用工具。</li>
+    <li><b>07</b>：看聊天平台（Telegram 等）怎么接进来。</li>
+    <li><b>08–10</b>：进阶话题：出错了怎么办、对话太长怎么办、怎么越用越聪明。</li>
+  </ol>
+  <h3>怎么看图</h3>
+  <ul>
+    <li>每个方块右上角的「来源 N」可以点开，直接跳到 GitHub 上对应的源码行。</li>
+    <li>粗绿线是主干路径；虚线通常是回路、异步或“有条件才走”的路径；红线与安全、错误相关。</li>
+    <li>每张图下方有卡片做小结；图可以放大、全屏、导出 PNG/SVG。</li>
+  </ul>
+</section>
+
+<section id="s1">
+  <h2>01 · 整体架构：Hermes 由哪几块组成</h2>
+  <p class="lead">一句话：多个入口 → 同一个 AIAgent 大脑 → 大模型负责思考、工具负责动手、数据库和记忆负责“记住”。</p>
+  <h3>按图走一遍</h3>
+  <ol class="steps">
+    <li><b>用户</b>可以从三类入口进来：<b>CLI / TUI / 桌面</b>（在电脑上直接用）、<b>消息网关</b>（在 Telegram、Discord、Slack 等 20 多个平台里聊天）、<b>定时任务</b>（预约好的任务到点自动运行）。</li>
+    <li>不管从哪个入口进来，最后都会创建同一个 <b>AIAgent</b>。所以各个入口的能力完全一样。</li>
+    <li>AIAgent 在会话开始时读取<b>记忆与技能</b>，放进“系统提示词”。</li>
+    <li>它把对话发给<b>大模型提供方</b>（OpenAI、Anthropic 等），拿回答复。</li>
+    <li>如果大模型说“我要用工具”，AIAgent 就交给<b>工具系统</b>，工具可能在<b>执行环境</b>（本机、Docker、SSH 远程机）里跑 shell 命令。</li>
+    <li>每一条消息都会写进<b>会话数据库 state.db</b>，下次可以接着聊。</li>
+  </ol>
+  <div class="tip">设计原则：核心要“窄”。每个工具的说明都会随每次请求发给模型，越多越贵，所以新能力优先做成插件、技能或命令行子命令。</div>
+  <div class="frame"><div class="bar"><span>架构总览</span><a href="../architecture-hermes-overview-20260930-120000/hermes-overview.html" target="_blank">新窗口打开 ↗</a></div>
+  <iframe loading="lazy" src="../architecture-hermes-overview-20260930-120000/hermes-overview.html" title="整体架构"></iframe></div>
+</section>
+
+<section id="s2">
+  <h2>02 · 一条消息的旅程</h2>
+  <p class="lead">一句话：消息进来 → 拼上提示词和历史 → 问模型 → 要么直接回答，要么“用工具→再问模型”直到能回答 → 回复并存档。</p>
+  <h3>按图走一遍（以 Telegram 为例）</h3>
+  <ol class="steps">
+    <li><b>用户消息</b>：你发了“帮我看看服务器磁盘还剩多少”。</li>
+    <li><b>网关入口</b>：检查你有没有权限、找到你的会话、判断是不是 <code>/命令</code>。同时从 state.db 读出<b>历史记录</b>。</li>
+    <li><b>请求组装</b>：把系统提示词（system 消息）+ 过往对话 + 你这句话（user 消息）+ 可用工具清单拼在一起。</li>
+    <li><b>大模型</b>回应。如果它返回 <code>tool_calls</code>（比如“执行 df -h”），就进入<b>工具执行</b>，结果作为 tool 消息<b>回到请求组装</b>，再问一次模型。这个回路可以转很多圈。</li>
+    <li>当模型不再要工具、直接给出文字时，<b>回复用户</b>；这一轮的所有消息写入<b>会话数据库</b>。</li>
+  </ol>
+  <div class="frame"><div class="bar"><span>消息旅程</span><a href="../dataflow-hermes-message-20260930-120000/hermes-message-flow.html" target="_blank">新窗口打开 ↗</a></div>
+  <iframe loading="lazy" src="../dataflow-hermes-message-20260930-120000/hermes-message-flow.html" title="一条消息的旅程"></iframe></div>
+</section>
+
+<section id="s3">
+  <h2>03 · AIAgent 启动：构造时做了哪些准备</h2>
+  <p class="lead">一句话：<code>AIAgent(...)</code> 被创建时，先“连上大模型”，再“装配能力与状态”。系统提示词此时还没拼。</p>
+  <h3>按图走一遍（图中是一条 S 形路线）</h3>
+  <ol class="steps">
+    <li><b>AIAgent(...)</b>：调用方传入模型名、API 密钥、平台（cli / telegram…）、会话 ID 等参数。<code>__init__</code> 本身只做转交，真正的工作在 <code>agent/agent_init.py::init_agent</code>。</li>
+    <li><b>预算与模式</b>：创建迭代预算（限制最多循环几次），并判断和这个服务商用哪种通信协议（<code>api_mode</code>，如 chat_completions、anthropic_messages）。</li>
+    <li><b>确定路由</b>：规范化模型名；如果传入的凭据池和服务商不匹配就丢弃。</li>
+    <li><b>创建客户端</b>：按协议创建对应的 SDK 客户端（OpenAI、Anthropic、Bedrock…）。</li>
+    <li><b>备用模型链</b>：准备好“主模型挂了换谁”的列表。</li>
+    <li><b>加载工具清单</b>：从<b>工具注册表</b>里挑出这次允许用的工具。工具按“工具集（toolset）”分组，环境不满足的工具（<code>check_fn</code> 不通过）会被隐藏，模型根本看不到。</li>
+    <li><b>会话状态</b>：确定 session_id，绑定 <b>state.db</b>，创建待办列表等。</li>
+    <li><b>载入记忆</b>：从磁盘读 <b>MEMORY.md / USER.md</b>；如果配置了外部记忆插件（如 mem0、honcho）也一并加载。</li>
+    <li><b>上下文引擎</b>：创建负责“对话太长就压缩”的 ContextCompressor。</li>
+    <li><b>Agent 就绪</b>：此时系统提示词仍为空，要等第一次对话时才构建（见 04）。</li>
+  </ol>
+  <div class="tip">在消息网关里，构造好的 AIAgent 会按会话缓存复用，而不是每条消息都重新初始化——这样既快，又能保证提示词缓存有效。</div>
+  <div class="frame"><div class="bar"><span>AIAgent 启动</span><a href="02-workflow-agent-init/agent-init.html" target="_blank">新窗口打开 ↗</a></div>
+  <iframe loading="lazy" src="02-workflow-agent-init/agent-init.html" title="AIAgent 启动"></iframe></div>
+</section>
+
+<section id="s4">
+  <h2>04 · 系统提示词是怎么拼出来的</h2>
+  <p class="lead">一句话：把“身份 / 项目规则 / 记忆技能”分三层拼成一段文字，首轮构建后整场对话一个字都不改。</p>
+  <h3>什么是系统提示词？</h3>
+  <p>每次请求模型时，消息列表的第一条是 <code>system</code> 消息，告诉模型“你是谁、要遵守什么、用户是什么样的人、有哪些技能可用”。它就是系统提示词。</p>
+  <h3>按图走一遍</h3>
+  <ol class="steps">
+    <li><b>身份与守则</b>（来自 <code>SOUL.md</code> 或内置默认身份，外加工具使用指南）→ 放进<b>稳定层 stable</b>。</li>
+    <li><b>项目说明文件</b>：在当前目录找 <code>.hermes.md</code> → <code>AGENTS.md</code> → <code>CLAUDE.md</code> → <code>.cursorrules</code>，只加载找到的第一种 → 放进<b>上下文层 context</b>。</li>
+    <li><b>记忆与技能</b>：MEMORY.md / USER.md 的“开局快照”和技能目录摘要，再加上日期、会话 ID、运行环境提示 → 放进<b>易变层 volatile</b>。</li>
+    <li>三层按顺序<b>拼成一段文本</b>（<code>build_system_prompt</code>）。</li>
+    <li>首轮：结果放进<b>内存缓存</b> <code>_cached_system_prompt</code>，同时<b>存档</b>到 state.db 的会话行里。</li>
+    <li>续聊（比如网关重启后）：如果模型、服务商、工作目录都没变，就从 state.db <b>原样恢复</b>旧文本，而不是重新拼。</li>
+    <li>之后每一轮请求，都把这段文字<b>原样</b>作为第一条 system 消息发出去。</li>
+  </ol>
+  <div class="tip"><b>为什么要“一字不改”？</b>模型服务商会缓存请求开头相同的部分，下次只为新增内容全价付费。开头一变，缓存就全部失效，费用和延迟成倍上升。所以越稳定的内容放越前面；对话中途新写的记忆，也要等下次重建才出现在提示词里。唯一允许重建的时机是<b>上下文压缩</b>（见 09），以及 CLI 执行 <code>/new</code> 等重置操作。</div>
+  <div class="frame"><div class="bar"><span>系统提示词</span><a href="03-architecture-system-prompt/system-prompt.html" target="_blank">新窗口打开 ↗</a></div>
+  <iframe loading="lazy" src="03-architecture-system-prompt/system-prompt.html" title="系统提示词"></iframe></div>
+</section>
+
+<section id="s5">
+  <h2>05 · 一个回合内部：Agent 主循环（最核心）</h2>
+  <p class="lead">一句话：用户说一句话 = 一个“回合”；一个回合里可能请求模型很多次，每次叫一“轮迭代”。有工具调用就继续转，没有就结束。</p>
+  <div class="analogy">回合 vs 迭代：你让助理“查一下磁盘并清理日志”，这是<b>一个回合</b>；助理先查磁盘、再列日志、再删除、最后汇报，每一步都要问一次顾问，这是<b>多轮迭代</b>。</div>
+  <h3>① 回合开始（只做一次）</h3>
+  <ol class="steps">
+    <li><b>拿会话锁</b>：保证同一个会话不会同时跑两个回合（比如你连发两条消息）。回合结束时在 <code>finally</code> 里释放。</li>
+    <li><b>准备上下文</b>：把你的消息加进对话；如果系统提示词还没构建就构建（见 04）；对话已经很长就先压缩；然后<b>先把你的消息写进 state.db</b>——即使后面崩溃，你说过的话也不会丢。</li>
+  </ol>
+  <h3>② 每次迭代：准备并请求模型</h3>
+  <ol class="steps">
+    <li><b>开始本轮</b>：检查是否被打断（比如你发了 <code>/stop</code>）、预算是否用完；都没问题就扣一次预算。若需要停，走向<b>提前停止</b>。</li>
+    <li><b>组装请求</b>：把消息整理成要发给 API 的格式，处理插话（<code>/steer</code>）、修正角色顺序，并插入缓存断点。</li>
+    <li><b>长度检查</b>：估算长度，快超出模型窗口就先压缩再继续。</li>
+    <li><b>调用大模型</b>：默认<b>流式</b>请求——模型一边生成，文字就一边推给界面；遇到网络、限流等错误会自动重试（详见 08）。</li>
+  </ol>
+  <h3>③ 看模型怎么回</h3>
+  <ol class="steps">
+    <li><b>解析回复</b>：把各家不同格式的返回统一成一条 assistant 消息，看里面<b>有没有 tool_calls</b>。</li>
+    <li><b>有</b> → <b>执行工具</b>：先把这条 assistant 消息存库，再执行工具，每个结果作为 tool 消息追加到对话；然后沿虚线“<b>下一轮</b>”回到“开始本轮”。</li>
+    <li><b>没有</b> → <b>文字答复</b>：这就是最终答案。如果模型返回了空内容，会尝试补救（提示它继续、重试等）；然后存库并跳出循环。</li>
+  </ol>
+  <h3>④ 收尾</h3>
+  <ol class="steps">
+    <li><b>收尾整理</b>：如果预算用完还没答案，会额外请求一次让模型做个总结；然后持久化会话、同步外部记忆；必要时在后台启动“复盘”（见 10）。</li>
+    <li><b>返回结果</b>：返回一个字典，里面有 <code>final_response</code>（最终回答）、<code>messages</code>（完整消息列表）、调用次数、是否被打断等。</li>
+  </ol>
+  <div class="tip">代码组织：循环本体在 <code>agent/conversation_loop.py</code> 的 <code>while</code>（约 1636 行）里，每个阶段是一个独立的 <code>agent/turn_*.py</code> 文件。想改“某一步”，只需要找对应的那个文件。</div>
+  <div class="frame"><div class="bar"><span>主循环</span><a href="04-workflow-turn-loop/turn-loop.html" target="_blank">新窗口打开 ↗</a></div>
+  <iframe loading="lazy" src="04-workflow-turn-loop/turn-loop.html" title="主循环"></iframe></div>
+</section>
+
+<section id="s6">
+  <h2>06 · 一次工具调用的全过程</h2>
+  <p class="lead">一句话：模型说“调用 terminal 执行某命令” → 层层检查 → 真正执行 → 结果包装成一条 tool 消息回到对话。</p>
+  <h3>这是一张“时序图”，怎么看？</h3>
+  <p>顶部每个方块是一个参与者，向下的虚线是它的时间线；横向箭头表示“谁调用谁”，从上往下按时间顺序读。实线是调用，灰色虚线是返回。</p>
+  <h3>① 分发</h3>
+  <ol class="steps">
+    <li><b>主循环 → 执行器</b>：先校验（工具名写错会尝试自动修正、参数必须是合法 JSON），把 assistant 消息存库后才开始执行。多个只读工具（读文件、搜索网页等）可以并行，最多 8 个同时跑；写文件这类操作按顺序执行。</li>
+    <li><b>执行器 → 插件钩子</b>：插件的 <code>pre_tool_call</code> 钩子可以<b>放行</b>、<b>改参数</b>、<b>拦截</b>，或要求<b>人工审批</b>。</li>
+    <li><b>执行器 → 分发入口</b>：<code>memory</code>、<code>todo</code>、<code>delegate_task</code> 这类“内联工具”由 Agent 自己处理；其余工具交给 <code>handle_function_call</code>。</li>
+    <li><b>分发入口 → 注册表</b>：<code>registry.dispatch</code> 根据工具名找到处理函数（每个工具在 <code>tools/*.py</code> 里用 <code>registry.register(...)</code> 自己登记）。</li>
+  </ol>
+  <h3>② 执行（以 terminal 为例）</h3>
+  <ol class="steps">
+    <li><b>危险命令审批</b>：像 <code>rm -rf</code> 这样的危险命令，会先弹出审批，经你同意才执行。</li>
+    <li><b>执行环境</b>：命令在配置好的环境里执行——本机、Docker 容器、SSH 远程主机或云沙箱；同一个任务会复用同一个环境。</li>
+  </ol>
+  <h3>③ 结果回流</h3>
+  <ol class="steps">
+    <li>结果一律是 <b>JSON 字符串</b>；就算工具报错，也会被包装成错误 JSON，不会让循环崩溃。</li>
+    <li><code>post_tool_call</code> 钩子可以观察结果；结果太长（约 10 万字符）会写进文件、只留预览；工具第一次进入某个目录时，如果那里有 <code>AGENTS.md</code>，会把它附在结果后面，帮模型了解这个目录的规矩。</li>
+    <li>最终变成一条 <code>role: "tool"</code> 的消息，追加到对话并存库。</li>
+  </ol>
+  <div class="tip">子智能体：<code>delegate_task</code> 会新建一个“子 AIAgent”去完成子任务。它继承父亲的模型、凭据和工具集，但不读项目文件、不带记忆，有自己的系统提示词和预算，完成后把结果交回父亲。</div>
+  <div class="frame"><div class="bar"><span>工具调用</span><a href="05-sequence-tool-call/tool-call.html" target="_blank">新窗口打开 ↗</a></div>
+  <iframe loading="lazy" src="05-sequence-tool-call/tool-call.html" title="工具调用"></iframe></div>
+</section>
+
+<section id="s7">
+  <h2>07 · 消息网关：一条 Telegram 消息的处理</h2>
+  <p class="lead">一句话：平台适配器把各家消息统一格式 → 网关检查权限和会话 → 在后台线程运行 AIAgent → 一边生成一边编辑 Telegram 消息 → 存档。</p>
+  <h3>① 接收与准备</h3>
+  <ol class="steps">
+    <li><b>平台适配器</b>用长轮询收到消息。Telegram 会把很长的粘贴拆成几条，适配器会先等一会、合并成一个 <code>MessageEvent</code>。</li>
+    <li><b>网关入口</b>依次检查：你是否被授权（陌生人私聊会收到一个配对码）、是否紧急停止、是不是斜杠命令。</li>
+    <li>如果这个会话<b>正在忙</b>（上一条还没处理完），新消息默认会<b>打断</b>当前回合；也可以配置为<b>排队</b>或“<b>插话</b>”（steer，悄悄塞给正在运行的回合）。</li>
+    <li>从<b>会话存储</b>取出会话并读取历史记录。</li>
+  </ol>
+  <h3>② 运行 Agent</h3>
+  <ol class="steps">
+    <li><b>回合执行</b>：在线程池里运行，并绑定这条消息所属的 profile（一个网关可以服务多个账号，彼此隔离）。</li>
+    <li>按会话查 <b>AIAgent 缓存</b>：配置没变就复用，否则新建。然后调用 <code>run_conversation</code>（就是 05 讲的主循环）。</li>
+    <li>模型每生成一段文字，<b>流式推送</b>组件就去<b>编辑同一条 Telegram 消息</b>，你会看到回答一点点“长出来”。</li>
+  </ol>
+  <h3>③ 收尾与回复</h3>
+  <ol class="steps">
+    <li>AIAgent 已经在循环中逐步写库；网关结束后再“补写”一次，已写过的行会跳过，不会重复。</li>
+    <li>如果已经流式发完，就只补发图片和页脚；否则由适配器发送最终文本。</li>
+    <li>对话接近上下文上限的 85% 时，网关会在下个回合开始前先压缩一次（“会话卫生”），比 Agent 自己的阈值更高，作为兜底。</li>
+  </ol>
+  <div class="frame"><div class="bar"><span>消息网关</span><a href="06-sequence-gateway/gateway.html" target="_blank">新窗口打开 ↗</a></div>
+  <iframe loading="lazy" src="06-sequence-gateway/gateway.html" title="消息网关"></iframe></div>
+</section>
+
+<section id="s8">
+  <h2>08 · 调用模型出错了怎么办</h2>
+  <p class="lead">一句话：先判断是什么错，再对症下药——等一等、换密钥、压缩、换模型，实在不行才报错。</p>
+  <h3>按图走一遍</h3>
+  <ol class="steps">
+    <li><b>请求模型</b>时出错，进入<b>错误分类</b>：根据 HTTP 状态码、错误码、错误文字判断原因，并给出四个建议——能否重试、要不要换密钥、要不要压缩、要不要换模型。</li>
+    <li><b>超时 / 过载 / 服务端错误</b> → <b>等一会再试</b>：等待时间从 2 秒起、逐渐加长（最长 60 秒）；服务端告诉了 Retry-After 就听它的。默认最多重试 3 次。</li>
+    <li><b>限流 / 欠费 / 401 未授权</b> → <b>换一个密钥</b>：如果配置了多个 API Key（凭据池），就换下一个；401 会先尝试刷新令牌。</li>
+    <li><b>上下文超长</b> → <b>压缩上下文</b>：采用服务商报告的真实上限，压缩后重来，最多 3 次；压不动了就以错误结束。</li>
+    <li>以上成功后都会<b>重新请求</b>，回到主循环。</li>
+    <li><b>403、模型不存在</b>等不可重试的错误，以及重试用尽、密钥换完时 → <b>切换备用模型</b>（按配置的 fallback 链）。</li>
+    <li>没有备用模型可用 → <b>结束并报错</b>，告诉用户原因。</li>
+  </ol>
+  <div class="tip">临时故障还有一道“自动恢复阶梯”：只要还没向用户输出任何文字，会再按 15 / 30 / 60 秒等待重试几次，尽量不让用户看到错误。</div>
+  <div class="frame"><div class="bar"><span>出错恢复</span><a href="07-architecture-error-recovery/error-recovery.html" target="_blank">新窗口打开 ↗</a></div>
+  <iframe loading="lazy" src="07-architecture-error-recovery/error-recovery.html" title="出错恢复"></iframe></div>
+</section>
+
+<section id="s9">
+  <h2>09 · 上下文压缩：对话太长时怎么办</h2>
+  <p class="lead">一句话：模型一次能读的文字有上限（上下文窗口），对话太长就把中间部分总结成摘要，保留开头和最近几轮。</p>
+  <h3>① 什么时候触发</h3>
+  <ul>
+    <li><b>自动</b>：每次请求模型前、工具结果回来后检查，超过阈值（默认窗口的 50%；窗口小于 512K 的模型至少 75%）就压缩。</li>
+    <li><b>服务商报超长</b>：请求被拒说“太长了”，也会压缩后重试。</li>
+    <li><b>手动</b>：用户输入 <code>/compress</code>。</li>
+  </ul>
+  <h3>② 压缩四步</h3>
+  <ol class="steps">
+    <li><b>裁剪旧工具输出</b>：很早以前的命令输出、文件内容先剪短——不调用模型，几乎零成本。</li>
+    <li><b>划定范围</b>：保护开头几条（默认 3 条）和最近一段对话，只处理中间部分。</li>
+    <li><b>生成摘要</b>：用“辅助模型”把中间部分写成结构化摘要。</li>
+    <li>摘要生成失败时，用规则拼一个<b>兜底摘要</b>（不调模型），保证流程能走完。</li>
+  </ol>
+  <h3>③ 压缩之后</h3>
+  <ol class="steps">
+    <li><b>拼回对话</b>：开头 + 摘要 + 结尾，并修复被切断的“工具调用—结果”配对，保证消息格式合法。</li>
+    <li><b>重建系统提示词</b>：这是整个系统里唯一允许的“缓存重置”时机。</li>
+    <li><b>旧消息归档</b>：默认原地压缩，旧消息软归档，会话 ID 保持不变。</li>
+  </ol>
+  <div class="frame"><div class="bar"><span>上下文压缩</span><a href="08-workflow-compression/compression.html" target="_blank">新窗口打开 ↗</a></div>
+  <iframe loading="lazy" src="08-workflow-compression/compression.html" title="上下文压缩"></iframe></div>
+</section>
+
+<section id="s10">
+  <h2>10 · 记忆与学习：Hermes 如何越用越懂你</h2>
+  <p class="lead">一句话：对话中主动记笔记、对话后后台复盘，把经验存成“记忆”和“技能”，下次会话开局读进来。</p>
+  <h3>按图走一遍</h3>
+  <ol class="steps">
+    <li><b>当前对话</b>中，模型觉得某件事值得记（比如“用户喜欢用 pnpm”），就调用 <b>memory 工具</b>（add / replace / remove）。</li>
+    <li>memory 工具<b>立即写盘</b>到<b>记忆文件</b>：<code>MEMORY.md</code> 是 Agent 给自己的笔记，<code>USER.md</code> 是关于你的画像。它们都有字数上限（约 2200 / 1375 字符），逼它只记要点。</li>
+    <li><b>每 10 轮</b>左右，回答发出之后，会启动一个<b>后台复盘</b>：复制一个“分身 Agent”，在后台线程里回看刚才的对话，判断有没有值得<b>补记</b>的记忆、有没有值得<b>新建或修补</b>的技能。整个过程不打扰主对话。</li>
+    <li><b>技能库</b>里每个技能是一份 <code>SKILL.md</code> 操作手册。<b>技能管家（curator）</b>会定期把长期不用的技能归档（14 天标记过期、30 天归档；只归档不删除，被固定的技能除外）。</li>
+    <li><b>下一次会话</b>开始时，记忆文件的快照和技能索引被读进系统提示词——Agent 就“记得”你了。</li>
+  </ol>
+  <div class="tip">补充：<code>session_search</code> 工具可以在 state.db 里全文搜索过去的对话（不调用模型）；还可以接入 mem0、honcho 等外部记忆插件，它们会在每轮请求前预取相关记忆、每轮结束后同步。</div>
+  <div class="frame"><div class="bar"><span>记忆与学习</span><a href="09-architecture-memory-learning/memory-learning.html" target="_blank">新窗口打开 ↗</a></div>
+  <iframe loading="lazy" src="09-architecture-memory-learning/memory-learning.html" title="记忆与学习"></iframe></div>
+</section>
+
+<section id="s11">
+  <h2>11 · 名词小词典</h2>
+  <table>
+    <tr><th>名词</th><th>通俗解释</th></tr>
+    <tr><td>大模型 / LLM</td><td>负责“思考”的 AI 服务，如 GPT、Claude。Hermes 自己不思考，只负责组织对话和执行动作。</td></tr>
+    <tr><td>Token</td><td>模型计量文字的单位，大约 1 个汉字 ≈ 1–2 个 token。费用和上下文上限都按 token 算。</td></tr>
+    <tr><td>上下文窗口</td><td>模型一次最多能读多少 token。对话超过它就必须压缩。</td></tr>
+    <tr><td>系统提示词</td><td>每次请求的第一条消息，告诉模型它是谁、要守什么规矩。</td></tr>
+    <tr><td>提示词缓存</td><td>服务商对“请求开头相同的部分”打折复用。Hermes 的很多设计都是为了不破坏它。</td></tr>
+    <tr><td>tool_calls</td><td>模型回复里“我要调用某个工具、参数是什么”的结构化请求。</td></tr>
+    <tr><td>工具 / 工具集</td><td>工具是 Agent 能执行的动作（terminal、read_file…）；工具集（toolset）是一组工具，可整体开关。</td></tr>
+    <tr><td>回合 / 迭代</td><td>用户说一句话是一个回合；回合里每请求模型一次是一轮迭代。</td></tr>
+    <tr><td>会话 / session</td><td>一段连续的对话，有唯一的 session_id，记录在 state.db。</td></tr>
+    <tr><td>流式输出</td><td>模型边生成边返回，界面上文字一点点出现。</td></tr>
+    <tr><td>Profile</td><td>一套独立的配置 + 密钥 + 数据目录。一个网关可同时服务多个 profile，互相隔离。</td></tr>
+    <tr><td>技能 / Skill</td><td>一份可复用的操作手册（SKILL.md），告诉 Agent 某类任务怎么做。</td></tr>
+    <tr><td>插件</td><td>在不改核心代码的前提下扩展功能（新平台、新模型服务商、新记忆后端…），放在 <code>plugins/</code>。</td></tr>
+  </table>
+  <p class="src">想读源码：先看根目录 <code>AGENTS.md</code>，再按区域看 <code>agent/AGENTS.md</code>、<code>gateway/AGENTS.md</code>、<code>tools/AGENTS.md</code>。</p>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var btn=document.getElementById('themeBtn'), root=document.documentElement;
+  try{var saved=localStorage.getItem('hermes-guide-theme'); if(saved) root.setAttribute('data-theme',saved);}catch(e){}
+  btn.addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+    var next=dark?'light':'dark'; root.setAttribute('data-theme',next);
+    try{localStorage.setItem('hermes-guide-theme',next);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

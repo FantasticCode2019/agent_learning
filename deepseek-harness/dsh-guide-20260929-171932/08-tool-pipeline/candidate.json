@@ -1,0 +1,427 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "⑧ 工具执行管线：一次 bash 调用经过的每一关",
+    "locale": "zh-CN",
+    "output": ".archify/dsh-guide-20260929-171932/08-tool-pipeline/tool-pipeline.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/deepseek-ai/deepseek-harness.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "4878cdabd87d4041bdaff61d04c966883b9fd07a"
+    },
+    "viewBox": [
+      1020,
+      652
+    ]
+  },
+  "lanes": [
+    {
+      "id": "loop",
+      "label": "Agent Loop 调度"
+    },
+    {
+      "id": "policy",
+      "label": "审批与拒绝",
+      "variant": "exception"
+    },
+    {
+      "id": "registry",
+      "label": "ctx.tools 管线"
+    },
+    {
+      "id": "exec",
+      "label": "工具本体与执行环境"
+    }
+  ],
+  "phases": [
+    {
+      "id": "t-prep",
+      "label": "准备",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "t-gate",
+      "label": "放行判断",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "security"
+    },
+    {
+      "id": "t-run",
+      "label": "执行与收尾",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "tcall",
+    "prepare",
+    "pre",
+    "execute",
+    "body",
+    "post",
+    "commit"
+  ],
+  "nodes": [
+    {
+      "id": "tcall",
+      "lane": "loop",
+      "col": 0,
+      "type": "backend",
+      "label": "分组 + tool/call",
+      "sublabel": "parallel / exclusive",
+      "width": 118,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/tool-calls.ts",
+          "line": 60,
+          "end_line": 102
+        },
+        {
+          "path": "packages/core/tools/src/index.ts",
+          "line": 1303,
+          "end_line": 1312,
+          "label": "executionMode"
+        }
+      ]
+    },
+    {
+      "id": "commit",
+      "lane": "loop",
+      "col": 5,
+      "type": "database",
+      "label": "提交 tool/result",
+      "sublabel": "按模型顺序",
+      "width": 118,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/tool-calls.ts",
+          "line": 147,
+          "end_line": 161,
+          "label": "commitReady"
+        }
+      ]
+    },
+    {
+      "id": "approval",
+      "lane": "policy",
+      "col": 3,
+      "type": "security",
+      "label": "用户审批",
+      "sublabel": "ctx.approval → Web 卡片",
+      "width": 118,
+      "sources": [
+        {
+          "path": "packages/core/tools/src/index.ts",
+          "line": 1727,
+          "end_line": 1768,
+          "label": "serviceAsk"
+        },
+        {
+          "path": "packages/interaction/user-approval/src/index.ts",
+          "line": 215,
+          "end_line": 307,
+          "label": "request/decide"
+        }
+      ]
+    },
+    {
+      "id": "denied",
+      "lane": "policy",
+      "col": 4,
+      "type": "security",
+      "label": "拒绝结果",
+      "sublabel": "isError: Error: 原因",
+      "width": 118,
+      "sources": [
+        {
+          "path": "packages/core/tools/src/index.ts",
+          "line": 1519,
+          "end_line": 1531
+        }
+      ]
+    },
+    {
+      "id": "prepare",
+      "lane": "registry",
+      "col": 1,
+      "type": "backend",
+      "label": "createExecution",
+      "sublabel": "冻结参数快照",
+      "width": 118,
+      "sources": [
+        {
+          "path": "packages/core/tools/src/index.ts",
+          "line": 1391,
+          "end_line": 1481
+        }
+      ]
+    },
+    {
+      "id": "pre",
+      "lane": "registry",
+      "col": 2,
+      "type": "security",
+      "label": "tools/pre-execute",
+      "sublabel": "allow/deny/ask/cancel",
+      "width": 118,
+      "sources": [
+        {
+          "path": "packages/core/tools/src/index.ts",
+          "line": 1493,
+          "end_line": 1539,
+          "label": "prepareExecution"
+        },
+        {
+          "path": "packages/core/tools/src/index.ts",
+          "line": 607,
+          "end_line": 611,
+          "label": "PreToolDecision"
+        }
+      ]
+    },
+    {
+      "id": "execute",
+      "lane": "registry",
+      "col": 3,
+      "type": "backend",
+      "label": "tools/execute",
+      "sublabel": "超时 / checkpoint 包装",
+      "width": 118,
+      "sources": [
+        {
+          "path": "packages/core/tools/src/index.ts",
+          "line": 1601,
+          "end_line": 1631
+        },
+        {
+          "path": "packages/guard/timeout-policy/src/index.ts",
+          "line": 55,
+          "end_line": 81,
+          "label": "超时"
+        }
+      ]
+    },
+    {
+      "id": "post",
+      "lane": "registry",
+      "col": 4,
+      "type": "backend",
+      "label": "tools/post-execute",
+      "sublabel": "spill 超长输出",
+      "width": 118,
+      "sources": [
+        {
+          "path": "packages/core/tools/src/index.ts",
+          "line": 1781,
+          "end_line": 1820
+        },
+        {
+          "path": "packages/spill/spill-policy/src/index.ts",
+          "line": 133,
+          "end_line": 150,
+          "label": "spill"
+        }
+      ]
+    },
+    {
+      "id": "body",
+      "lane": "exec",
+      "col": 3,
+      "type": "backend",
+      "label": "bash 工具本体",
+      "sublabel": "校验参数 → ctx.shell",
+      "width": 118,
+      "sources": [
+        {
+          "path": "packages/shell/tool-bash/src/index.ts",
+          "line": 478,
+          "end_line": 528,
+          "label": "execute"
+        },
+        {
+          "path": "packages/core/tools/src/schema.ts",
+          "line": 597,
+          "end_line": 601,
+          "label": "参数校验"
+        }
+      ]
+    },
+    {
+      "id": "sandbox",
+      "lane": "exec",
+      "col": 4,
+      "type": "security",
+      "label": "沙箱包装",
+      "sublabel": "sandbox-exec / bwrap",
+      "width": 118,
+      "sources": [
+        {
+          "path": "packages/shell/bash-sandbox/src/index.ts",
+          "line": 89,
+          "end_line": 133
+        },
+        {
+          "path": "packages/sandbox/sandbox-local/src/index.ts",
+          "line": 325,
+          "end_line": 355,
+          "label": "confine"
+        }
+      ]
+    },
+    {
+      "id": "spawn",
+      "lane": "exec",
+      "col": 5,
+      "type": "backend",
+      "label": "子进程",
+      "sublabel": "有界输出 + spill 文件",
+      "width": 118,
+      "sources": [
+        {
+          "path": "packages/shell/bash-local/src/index.ts",
+          "line": 201,
+          "end_line": 260,
+          "label": "executeArgv"
+        },
+        {
+          "path": "packages/subprocess/subprocess-local/src/index.ts",
+          "line": 182,
+          "end_line": 211
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "t1",
+      "from": "tcall",
+      "to": "prepare",
+      "label": "prepare",
+      "variant": "emphasis"
+    },
+    {
+      "id": "t2",
+      "from": "prepare",
+      "to": "pre",
+      "variant": "emphasis"
+    },
+    {
+      "id": "t3",
+      "from": "pre",
+      "to": "approval",
+      "label": "ask",
+      "variant": "security",
+      "role": "branch",
+      "fromSide": "top",
+      "toSide": "left"
+    },
+    {
+      "id": "t4",
+      "from": "pre",
+      "to": "execute",
+      "variant": "emphasis",
+      "route": "straight"
+    },
+    {
+      "id": "t5",
+      "from": "approval",
+      "to": "execute",
+      "label": "同意一次",
+      "variant": "security"
+    },
+    {
+      "id": "t6",
+      "from": "approval",
+      "to": "denied",
+      "label": "拒绝",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "t7",
+      "from": "denied",
+      "to": "post",
+      "label": "错误结果",
+      "variant": "dashed"
+    },
+    {
+      "id": "t8",
+      "from": "execute",
+      "to": "body",
+      "label": "dispatch",
+      "variant": "emphasis"
+    },
+    {
+      "id": "t9",
+      "from": "body",
+      "to": "sandbox",
+      "label": "confine",
+      "variant": "security",
+      "role": "branch"
+    },
+    {
+      "id": "t10",
+      "from": "sandbox",
+      "to": "spawn",
+      "label": "spawn"
+    },
+    {
+      "id": "t11",
+      "from": "body",
+      "to": "post",
+      "label": "结果 + render",
+      "variant": "emphasis"
+    },
+    {
+      "id": "t12",
+      "from": "post",
+      "to": "commit",
+      "label": "tool/result",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "1. 调度：能不能并行",
+      "items": [
+        "工具声明 isConcurrencySafe 才能并行（如 read），否则是 exclusive 屏障（如 bash、write、edit）",
+        "并行池默认最多 10 个；不论谁先跑完，tool/result 一律按模型给出的顺序提交",
+        "每个调用开始前先写一条 tool/call 事件"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "2. 放行：谁能拦住它",
+      "items": [
+        "tools/pre-execute 瀑布：Claude Code/Codex hooks、experimental auto-review 等可返回 deny / ask / cancel",
+        "ask 交给 ctx.approval：写 approval/asked → 推到浏览器审批卡片 → 用户点允许/拒绝 → 写 approval/decided",
+        "策略 never（danger-full-access 模式）直接拒绝；没有应答者时默认 unavailable（失败即关闭）"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "3. 执行：bash 怎么被关进沙箱",
+      "items": [
+        "tools/execute 包装层：tool-call-timeout-policy 加超时，checkpoint-policy 先把会话落盘",
+        "bash 本体解析沙箱策略；需要更高权限（sandbox_permissions）时自己再走一次审批",
+        "默认 workspace-write：macOS 用 sandbox-exec 禁止工作区外写文件，Linux 用 bwrap/Landlock；只限制写，不限制网络"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "4. 收尾：结果怎么回到模型",
+      "items": [
+        "输出先按 output schema 校验、render 成文本",
+        "tools/post-execute：spill-policy 把超过 12500 token 的输出存到文件、只留预览；repeat-tool-reminder 提醒重复调用",
+        "最后写 tool/result；下一 Step 模型就能看到它"
+      ]
+    }
+  ]
+}

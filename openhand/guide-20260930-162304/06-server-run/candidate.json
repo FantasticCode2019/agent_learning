@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "⑥ 发一条消息后，服务端怎么跑",
+    "locale": "zh-CN",
+    "output": ".archify/guide-20260930-162304/06-server-run/server-run.html",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1080, 690],
+    "repository": {
+      "url": "https://github.com/OpenHands/software-agent-sdk",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "fcc102a697874d54a357e36004e02c95040dbdc0"
+    }
+  },
+  "participants": [
+    { "id": "fe", "type": "frontend", "label": "Canvas", "sublabel": "浏览器" },
+    {
+      "id": "sock", "type": "messagebus", "label": "会话 Socket", "sublabel": "/sockets/session",
+      "sources": [{ "path": "openhands-agent-server/openhands/agent_server/session_socket.py", "line": 430, "end_line": 494, "label": "_inbound_loop" }]
+    },
+    {
+      "id": "evs", "type": "backend", "label": "EventService", "sublabel": "每会话一个",
+      "sources": [
+        { "path": "openhands-agent-server/openhands/agent_server/event_service.py", "line": 745, "end_line": 791, "label": "send_message" },
+        { "path": "openhands-agent-server/openhands/agent_server/event_service.py", "line": 1243, "end_line": 1398, "label": "run() 后台任务" }
+      ]
+    },
+    {
+      "id": "conv", "type": "backend", "label": "会话循环", "sublabel": "LocalConversation",
+      "sources": [
+        { "path": "openhands-sdk/openhands/sdk/conversation/impl/local_conversation.py", "line": 1809, "end_line": 1871, "label": "send_message" },
+        { "path": "openhands-sdk/openhands/sdk/conversation/impl/local_conversation.py", "line": 2089, "end_line": 2361, "label": "arun 主循环" }
+      ]
+    },
+    {
+      "id": "agent", "type": "backend", "label": "Agent", "sublabel": "astep()",
+      "sources": [
+        { "path": "openhands-sdk/openhands/sdk/agent/agent.py", "line": 836, "end_line": 943, "label": "astep → LLM" },
+        { "path": "openhands-sdk/openhands/sdk/agent/response_dispatch.py", "line": 145, "end_line": 190, "label": "处理 tool_calls" }
+      ]
+    },
+    {
+      "id": "llm", "type": "cloud", "label": "LLM", "sublabel": "litellm",
+      "sources": [{ "path": "openhands-sdk/openhands/sdk/llm/llm.py", "line": 2419, "end_line": 2475, "label": "completion 调用" }]
+    },
+    {
+      "id": "tool", "type": "database", "label": "工具", "sublabel": "终端 / 编辑器",
+      "sources": [
+        { "path": "openhands-sdk/openhands/sdk/agent/agent.py", "line": 1384, "end_line": 1446, "label": "_execute_action_event" },
+        { "path": "openhands-sdk/openhands/sdk/tool/tool.py", "line": 607, "end_line": 640, "label": "调用执行器" }
+      ]
+    }
+  ],
+  "segments": [
+    { "from": 150, "to": 262, "label": "收到消息" },
+    { "from": 268, "to": 522, "label": "循环：每一步 step" },
+    { "from": 528, "to": 590, "label": "结束" }
+  ],
+  "messages": [
+    { "id": "user-frame", "from": "fe", "to": "sock", "y": 165, "label": "{role:user, content}", "variant": "emphasis" },
+    { "id": "to-evs", "from": "sock", "to": "evs", "y": 193, "label": "send_message(run=True)" },
+    { "id": "to-conv", "from": "evs", "to": "conv", "y": 221, "label": "写入 MessageEvent" },
+    { "id": "start-run", "from": "evs", "to": "conv", "y": 249, "label": "后台 arun()", "variant": "emphasis", "note": "若已在运行，则标记跑完后再跑一轮" },
+    { "id": "astep", "from": "conv", "to": "agent", "y": 283, "label": "astep()" },
+    { "id": "ask-llm", "from": "agent", "to": "llm", "y": 311, "label": "历史消息 + 工具定义", "variant": "emphasis" },
+    { "id": "llm-ret", "from": "llm", "to": "agent", "y": 339, "label": "tool_calls", "variant": "return" },
+    { "id": "emit-action", "from": "agent", "to": "conv", "y": 367, "label": "ActionEvent", "variant": "dashed" },
+    { "id": "publish", "from": "conv", "to": "sock", "y": 395, "label": "先落盘再广播", "variant": "dashed" },
+    { "id": "push", "from": "sock", "to": "fe", "y": 423, "label": "DurableFrame(seq)", "variant": "return", "note": "每个事件都走这条路" },
+    { "id": "exec", "from": "agent", "to": "tool", "y": 451, "label": "执行动作" },
+    { "id": "obs", "from": "tool", "to": "agent", "y": 479, "label": "Observation", "variant": "return" },
+    { "id": "emit-obs", "from": "agent", "to": "conv", "y": 507, "label": "ObservationEvent", "variant": "dashed", "note": "回到 astep，直到完成 / 暂停 / 等确认" },
+    { "id": "finish", "from": "agent", "to": "conv", "y": 543, "label": "Finish → FINISHED" },
+    { "id": "state", "from": "evs", "to": "sock", "y": 571, "label": "full_state 状态帧", "variant": "dashed" }
+  ],
+  "activations": [
+    { "participant": "sock", "from": 160, "to": 199, "type": "messagebus" },
+    { "participant": "evs", "from": 188, "to": 255, "type": "backend" },
+    { "participant": "conv", "from": 216, "to": 549, "type": "backend" },
+    { "participant": "agent", "from": 278, "to": 549, "type": "backend" },
+    { "participant": "llm", "from": 311, "to": 339, "type": "cloud" },
+    { "participant": "tool", "from": 451, "to": 479, "type": "database" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "一句话理解", "items": ["消息先变成一个事件存起来，再唤醒后台循环", "循环每一步：问 LLM → 得到要调用的工具 → 执行 → 把结果再喂回去"] },
+    { "dot": "emerald", "title": "何时停下", "items": ["调用 Finish 工具，或 LLM 直接回复纯文字 → FINISHED", "动作需要人工确认 → 暂停等待", "超过 max_iterations（默认 500）或出错 → ERROR"] },
+    { "dot": "amber", "title": "容易踩的坑", "items": ["WS 消息里的 run 字段会被服务端丢弃，每条 WS 消息都会触发运行", "等 LLM 响应时会释放锁，所以用户可以插话"] }
+  ]
+}

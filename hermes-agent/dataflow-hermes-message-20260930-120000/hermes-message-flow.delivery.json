@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "3d1a2697-d3d9-4723-b4a3-9b91f2a5fef3",
+  "status": "current",
+  "command": "deliver",
+  "type": "dataflow",
+  "input": "/Users/yajun/Documents/opensource/hermes-agent/.archify/dataflow-hermes-message-20260930-120000/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/hermes-agent/.archify/dataflow-hermes-message-20260930-120000/hermes-message-flow.html",
+  "specification": {
+    "sha256": "8b8f4d057a89d327b17487b0aa0407ebe5382707ce2ed4a41ab46fc85478da33",
+    "bytes": 7183
+  },
+  "artifact": {
+    "sha256": "573cd928bb150a678bb8f34e3defebfe956d95f458873f1eec90d6e9913f853f",
+    "bytes": 763822
+  }
+}

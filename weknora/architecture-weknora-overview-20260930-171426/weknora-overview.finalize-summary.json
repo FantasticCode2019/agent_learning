@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "/Users/yajun/Documents/opensource/WeKnora/.archify/architecture-weknora-overview-20260930-171426/candidate.json",
+    "sha256": "55385e759aef4d84439b30f25cdd2def5466090f8eeeb841ef8af8421378f70d",
+    "bytes": 6221
+  },
+  "artifact": {
+    "path": "/Users/yajun/Documents/opensource/WeKnora/.archify/architecture-weknora-overview-20260930-171426/weknora-overview.html",
+    "sha256": "ca1ff4a65a8f59d515ca58c85ab439c82c8e368070dfc70d949105452e6176dc",
+    "bytes": 770231
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/Users/yajun/Documents/opensource/WeKnora/.archify/architecture-weknora-overview-20260930-171426/weknora-overview.finalize.json",
+    "summaryReceipt": "/Users/yajun/Documents/opensource/WeKnora/.archify/architecture-weknora-overview-20260930-171426/weknora-overview.finalize-summary.json",
+    "browserCheckReceipt": "/Users/yajun/Documents/opensource/WeKnora/.archify/architecture-weknora-overview-20260930-171426/weknora-overview.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.0.1",
+    "releaseNotes": null,
+    "checkedAt": "2026-09-29T09:06:25.980Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 2607
+}

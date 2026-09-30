@@ -1,0 +1,319 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "一条消息在 Hermes 中的旅程",
+    "output": ".archify/dataflow-hermes-message-20260930-120000/hermes-message-flow.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/NousResearch/hermes-agent.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "f42f579cf8bac4918ac9599bece71618afadd846"
+    },
+    "viewBox": [
+      1068,
+      560
+    ],
+    "legend": {
+      "entries": {
+        "security": {
+          "label": "系统提示词注入"
+        },
+        "dashed": {
+          "label": "工具回路 / 落盘"
+        },
+        "emphasis": {
+          "label": "主干路径"
+        }
+      }
+    }
+  },
+  "stages": [
+    {
+      "label": "① 输入"
+    },
+    {
+      "label": "② 接入与准备"
+    },
+    {
+      "label": "③ 组装请求"
+    },
+    {
+      "label": "④ 推理与执行"
+    },
+    {
+      "label": "⑤ 输出与保存"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "msg",
+      "type": "external",
+      "label": "用户消息",
+      "sublabel": "如 Telegram 一句话",
+      "stage": 0,
+      "row": 1
+    },
+    {
+      "id": "ingress",
+      "type": "backend",
+      "label": "网关入口",
+      "sublabel": "鉴权 · 会话",
+      "stage": 1,
+      "row": 1,
+      "sources": [
+        {
+          "path": "gateway/platforms/base.py",
+          "line": 3987,
+          "label": "适配器收到消息"
+        },
+        {
+          "path": "gateway/run_inbound.py",
+          "line": 1312,
+          "label": "_handle_message"
+        }
+      ]
+    },
+    {
+      "id": "history",
+      "type": "database",
+      "label": "历史记录",
+      "sublabel": "state.db 读取",
+      "stage": 1,
+      "row": 2,
+      "sources": [
+        {
+          "path": "gateway/run_turn.py",
+          "line": 2094,
+          "label": "load_transcript"
+        },
+        {
+          "path": "gateway/session_transcript.py",
+          "line": 539
+        }
+      ]
+    },
+    {
+      "id": "prompt",
+      "type": "security",
+      "label": "系统提示词",
+      "sublabel": "身份+AGENTS.md+记忆+技能",
+      "stage": 2,
+      "row": 0,
+      "tag": "整场不变",
+      "sources": [
+        {
+          "path": "agent/system_prompt.py",
+          "line": 734,
+          "end_line": 797,
+          "label": "三层缓存结构"
+        },
+        {
+          "path": "agent/conversation_loop.py",
+          "line": 745,
+          "label": "恢复或构建一次"
+        }
+      ]
+    },
+    {
+      "id": "assemble",
+      "type": "backend",
+      "label": "请求组装",
+      "sublabel": "assemble_api_request",
+      "stage": 2,
+      "row": 1,
+      "sources": [
+        {
+          "path": "agent/turn_request_assembly.py",
+          "line": 106
+        },
+        {
+          "path": "model_tools.py",
+          "line": 214,
+          "label": "get_tool_definitions"
+        }
+      ],
+      "yOffset": 7
+    },
+    {
+      "id": "llm",
+      "type": "cloud",
+      "label": "大模型",
+      "sublabel": "chat.completions 等",
+      "stage": 3,
+      "row": 1,
+      "sources": [
+        {
+          "path": "agent/chat_completion_helpers.py",
+          "line": 788,
+          "end_line": 794
+        },
+        {
+          "path": "agent/turn_response_intake.py",
+          "line": 120,
+          "label": "解析模型回复"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "工具执行",
+      "sublabel": "handle_function_call",
+      "stage": 3,
+      "row": 2,
+      "tag": "终端·文件·网页…",
+      "sources": [
+        {
+          "path": "agent/turn_tool_round.py",
+          "line": 46,
+          "label": "run_tool_round"
+        },
+        {
+          "path": "model_tools.py",
+          "line": 873
+        },
+        {
+          "path": "tools/registry.py",
+          "line": 893,
+          "label": "dispatch"
+        }
+      ]
+    },
+    {
+      "id": "reply",
+      "type": "frontend",
+      "label": "回复用户",
+      "sublabel": "adapter.send",
+      "stage": 4,
+      "row": 0,
+      "sources": [
+        {
+          "path": "agent/turn_final_response.py",
+          "line": 55,
+          "label": "finish_text_response"
+        },
+        {
+          "path": "gateway/platforms/base.py",
+          "line": 2684,
+          "label": "send"
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "会话数据库",
+      "sublabel": "state.db 追加写入",
+      "stage": 4,
+      "row": 2,
+      "sources": [
+        {
+          "path": "agent/session_persistence.py",
+          "line": 294
+        },
+        {
+          "path": "hermes_state_messages.py",
+          "line": 449,
+          "label": "append_messages_batch"
+        }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "raw-message",
+      "from": "msg",
+      "to": "ingress",
+      "label": "原始消息",
+      "variant": "emphasis"
+    },
+    {
+      "id": "load-history",
+      "from": "history",
+      "to": "assemble",
+      "label": "过往对话"
+    },
+    {
+      "id": "user-turn",
+      "from": "ingress",
+      "to": "assemble",
+      "label": "user 消息",
+      "variant": "emphasis"
+    },
+    {
+      "id": "system-prompt",
+      "from": "prompt",
+      "to": "assemble",
+      "label": "system 消息",
+      "variant": "security",
+      "labelDy": 25
+    },
+    {
+      "id": "api-request",
+      "from": "assemble",
+      "to": "llm",
+      "label": "messages + 工具清单",
+      "variant": "emphasis"
+    },
+    {
+      "id": "tool-calls",
+      "from": "llm",
+      "to": "tools",
+      "label": "tool_calls",
+      "classification": "有工具调用时",
+      "labelDy": 25
+    },
+    {
+      "id": "tool-results",
+      "from": "tools",
+      "to": "assemble",
+      "label": "tool 结果",
+      "classification": "进入下一轮",
+      "variant": "dashed"
+    },
+    {
+      "id": "final-text",
+      "from": "llm",
+      "to": "reply",
+      "label": "最终文本",
+      "classification": "无工具调用时",
+      "variant": "emphasis"
+    },
+    {
+      "id": "persist",
+      "from": "tools",
+      "to": "store",
+      "label": "本轮消息落盘",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "主干：一问一答",
+      "items": [
+        "消息经网关进入，拼上系统提示词和历史，发给大模型",
+        "模型直接给出文字 → 发回用户，本次结束"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "循环：边想边做",
+      "items": [
+        "模型要求调用工具 → 执行（跑命令、读写文件、搜网页）",
+        "工具结果作为 tool 消息放回对话，再次请求模型，直到不再调用工具"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "为什么提示词不变",
+      "items": [
+        "系统提示词在会话开始时构建一次，之后字节不变",
+        "这样模型服务商能复用缓存，省钱省时间；只有上下文压缩会重建"
+      ]
+    }
+  ]
+}

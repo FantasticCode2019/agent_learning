@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "8ce3ba1a-7b32-4bd0-9046-2c63011d34e9",
+  "status": "current",
+  "command": "deliver",
+  "type": "lifecycle",
+  "input": "/Users/yajun/Documents/opensource/WeKnora/.archify/lifecycle-weknora-parse-status-20260930-172606/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/WeKnora/.archify/lifecycle-weknora-parse-status-20260930-172606/weknora-parse-status.html",
+  "specification": {
+    "sha256": "239b22fcabc6d39e62a92216a0b2d2f42f0f68f9458bf9eaa86724d6057e8e3f",
+    "bytes": 4277
+  },
+  "artifact": {
+    "sha256": "0e6e38d3252ef48fb94395748df5927f6f8d3b8a54ab3d453f8fe0ea13a7cf12",
+    "bytes": 763105
+  }
+}

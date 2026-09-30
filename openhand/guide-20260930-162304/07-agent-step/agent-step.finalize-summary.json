@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "workflow",
+  "quality": "showcase",
+  "specification": {
+    "path": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/07-agent-step/candidate.json",
+    "sha256": "90064c085b151f21c89a41eb26eeb40038ae2f8aab43b02f997c1bd5166a4f3f",
+    "bytes": 9017
+  },
+  "artifact": {
+    "path": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/07-agent-step/agent-step.html",
+    "sha256": "362cad62ad91f17fde6aace18d60ea6a75a0633b5a32b064d8b83686d33cd0bd",
+    "bytes": 768635
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/07-agent-step/agent-step.finalize.json",
+    "summaryReceipt": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/07-agent-step/agent-step.finalize-summary.json",
+    "browserCheckReceipt": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/07-agent-step/agent-step.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.0.1",
+    "releaseNotes": null,
+    "checkedAt": "2026-09-29T09:06:25.980Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 1675,
+  "visualReviewRecommendation": {
+    "action": "inspect-route-readability",
+    "signals": {
+      "routesOverSuggestedBends": 2
+    },
+    "reason": "Automated gates passed, but crossings or detours still need perceptual review before claiming visual quality.",
+    "affectedRoutes": {
+      "crossings": [],
+      "detours": [
+        {
+          "relationship": {
+            "id": "risk-execute",
+            "from": "risk",
+            "to": "execute",
+            "label": "放行",
+            "collectionIndex": 5,
+            "artifactIndex": 6
+          },
+          "bends": 3,
+          "stretch": 1
+        },
+        {
+          "relationship": {
+            "id": "tomsg-condense",
+            "from": "tomsg",
+            "to": "condense",
+            "label": "太长",
+            "collectionIndex": 7,
+            "artifactIndex": 8
+          },
+          "bends": 3,
+          "stretch": 1.073
+        }
+      ],
+      "truncated": false
+    },
+    "hints": [
+      "risk → execute needs 3 bends: move node risk or execute so they share a row or column with matching centers, or sit diagonally with a clear corner.",
+      "tomsg → condense needs 3 bends: move node tomsg or condense so they share a row or column with matching centers, or sit diagonally with a clear corner."
+    ],
+    "repair": "Trace these relationships at the desktop viewport. For Architecture, use references/architecture-layout-repair.md: reflow a blocked main path or tangled connected scene, and repair an isolated defect locally only when the surrounding composition is accepted. Preserve all semantic content and user-fixed geometry. Rerun finalize once after the edit."
+  }
+}

@@ -1,0 +1,373 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "一次工具调用的全过程（以 terminal 为例）",
+    "output": ".archify/hermes-guide-20260930-162431/05-sequence-tool-call/tool-call.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "repository": {
+      "url": "https://github.com/NousResearch/hermes-agent.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "f42f579cf8bac4918ac9599bece71618afadd846"
+    },
+    "viewBox": [
+      1068,
+      660
+    ]
+  },
+  "participants": [
+    {
+      "id": "loop",
+      "type": "backend",
+      "label": "主循环",
+      "sublabel": "run_tool_round",
+      "sources": [
+        {
+          "path": "agent/turn_tool_round.py",
+          "line": 46,
+          "end_line": 154
+        },
+        {
+          "path": "agent/turn_tool_validation.py",
+          "line": 71,
+          "label": "validate_tool_calls"
+        }
+      ]
+    },
+    {
+      "id": "executor",
+      "type": "backend",
+      "label": "执行器",
+      "sublabel": "tool_executor",
+      "sources": [
+        {
+          "path": "run_agent.py",
+          "line": 1326,
+          "label": "_execute_tool_calls"
+        },
+        {
+          "path": "agent/tool_executor.py",
+          "line": 1645,
+          "label": "顺序分发"
+        },
+        {
+          "path": "agent/tool_executor.py",
+          "line": 1051,
+          "label": "_commit_tool_result"
+        }
+      ]
+    },
+    {
+      "id": "hooks",
+      "type": "security",
+      "label": "插件钩子",
+      "sublabel": "pre_tool_call",
+      "sources": [
+        {
+          "path": "agent/tool_executor.py",
+          "line": 681,
+          "label": "_dispatch_authorized_once"
+        },
+        {
+          "path": "hermes_cli/plugins.py",
+          "line": 2038,
+          "end_line": 2090,
+          "label": "放行/改参/拦截"
+        }
+      ]
+    },
+    {
+      "id": "mt",
+      "type": "backend",
+      "label": "分发入口",
+      "sublabel": "handle_function_call",
+      "sources": [
+        {
+          "path": "model_tools.py",
+          "line": 873,
+          "end_line": 966
+        }
+      ]
+    },
+    {
+      "id": "registry",
+      "type": "database",
+      "label": "注册表",
+      "sublabel": "registry.dispatch",
+      "sources": [
+        {
+          "path": "tools/registry.py",
+          "line": 893,
+          "end_line": 921
+        }
+      ]
+    },
+    {
+      "id": "tool",
+      "type": "backend",
+      "label": "terminal 工具",
+      "sublabel": "terminal_tool",
+      "sources": [
+        {
+          "path": "tools/terminal_tool.py",
+          "line": 1367,
+          "label": "terminal_tool"
+        },
+        {
+          "path": "tools/terminal_tool.py",
+          "line": 1182,
+          "label": "_acquire_env"
+        }
+      ]
+    },
+    {
+      "id": "approval",
+      "type": "security",
+      "label": "危险命令审批",
+      "sublabel": "approval.py",
+      "sources": [
+        {
+          "path": "tools/terminal_tool.py",
+          "line": 1016,
+          "label": "_run_approval_guards"
+        },
+        {
+          "path": "tools/approval.py",
+          "line": 1168,
+          "label": "check_all_command_guards"
+        }
+      ]
+    },
+    {
+      "id": "env",
+      "type": "cloud",
+      "label": "执行环境",
+      "sublabel": "local/docker/ssh",
+      "sources": [
+        {
+          "path": "tools/terminal_tool_backends.py",
+          "line": 233,
+          "end_line": 238,
+          "label": "_ENV_BUILDERS"
+        },
+        {
+          "path": "tools/environments/base.py",
+          "line": 604,
+          "label": "execute"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 155,
+      "to": 330,
+      "label": "① 分发"
+    },
+    {
+      "from": 335,
+      "to": 440,
+      "label": "② 执行"
+    },
+    {
+      "from": 450,
+      "to": 560,
+      "label": "③ 结果回流"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "loop",
+      "to": "executor",
+      "y": 168,
+      "label": "校验 + 存库后执行",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m2",
+      "from": "executor",
+      "to": "hooks",
+      "y": 198,
+      "label": "pre_tool_call",
+      "variant": "security"
+    },
+    {
+      "id": "m3",
+      "from": "hooks",
+      "to": "executor",
+      "y": 226,
+      "label": "放行（可改参数）",
+      "variant": "return"
+    },
+    {
+      "id": "m4",
+      "from": "executor",
+      "to": "mt",
+      "y": 256,
+      "label": "非内联工具",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m5",
+      "from": "mt",
+      "to": "registry",
+      "y": 284,
+      "label": "dispatch",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m6",
+      "from": "registry",
+      "to": "tool",
+      "y": 312,
+      "label": "调用 handler",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m7",
+      "from": "tool",
+      "to": "approval",
+      "y": 345,
+      "label": "危险命令？",
+      "variant": "security"
+    },
+    {
+      "id": "m8",
+      "from": "approval",
+      "to": "tool",
+      "y": 373,
+      "label": "批准",
+      "variant": "return"
+    },
+    {
+      "id": "m9",
+      "from": "tool",
+      "to": "env",
+      "y": 401,
+      "label": "execute",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m10",
+      "from": "env",
+      "to": "tool",
+      "y": 429,
+      "label": "输出+退出码",
+      "variant": "return"
+    },
+    {
+      "id": "m11",
+      "from": "tool",
+      "to": "registry",
+      "y": 462,
+      "label": "JSON 字符串",
+      "variant": "return"
+    },
+    {
+      "id": "m12",
+      "from": "registry",
+      "to": "mt",
+      "y": 490,
+      "label": "结果",
+      "variant": "return"
+    },
+    {
+      "id": "m13",
+      "from": "mt",
+      "to": "executor",
+      "y": 518,
+      "label": "post_tool_call",
+      "variant": "return"
+    },
+    {
+      "id": "m14",
+      "from": "executor",
+      "to": "loop",
+      "y": 546,
+      "label": "tool 消息",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "loop",
+      "from": 163,
+      "to": 552,
+      "type": "backend"
+    },
+    {
+      "participant": "executor",
+      "from": 168,
+      "to": 546,
+      "type": "backend"
+    },
+    {
+      "participant": "hooks",
+      "from": 198,
+      "to": 226,
+      "type": "security"
+    },
+    {
+      "participant": "mt",
+      "from": 256,
+      "to": 518,
+      "type": "backend"
+    },
+    {
+      "participant": "registry",
+      "from": 284,
+      "to": 490,
+      "type": "database"
+    },
+    {
+      "participant": "tool",
+      "from": 312,
+      "to": 462,
+      "type": "backend"
+    },
+    {
+      "participant": "approval",
+      "from": 345,
+      "to": 373,
+      "type": "security"
+    },
+    {
+      "participant": "env",
+      "from": 401,
+      "to": 429,
+      "type": "cloud"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "① 分发",
+      "items": [
+        "先校验工具名和参数（名字写错会尝试自动修正），把助手消息存库后才执行",
+        "多个只读工具（读文件、搜索网页等）可并行，最多 8 个；写操作按顺序",
+        "memory、todo、delegate_task 等“内联工具”由 Agent 自己处理，不经过注册表"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "② 安全关卡",
+      "items": [
+        "插件的 pre_tool_call 钩子可以放行、改参数、拦截或要求人工审批",
+        "terminal 工具内部还会检查危险命令（如 rm -rf），需要用户批准"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "③ 结果回流",
+      "items": [
+        "结果统一是 JSON 字符串；异常也会包装成错误 JSON，不会让循环崩溃",
+        "超过约 10 万字符会写入文件、只留预览；首次进入的目录若有 AGENTS.md 会附在结果后",
+        "最终变成一条 role=tool 的消息追加到对话并存库"
+      ]
+    }
+  ]
+}

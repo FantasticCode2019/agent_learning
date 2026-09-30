@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "ba272c1d-cea6-48c8-b96f-992eb3333370",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/03-ingress/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/03-ingress/ingress.html",
+  "specification": {
+    "sha256": "502c27129a8d0a7925dcf40595bb90bae61cbd53936fd8afa4ec5cb8a010f22e",
+    "bytes": 8119
+  },
+  "artifact": {
+    "sha256": "3d63dd6c3f94374065263142076d8fd5fb2e624b8e1df1235ca86f2120a96eac",
+    "bytes": 767419
+  }
+}

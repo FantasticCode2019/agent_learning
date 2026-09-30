@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "fail",
+  "type": "workflow",
+  "quality": "showcase",
+  "startedAt": "2026-09-29T09:24:40.584Z",
+  "specification": {
+    "path": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/candidate.json",
+    "sha256": "3d306cb09b989cb25513052958633057a1b2d2591755870649262b27c4787d1a",
+    "bytes": 12562
+  },
+  "artifact": {
+    "path": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.html",
+    "sha256": "88570f73837883e611652a198c16e1450cf45ec93792db77bd77d9c06922d84c",
+    "bytes": 781522
+  },
+  "stages": {
+    "validate": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": null,
+      "execution": "embedded-in-deliver",
+      "command": [
+        "/usr/local/bin/node",
+        "/Users/yajun/.agents/skills/archify/bin/archify.mjs",
+        "deliver",
+        "workflow",
+        "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/candidate.json",
+        "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.html",
+        "--quality",
+        "showcase",
+        "--repo-root",
+        "/Users/yajun/Documents/opensource/dsh-devlopment/deepseek-harness",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": true,
+        "command": "validate",
+        "specification": {
+          "sha256": "3d306cb09b989cb25513052958633057a1b2d2591755870649262b27c4787d1a",
+          "bytes": 12562
+        },
+        "validation": {
+          "checksPassed": 9,
+          "checkCount": 9,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        }
+      }
+    },
+    "deliver": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 380,
+      "command": [
+        "/usr/local/bin/node",
+        "/Users/yajun/.agents/skills/archify/bin/archify.mjs",
+        "deliver",
+        "workflow",
+        "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/candidate.json",
+        "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.html",
+        "--quality",
+        "showcase",
+        "--repo-root",
+        "/Users/yajun/Documents/opensource/dsh-devlopment/deepseek-harness",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "receiptId": "409c62ed-e4d0-4908-9584-227dc9ebd7c6",
+        "ok": true,
+        "command": "deliver",
+        "type": "workflow",
+        "input": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/candidate.json",
+        "output": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.html",
+        "specification": {
+          "sha256": "3d306cb09b989cb25513052958633057a1b2d2591755870649262b27c4787d1a",
+          "bytes": 12562
+        },
+        "artifact": {
+          "sha256": "88570f73837883e611652a198c16e1450cf45ec93792db77bd77d9c06922d84c",
+          "bytes": 781522
+        },
+        "validation": {
+          "checksPassed": 9,
+          "checkCount": 9,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        },
+        "evidence": {
+          "verified": true,
+          "repository": "https://github.com/deepseek-ai/deepseek-harness",
+          "revision": "4878cdabd87d4041bdaff61d04c966883b9fd07a",
+          "references": 23
+        },
+        "update": {
+          "status": "unavailable",
+          "installedVersion": null,
+          "availableVersion": null,
+          "releaseNotes": null,
+          "checkedAt": null,
+          "source": null,
+          "noticeRequired": false,
+          "noticeText": null,
+          "reason": "disabled"
+        }
+      }
+    },
+    "check": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 84,
+      "command": [
+        "/usr/local/bin/node",
+        "/Users/yajun/.agents/skills/archify/bin/archify.mjs",
+        "check",
+        "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.html",
+        "--require-provenance"
+      ],
+      "receipt": {
+        "ok": true,
+        "file": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.html",
+        "artifact": {
+          "sha256": "88570f73837883e611652a198c16e1450cf45ec93792db77bd77d9c06922d84c",
+          "bytes": 781522
+        },
+        "checks": [
+          {
+            "name": "single_svg",
+            "ok": true,
+            "details": [
+              "found 1 <svg> block(s)"
+            ]
+          },
+          {
+            "name": "finite_svg",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "orthogonal_arrows",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "label_route_clearance",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "relationship_crossings",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "relationship_corridors",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "container_border_runs",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "route_rhythm",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "legend_clearance",
+            "ok": true,
+            "details": []
+          }
+        ],
+        "composition": {
+          "schemaVersion": 1,
+          "profile": "showcase",
+          "status": "pass",
+          "summary": {
+            "errors": 0,
+            "warnings": 0
+          },
+          "metrics": {
+            "properCrossings": 0,
+            "resolvedCrossovers": 0,
+            "ambiguousCorridors": 0,
+            "arrowheadCollisions": 0,
+            "containerBorderRuns": 0,
+            "labelRouteClearanceIssues": 0,
+            "labelCanvasOverflowIssues": 0,
+            "minLabelRouteClearance": 68.3,
+            "desktopReadabilityIssues": 0,
+            "viewportHeightIssues": 0,
+            "minProjectedNodeTextPx": 7.167630057803469,
+            "maxBends": 3,
+            "routesOverSuggestedBends": 1,
+            "maxStretch": 1.689,
+            "routesOverSuggestedStretch": 1,
+            "minSegmentPx": 16,
+            "minInteriorSegmentPx": 95.8,
+            "shortSegmentCount": 0,
+            "shortEndpointSegmentCount": 0,
+            "shortInteriorSegmentCount": 0,
+            "microSegmentCount": 0
+          },
+          "suggestedLimits": {
+            "bendsPerRelationship": 2,
+            "stretch": 1.35,
+            "segmentPx": 16,
+            "microSegmentPx": 8
+          },
+          "routeReview": {
+            "crossings": [],
+            "detours": [
+              {
+                "relationship": {
+                  "id": "w-wake",
+                  "from": "msgin",
+                  "to": "claim",
+                  "label": "唤醒",
+                  "collectionIndex": 14,
+                  "artifactIndex": 15
+                },
+                "bends": 3,
+                "stretch": 1.689
+              }
+            ]
+          },
+          "leadingSpace": {
+            "measured": false,
+            "reviewSuggested": false
+          },
+          "desktopReadability": {
+            "budgetBasis": "legacy-930",
+            "readerContract": "declared-wide-v1",
+            "availableDiagramWidth": 930,
+            "actualBudgetPx": 930,
+            "limit": "legacy",
+            "requestedTargetPx": null,
+            "requestedTargetMet": null,
+            "hardFloorPx": 6,
+            "hardFloorMet": true,
+            "minimumOwner": {
+              "kind": "node",
+              "id": "msgin"
+            },
+            "minimumSourceTextPx": 8,
+            "minimumProjectedTextPx": 7.167630057803469,
+            "semanticTextCount": 46
+          },
+          "issues": []
+        },
+        "provenance": "current",
+        "deliveryReceiptId": "409c62ed-e4d0-4908-9584-227dc9ebd7c6"
+      }
+    },
+    "browser-check": {
+      "status": "fail",
+      "exitCode": 1,
+      "durationMs": 5,
+      "command": [
+        "/usr/local/bin/node",
+        "/Users/yajun/.agents/skills/archify/bin/archify.mjs",
+        "browser-check",
+        "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.html",
+        "--json",
+        "--require-provenance"
+      ],
+      "execution": "in-process",
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": false,
+        "command": "browser-check",
+        "evidenceKind": "automated-browser",
+        "status": "fail",
+        "visualReview": "not-requested",
+        "provenance": "current",
+        "deliveryReceiptId": "409c62ed-e4d0-4908-9584-227dc9ebd7c6",
+        "artifact": {
+          "path": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.html",
+          "sha256": "88570f73837883e611652a198c16e1450cf45ec93792db77bd77d9c06922d84c",
+          "bytes": 781522
+        },
+        "state": {
+          "detail": "read",
+          "motion": "still"
+        },
+        "chrome": {
+          "status": "not-checked",
+          "executable": null
+        },
+        "diagnostics": [
+          {
+            "code": "viewer/evidence-path-conflict",
+            "severity": "error",
+            "message": "browser-check will not replace the existing unowned evidence path \"/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.browser-check.json\".",
+            "subject": {
+              "artifact": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.html",
+              "evidencePath": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.browser-check.json"
+            },
+            "evidence": {
+              "reason": {
+                "code": "ownership-artifact-mismatch"
+              }
+            },
+            "supportedFixes": [
+              "move the conflicting file aside, or choose a separate --out-dir, then rerun browser-check"
+            ]
+          }
+        ],
+        "containment": {
+          "status": "fail",
+          "policy": "fit-or-reader-declared-readable-vertical-scroll",
+          "viewports": []
+        },
+        "themeStates": {
+          "status": "fail",
+          "viewports": []
+        },
+        "readability": {
+          "status": "fail",
+          "minimumProjectedNodeTextPx": 6,
+          "viewports": []
+        },
+        "viewerChrome": {
+          "status": "fail",
+          "viewports": []
+        },
+        "captures": {
+          "status": "not-requested",
+          "screenshots": [],
+          "contactSheet": null
+        },
+        "sidecars": {
+          "receipt": "turn-loop.browser-check.json",
+          "files": []
+        },
+        "error": "browser-check will not replace the existing unowned evidence path \"/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.browser-check.json\"."
+      }
+    }
+  },
+  "diagnostics": [
+    {
+      "code": "viewer/evidence-path-conflict",
+      "severity": "error",
+      "message": "browser-check will not replace the existing unowned evidence path \"/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.browser-check.json\".",
+      "subject": {
+        "artifact": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.html",
+        "evidencePath": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.browser-check.json"
+      },
+      "evidence": {
+        "reason": {
+          "code": "ownership-artifact-mismatch"
+        }
+      },
+      "supportedFixes": [
+        "move the conflicting file aside, or choose a separate --out-dir, then rerun browser-check"
+      ]
+    }
+  ],
+  "evidence": {
+    "receipt": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.finalize.json",
+    "summaryReceipt": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.finalize-summary.json",
+    "browserCheckReceipt": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/05-turn-loop/turn-loop.browser-check.json"
+  },
+  "visualReview": "not-requested",
+  "failedStage": "browser-check",
+  "finishedAt": "2026-09-29T09:24:41.160Z",
+  "durationMs": 575,
+  "update": {
+    "status": "current",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.0.1",
+    "releaseNotes": null,
+    "checkedAt": "2026-09-29T09:06:25.980Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  }
+}

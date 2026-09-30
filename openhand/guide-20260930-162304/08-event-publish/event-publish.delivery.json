@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "4c0d17c8-b855-4255-ac3b-882063accc6d",
+  "status": "current",
+  "command": "deliver",
+  "type": "dataflow",
+  "input": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/08-event-publish/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/08-event-publish/event-publish.html",
+  "specification": {
+    "sha256": "e93ce106975caee169c926291dad48325e9c906f2343fff287ae8961681d453d",
+    "bytes": 7147
+  },
+  "artifact": {
+    "sha256": "813d40321c6243ffa5441d0b026b98e006d080351829c2dfb4d7eaf08cb2eb1d",
+    "bytes": 762292
+  }
+}

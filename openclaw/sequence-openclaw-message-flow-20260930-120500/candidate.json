@@ -1,0 +1,405 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "OpenClaw 消息处理流程（以 Telegram 为例）",
+    "locale": "zh-CN",
+    "output": ".archify/sequence-openclaw-message-flow-20260930-120500/openclaw-message-flow.html",
+    "viewBox": [
+      1080,
+      695
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/openclaw/openclaw",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "63144fe0c4d170902aa50155daa36460af6e8569"
+    }
+  },
+  "participants": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "IM 用户",
+      "sublabel": "Telegram 客户端",
+      "sources": [
+        {
+          "path": "extensions/telegram/src/bot-core.ts",
+          "line": 107,
+          "label": "grammY Bot"
+        }
+      ]
+    },
+    {
+      "id": "telegram",
+      "type": "backend",
+      "label": "Telegram 插件",
+      "sublabel": "入站管线 / 出站",
+      "sources": [
+        {
+          "path": "extensions/telegram/src/bot-handlers.inbound-pipeline.ts",
+          "line": 400,
+          "label": "bot.on(message)"
+        },
+        {
+          "path": "extensions/telegram/src/bot-message-dispatch-turn.ts",
+          "line": 107,
+          "label": "runChannelInboundEvent 调用"
+        },
+        {
+          "path": "extensions/telegram/src/bot-message-dispatch-reply.ts",
+          "line": 293,
+          "label": "deliverReply"
+        }
+      ]
+    },
+    {
+      "id": "turn",
+      "type": "backend",
+      "label": "渠道回合",
+      "sublabel": "src/channels/turn",
+      "sources": [
+        {
+          "path": "src/plugin-sdk/channel-inbound.ts",
+          "line": 250,
+          "label": "runChannelInboundEvent"
+        },
+        {
+          "path": "src/channels/turn/run-channel-turn.ts",
+          "line": 158,
+          "label": "runChannelTurn"
+        },
+        {
+          "path": "src/channels/turn/execution.ts",
+          "line": 262,
+          "label": "recordInboundSession 调用"
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "会话存储",
+      "sublabel": "SQLite",
+      "sources": [
+        {
+          "path": "src/channels/session.ts",
+          "line": 27,
+          "label": "recordInboundSession"
+        },
+        {
+          "path": "src/state/openclaw-state-db.ts",
+          "line": 355,
+          "label": "openOpenClawStateDatabase"
+        }
+      ]
+    },
+    {
+      "id": "autoreply",
+      "type": "backend",
+      "label": "Auto-reply",
+      "sublabel": "dispatch → getReply",
+      "sources": [
+        {
+          "path": "src/auto-reply/dispatch.ts",
+          "line": 210,
+          "label": "dispatchInboundMessage"
+        },
+        {
+          "path": "src/auto-reply/reply/dispatch-from-config.ts",
+          "line": 27,
+          "label": "dispatchReplyFromConfig"
+        },
+        {
+          "path": "src/auto-reply/reply/get-reply.ts",
+          "line": 213,
+          "label": "getReplyFromConfig"
+        }
+      ]
+    },
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "Agent 运行时",
+      "sublabel": "embedded runner",
+      "sources": [
+        {
+          "path": "src/auto-reply/reply/agent-runner-run.ts",
+          "line": 75,
+          "label": "runReplyAgent"
+        },
+        {
+          "path": "src/agents/embedded-agent-runner/run/attempt.ts",
+          "line": 64,
+          "label": "runEmbeddedAttempt"
+        },
+        {
+          "path": "packages/agent-core/src/agent.ts",
+          "line": 442,
+          "label": "Agent.prompt"
+        }
+      ]
+    },
+    {
+      "id": "llm",
+      "type": "external",
+      "label": "模型提供方",
+      "sublabel": "packages/ai",
+      "sources": [
+        {
+          "path": "packages/ai/src/providers/anthropic.ts",
+          "line": 1,
+          "label": "Anthropic 适配器"
+        },
+        {
+          "path": "extensions/anthropic/register.runtime.ts",
+          "line": 654,
+          "label": "registerProvider"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "工具",
+      "sublabel": "exec · browser …",
+      "sources": [
+        {
+          "path": "packages/agent-core/src/agent-loop.ts",
+          "line": 1136,
+          "label": "tool.execute"
+        },
+        {
+          "path": "src/agents/agent-tools.ts",
+          "line": 752,
+          "label": "createOpenClawCodingTools"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 250,
+      "label": "入站"
+    },
+    {
+      "from": 254,
+      "to": 470,
+      "label": "Agent 回合"
+    },
+    {
+      "from": 474,
+      "to": 590,
+      "label": "回复投递"
+    }
+  ],
+  "messages": [
+    {
+      "id": "send-msg",
+      "from": "user",
+      "to": "telegram",
+      "y": 160,
+      "label": "发送消息",
+      "variant": "emphasis"
+    },
+    {
+      "id": "inbound-event",
+      "from": "telegram",
+      "to": "turn",
+      "y": 188,
+      "label": "runChannelInboundEvent",
+      "variant": "emphasis"
+    },
+    {
+      "id": "record-session",
+      "from": "turn",
+      "to": "store",
+      "y": 216,
+      "label": "recordInboundSession"
+    },
+    {
+      "id": "session-ok",
+      "from": "store",
+      "to": "turn",
+      "y": 244,
+      "label": "已记录",
+      "variant": "return"
+    },
+    {
+      "id": "dispatch",
+      "from": "turn",
+      "to": "autoreply",
+      "y": 272,
+      "label": "dispatchInboundMessage",
+      "variant": "emphasis"
+    },
+    {
+      "id": "run-agent",
+      "from": "autoreply",
+      "to": "agent",
+      "y": 300,
+      "label": "runReplyAgent",
+      "variant": "emphasis",
+      "note": "模型/CLI 后端回退"
+    },
+    {
+      "id": "llm-request",
+      "from": "agent",
+      "to": "llm",
+      "y": 328,
+      "label": "流式请求",
+      "variant": "emphasis"
+    },
+    {
+      "id": "tool-call",
+      "from": "llm",
+      "to": "agent",
+      "y": 356,
+      "label": "tool_use",
+      "variant": "return"
+    },
+    {
+      "id": "exec-tool",
+      "from": "agent",
+      "to": "tools",
+      "y": 384,
+      "label": "tool.execute"
+    },
+    {
+      "id": "tool-result",
+      "from": "tools",
+      "to": "agent",
+      "y": 412,
+      "label": "工具结果",
+      "variant": "return"
+    },
+    {
+      "id": "llm-continue",
+      "from": "agent",
+      "to": "llm",
+      "y": 440,
+      "label": "继续请求"
+    },
+    {
+      "id": "llm-final",
+      "from": "llm",
+      "to": "agent",
+      "y": 468,
+      "label": "最终文本",
+      "variant": "return"
+    },
+    {
+      "id": "reply-payload",
+      "from": "agent",
+      "to": "autoreply",
+      "y": 496,
+      "label": "回复 payload",
+      "variant": "return"
+    },
+    {
+      "id": "deliver",
+      "from": "autoreply",
+      "to": "turn",
+      "y": 524,
+      "label": "dispatcher 投递",
+      "variant": "return"
+    },
+    {
+      "id": "deliver-reply",
+      "from": "turn",
+      "to": "telegram",
+      "y": 552,
+      "label": "deliverReply"
+    },
+    {
+      "id": "send-text",
+      "from": "telegram",
+      "to": "user",
+      "y": 580,
+      "label": "sendText (Bot API)",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "telegram",
+      "from": 155,
+      "to": 586,
+      "type": "backend"
+    },
+    {
+      "participant": "turn",
+      "from": 183,
+      "to": 558,
+      "type": "backend"
+    },
+    {
+      "participant": "store",
+      "from": 211,
+      "to": 250,
+      "type": "database"
+    },
+    {
+      "participant": "autoreply",
+      "from": 267,
+      "to": 530,
+      "type": "backend"
+    },
+    {
+      "participant": "agent",
+      "from": 295,
+      "to": 502,
+      "type": "backend"
+    },
+    {
+      "participant": "llm",
+      "from": 323,
+      "to": 362,
+      "type": "external"
+    },
+    {
+      "participant": "tools",
+      "from": 379,
+      "to": 418,
+      "type": "backend"
+    },
+    {
+      "participant": "llm",
+      "from": 435,
+      "to": 474,
+      "type": "external"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "入站",
+      "items": [
+        "grammY 收到 update，经缓冲/去抖进入 dispatchTelegramMessage",
+        "runChannelTurn 依次执行 ingest → classify → preflight → resolveTurn",
+        "先把入站会话写入 SQLite，再开始调度"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Agent 回合",
+      "items": [
+        "getReplyFromConfig 选择路由并调用 runReplyAgent",
+        "runEmbeddedAttempt 构建系统提示词、技能和工具",
+        "agent-core 循环：模型返回 tool_use 时执行工具并继续请求"
+      ]
+    },
+    {
+      "dot": "orange",
+      "title": "回复与其他入口",
+      "items": [
+        "回复按块流式投递；打字状态与草稿预览并行",
+        "Control UI 的 chat.send 从 Gateway 进入同一 Auto-reply 管线",
+        "回复经 WS 事件广播回客户端"
+      ]
+    }
+  ]
+}

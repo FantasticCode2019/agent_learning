@@ -1,0 +1,315 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "② 请求进门：一个 HTTP 请求经过哪些关卡",
+    "output": ".archify/workflow-weknora-request-20260930-172606/weknora-request.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Tencent/WeKnora.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "bccb4b151bae403508da77fbb174efc79dc47c1a"
+    },
+    "viewBox": [
+      1230,
+      786
+    ],
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "用户 / 入口"
+        },
+        "backend": {
+          "label": "处理步骤"
+        },
+        "database": {
+          "label": "存储 / 数据"
+        },
+        "security": {
+          "label": "校验 / 异常"
+        },
+        "messagebus": {
+          "label": "队列 / 任务"
+        },
+        "external": {
+          "label": "模型调用"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "client",
+      "label": "请求方"
+    },
+    {
+      "id": "mw",
+      "label": "通用中间件"
+    },
+    {
+      "id": "sec",
+      "label": "鉴权与权限"
+    },
+    {
+      "id": "deny",
+      "label": "拒绝",
+      "variant": "exception"
+    },
+    {
+      "id": "biz",
+      "label": "业务处理"
+    }
+  ],
+  "mainPath": [
+    "req",
+    "base",
+    "guard",
+    "auth",
+    "trace",
+    "rbac",
+    "handler"
+  ],
+  "nodes": [
+    {
+      "id": "req",
+      "lane": "client",
+      "col": 0,
+      "type": "frontend",
+      "label": "HTTP 请求",
+      "sublabel": "浏览器 / API Key",
+      "width": 140
+    },
+    {
+      "id": "base",
+      "lane": "mw",
+      "col": 1,
+      "type": "backend",
+      "label": "基础处理",
+      "sublabel": "CORS · 请求 ID · 语言",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/router/router.go",
+          "line": 104,
+          "end_line": 140
+        }
+      ]
+    },
+    {
+      "id": "guard",
+      "lane": "mw",
+      "col": 2,
+      "type": "backend",
+      "label": "日志与兜底",
+      "sublabel": "Logger · Recovery",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/router/router.go",
+          "line": 140,
+          "end_line": 142
+        }
+      ]
+    },
+    {
+      "id": "public",
+      "lane": "biz",
+      "col": 2,
+      "type": "backend",
+      "label": "免登录路由",
+      "sublabel": "IM 回调 · 嵌入 · MCP",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/router/router.go",
+          "line": 173,
+          "end_line": 206
+        }
+      ]
+    },
+    {
+      "id": "auth",
+      "lane": "sec",
+      "col": 3,
+      "type": "security",
+      "label": "Auth 鉴权",
+      "sublabel": "JWT 或 X-API-Key",
+      "tag": "确定租户",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/router/router.go",
+          "line": 208
+        },
+        {
+          "path": "internal/middleware/auth.go",
+          "line": 126,
+          "end_line": 177
+        }
+      ]
+    },
+    {
+      "id": "reject",
+      "lane": "deny",
+      "col": 4,
+      "type": "security",
+      "label": "拒绝请求",
+      "sublabel": "401 / 403",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/middleware/auth.go",
+          "line": 175,
+          "end_line": 177
+        },
+        {
+          "path": "internal/middleware/auth.go",
+          "line": 248
+        }
+      ]
+    },
+    {
+      "id": "trace",
+      "lane": "mw",
+      "col": 4,
+      "type": "backend",
+      "label": "追踪与审计",
+      "sublabel": "Langfuse · 审计日志",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/router/router.go",
+          "line": 221,
+          "end_line": 228
+        }
+      ]
+    },
+    {
+      "id": "rbac",
+      "lane": "sec",
+      "col": 5,
+      "type": "security",
+      "label": "权限检查",
+      "sublabel": "Key 能力 · RBAC 角色",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/router/router.go",
+          "line": 257
+        },
+        {
+          "path": "internal/router/rbac.go",
+          "line": 195
+        }
+      ]
+    },
+    {
+      "id": "handler",
+      "lane": "biz",
+      "col": 5,
+      "type": "backend",
+      "label": "业务 Handler",
+      "sublabel": "知识库 · 问答 · Agent",
+      "width": 140,
+      "sources": [
+        {
+          "path": "internal/router/routes_chat.go",
+          "line": 136,
+          "end_line": 145
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "r1",
+      "from": "req",
+      "to": "base",
+      "variant": "emphasis"
+    },
+    {
+      "id": "r2",
+      "from": "base",
+      "to": "guard",
+      "variant": "emphasis"
+    },
+    {
+      "id": "r3",
+      "from": "guard",
+      "to": "auth",
+      "label": "需要登录",
+      "variant": "emphasis"
+    },
+    {
+      "id": "r4",
+      "from": "guard",
+      "to": "public",
+      "label": "公开路由",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "r5",
+      "from": "auth",
+      "to": "trace",
+      "label": "通过",
+      "variant": "emphasis"
+    },
+    {
+      "id": "r6",
+      "from": "auth",
+      "to": "reject",
+      "label": "凭证无效",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "r7",
+      "from": "trace",
+      "to": "rbac",
+      "variant": "emphasis"
+    },
+    {
+      "id": "r8",
+      "from": "rbac",
+      "to": "reject",
+      "label": "权限不足",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "r9",
+      "from": "rbac",
+      "to": "handler",
+      "label": "放行",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "中间件是什么",
+      "items": [
+        "像安检通道：请求按顺序经过每一道关卡，任何一关都可以直接拦下",
+        "通用关卡负责打日志、分配请求 ID、捕获崩溃"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "鉴权两件事",
+      "items": [
+        "你是谁：校验登录令牌（JWT）或 API Key",
+        "你能做什么：API Key 的能力范围 + 空间里的角色（RBAC）"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "例外",
+      "items": [
+        "IM 机器人回调、网站嵌入、MCP Server 等路由在鉴权之前注册，自己负责校验"
+      ]
+    }
+  ]
+}

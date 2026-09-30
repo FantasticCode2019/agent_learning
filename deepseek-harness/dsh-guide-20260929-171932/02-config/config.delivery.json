@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "d499deb5-5ca5-4837-82f9-be3c91ba150c",
+  "status": "current",
+  "command": "deliver",
+  "type": "dataflow",
+  "input": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/02-config/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/dsh-devlopment/.archify/dsh-guide-20260929-171932/02-config/config.html",
+  "specification": {
+    "sha256": "f6d9c738d78ecce032d2078202375d2ce23d7e9aea4f54cf86db2aafeff58a90",
+    "bytes": 6568
+  },
+  "artifact": {
+    "sha256": "dcb89b018767ef3bf4b4901c793613a4d0ac85b77799eb957cdf0e6c4a5c98d8",
+    "bytes": 760910
+  }
+}

@@ -1,0 +1,367 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "AIAgent 启动：构造时做了哪些准备",
+    "output": ".archify/hermes-guide-20260930-162431/02-workflow-agent-init/agent-init.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/NousResearch/hermes-agent.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "f42f579cf8bac4918ac9599bece71618afadd846"
+    }
+  },
+  "lanes": [
+    {
+      "id": "caller",
+      "label": "调用方（CLI / 网关 / cron …）"
+    },
+    {
+      "id": "llm",
+      "label": "① 连上大模型"
+    },
+    {
+      "id": "cap",
+      "label": "② 装配能力与状态"
+    },
+    {
+      "id": "disk",
+      "label": "磁盘上的数据"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "entry",
+      "lane": "caller",
+      "col": 0,
+      "type": "external",
+      "label": "AIAgent(...)",
+      "sublabel": "传入模型、密钥、平台等",
+      "sources": [
+        {
+          "path": "run_agent.py",
+          "line": 263,
+          "end_line": 316,
+          "label": "__init__ 转交 init_agent"
+        }
+      ],
+      "width": 160
+    },
+    {
+      "id": "budget",
+      "lane": "llm",
+      "col": 1,
+      "type": "backend",
+      "label": "预算与模式",
+      "sublabel": "迭代上限 · api_mode",
+      "sources": [
+        {
+          "path": "agent/agent_init.py",
+          "line": 2422,
+          "label": "IterationBudget"
+        },
+        {
+          "path": "agent/agent_init.py",
+          "line": 374,
+          "label": "_resolve_api_mode"
+        }
+      ],
+      "width": 160
+    },
+    {
+      "id": "routing",
+      "lane": "llm",
+      "col": 2,
+      "type": "backend",
+      "label": "确定路由",
+      "sublabel": "规范化模型名",
+      "sources": [
+        {
+          "path": "agent/agent_init.py",
+          "line": 425,
+          "end_line": 500,
+          "label": "_finalize_routing"
+        }
+      ],
+      "width": 160
+    },
+    {
+      "id": "client",
+      "lane": "llm",
+      "col": 3,
+      "type": "cloud",
+      "label": "创建客户端",
+      "sublabel": "OpenAI / Anthropic …",
+      "sources": [
+        {
+          "path": "agent/agent_init.py",
+          "line": 1013,
+          "label": "_build_client"
+        }
+      ],
+      "width": 160
+    },
+    {
+      "id": "fallback",
+      "lane": "llm",
+      "col": 4,
+      "type": "backend",
+      "label": "备用模型链",
+      "sublabel": "主模型挂了就换",
+      "sources": [
+        {
+          "path": "agent/agent_init.py",
+          "line": 1090,
+          "label": "_init_fallback_chain"
+        }
+      ],
+      "width": 160
+    },
+    {
+      "id": "tools",
+      "lane": "cap",
+      "col": 4,
+      "type": "backend",
+      "label": "加载工具清单",
+      "sublabel": "按 toolset 筛选",
+      "sources": [
+        {
+          "path": "agent/agent_init.py",
+          "line": 1111,
+          "end_line": 1137,
+          "label": "_load_tools"
+        },
+        {
+          "path": "model_tools.py",
+          "line": 214,
+          "label": "get_tool_definitions"
+        }
+      ],
+      "width": 160
+    },
+    {
+      "id": "session",
+      "lane": "cap",
+      "col": 3,
+      "type": "backend",
+      "label": "会话状态",
+      "sublabel": "session_id · 待办",
+      "sources": [
+        {
+          "path": "agent/agent_init.py",
+          "line": 1197,
+          "end_line": 1216,
+          "label": "_init_session_state"
+        }
+      ],
+      "width": 160
+    },
+    {
+      "id": "memory",
+      "lane": "cap",
+      "col": 2,
+      "type": "backend",
+      "label": "载入记忆",
+      "sublabel": "内置 + 可选外部",
+      "sources": [
+        {
+          "path": "agent/agent_init.py",
+          "line": 1311,
+          "end_line": 1389,
+          "label": "_init_memory"
+        }
+      ],
+      "width": 160
+    },
+    {
+      "id": "ctxengine",
+      "lane": "cap",
+      "col": 1,
+      "type": "backend",
+      "label": "上下文引擎",
+      "sublabel": "ContextCompressor",
+      "sources": [
+        {
+          "path": "agent/agent_init.py",
+          "line": 1976,
+          "end_line": 2003,
+          "label": "_build_context_engine"
+        }
+      ],
+      "width": 160
+    },
+    {
+      "id": "ready",
+      "lane": "cap",
+      "col": 0,
+      "type": "frontend",
+      "label": "Agent 就绪",
+      "sublabel": "提示词尚未构建",
+      "sources": [
+        {
+          "path": "agent/agent_init.py",
+          "line": 596,
+          "end_line": 597,
+          "label": "_cached_system_prompt=None"
+        }
+      ],
+      "width": 160
+    },
+    {
+      "id": "registry",
+      "lane": "disk",
+      "col": 4,
+      "type": "database",
+      "label": "工具注册表",
+      "sublabel": "tools/*.py 自注册",
+      "sources": [
+        {
+          "path": "tools/registry.py",
+          "line": 843,
+          "end_line": 869,
+          "label": "get_definitions + check_fn"
+        }
+      ],
+      "width": 160
+    },
+    {
+      "id": "statedb",
+      "lane": "disk",
+      "col": 3,
+      "type": "database",
+      "label": "state.db",
+      "sublabel": "会话数据库",
+      "sources": [
+        {
+          "path": "hermes_state.py",
+          "line": 451,
+          "label": "SessionDB"
+        }
+      ],
+      "width": 160
+    },
+    {
+      "id": "memfiles",
+      "lane": "disk",
+      "col": 2,
+      "type": "database",
+      "label": "记忆文件",
+      "sublabel": "MEMORY.md · USER.md",
+      "sources": [
+        {
+          "path": "agent/agent_init.py",
+          "line": 1342,
+          "end_line": 1348,
+          "label": "load_from_disk"
+        }
+      ],
+      "width": 160
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-entry",
+      "from": "entry",
+      "to": "budget",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-budget",
+      "from": "budget",
+      "to": "routing",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-routing",
+      "from": "routing",
+      "to": "client",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-client",
+      "from": "client",
+      "to": "fallback",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-fallback",
+      "from": "fallback",
+      "to": "tools",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-tools",
+      "from": "tools",
+      "to": "session",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-session",
+      "from": "session",
+      "to": "memory",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-memory",
+      "from": "memory",
+      "to": "ctxengine",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-ctx",
+      "from": "ctxengine",
+      "to": "ready",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-registry",
+      "from": "registry",
+      "to": "tools",
+      "label": "可用工具",
+      "variant": "dashed"
+    },
+    {
+      "id": "e-statedb",
+      "from": "statedb",
+      "to": "session",
+      "label": "绑定",
+      "variant": "dashed"
+    },
+    {
+      "id": "e-memfiles",
+      "from": "memfiles",
+      "to": "memory",
+      "label": "读取",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "① 连上大模型",
+      "items": [
+        "先定迭代预算（CLI 配置 max_turns 默认 500；子智能体有自己的预算）",
+        "按服务商判定通信协议 api_mode，再创建对应的 SDK 客户端",
+        "同时准备好备用模型链，主模型报错时可以自动切换"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "② 装配能力与状态",
+      "items": [
+        "从工具注册表挑出本次可用的工具（check_fn 不通过的会被隐藏）",
+        "绑定会话数据库、读入 MEMORY.md / USER.md、创建上下文压缩器"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "注意",
+      "items": [
+        "构造时不会拼系统提示词；它在第一次对话时才构建，并存进 state.db",
+        "构造好的 agent 在网关里会被缓存复用，避免每条消息都重新初始化"
+      ]
+    }
+  ]
+}

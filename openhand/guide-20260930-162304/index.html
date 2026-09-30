@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenHands 执行流程导读</title>
+<style>
+:root{
+  --bg:#f7f7f5; --surface:#ffffff; --ink:#1d1f23; --muted:#5d636e; --line:#e3e4e8;
+  --accent:#2f6fdb; --accent-soft:#e8f0fd; --warn:#b4540a; --warn-soft:#fdf1e6;
+  --ok:#1f7a4d; --ok-soft:#e6f5ec; --code:#f1f2f4;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121417; --surface:#1a1d21; --ink:#e7e9ec; --muted:#9aa1ac; --line:#2c3036;
+    --accent:#7aa7f5; --accent-soft:#1f2a3d; --warn:#f0a35e; --warn-soft:#33251a;
+    --ok:#6fd19f; --ok-soft:#18302a; --code:#23272d;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121417; --surface:#1a1d21; --ink:#e7e9ec; --muted:#9aa1ac; --line:#2c3036;
+  --accent:#7aa7f5; --accent-soft:#1f2a3d; --warn:#f0a35e; --warn-soft:#33251a;
+  --ok:#6fd19f; --ok-soft:#18302a; --code:#23272d;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+a{color:var(--accent)}
+code{background:var(--code);padding:1px 6px;border-radius:4px;font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+header.hero{padding:56px 0 28px}
+header.hero h1{font-size:34px;line-height:1.25;margin:0 0 12px}
+header.hero p{color:var(--muted);max-width:760px;margin:0}
+.layout{display:grid;grid-template-columns:230px 1fr;gap:40px;align-items:start}
+nav.toc{position:sticky;top:20px;font-size:14px;padding:16px 0}
+nav.toc ol{list-style:none;margin:0;padding:0}
+nav.toc li{margin:2px 0}
+nav.toc a{display:block;padding:5px 10px;border-radius:6px;color:var(--muted);text-decoration:none}
+nav.toc a:hover{background:var(--accent-soft);color:var(--ink)}
+nav.toc .grp{margin:14px 0 4px 10px;font-size:12px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+section.flow{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px 28px 22px;margin:0 0 28px}
+section.flow h2{font-size:24px;margin:0 0 4px;line-height:1.35}
+.where{font-size:13px;color:var(--muted);margin:0 0 16px}
+.analogy{background:var(--accent-soft);border-radius:10px;padding:12px 16px;margin:0 0 18px}
+.analogy b{color:var(--accent)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0 0 18px}
+.steps li{counter-increment:s;position:relative;padding:0 0 10px 38px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:2px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--surface);font-size:13px;display:flex;align-items:center;justify-content:center;font-weight:600}
+.note{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:0 0 18px;font-size:15px}
+.frame{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}
+.frame iframe{display:block;width:100%;height:860px;border:0}
+.frame-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;font-size:13px;color:var(--muted);border-bottom:1px solid var(--line);background:var(--surface)}
+.journey{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0 0}
+.journey div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;background:var(--bg)}
+.journey b{display:block;color:var(--accent);font-size:13px}
+dl.gloss{display:grid;grid-template-columns:170px 1fr;gap:8px 18px;margin:0}
+dl.gloss dt{font-weight:600}
+dl.gloss dd{margin:0;color:var(--muted)}
+footer{color:var(--muted);font-size:13px;padding:10px 0 60px}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  nav.toc{position:static}
+  section.flow{padding:20px 16px}
+  .frame iframe{height:640px}
+  dl.gloss{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <h1>OpenHands 执行流程导读</h1>
+  <p>从敲下启动命令，到 Agent 在后台一步步执行任务、结果实时出现在屏幕上，全程拆成 10 个流程。每个流程都有一段通俗讲解和一张可交互的图；图中节点可以点击，跳转到对应的源码行。</p>
+</header>
+
+<div class="layout">
+<nav class="toc" aria-label="目录">
+  <ol>
+    <li><a href="#overview">先看全局</a></li>
+    <li><a href="#journey">一条消息的旅程</a></li>
+    <li class="grp">启动</li>
+    <li><a href="#f1">① 本地栈启动</a></li>
+    <li><a href="#f2">② 前端启动与选后端</a></li>
+    <li class="grp">建立会话</li>
+    <li><a href="#f3">③ 创建会话（前端）</a></li>
+    <li><a href="#f4">④ 创建会话（服务端）</a></li>
+    <li><a href="#f5">⑤ 预加载历史与 WebSocket</a></li>
+    <li class="grp">Agent 执行</li>
+    <li><a href="#f6">⑥ 服务端怎么跑</a></li>
+    <li><a href="#f7">⑦ 一步 step 的内部</a></li>
+    <li><a href="#f8">⑧ 事件落盘与广播</a></li>
+    <li class="grp">回到界面</li>
+    <li><a href="#f9">⑨ 前端渲染</a></li>
+    <li><a href="#f10">⑩ 执行状态</a></li>
+    <li class="grp">附录</li>
+    <li><a href="#glossary">名词表</a></li>
+  </ol>
+</nav>
+
+<main>
+<section class="flow" id="overview">
+  <h2>先看全局：谁负责什么</h2>
+  <p class="where">OpenHands 仓库（Agent Canvas 前端）+ software-agent-sdk 仓库（Agent Server / SDK）</p>
+  <div class="analogy"><b>打个比方：</b>Canvas 是遥控器加显示屏，Agent Server 是干活的工人，LLM 是工人的大脑，工作目录是工人的工位。遥控器只负责下指令、看直播，真正的活全在服务端干。</div>
+  <ol class="steps">
+    <li><b>Agent Canvas（本仓库）</b>：React 前端，负责界面、选择连哪个后端、把用户输入发出去、把事件画出来。它不自己实现 Agent 逻辑。</li>
+    <li><b>Agent Server（Python，另一个仓库）</b>：接收请求，创建会话，运行 Agent 循环，调用 LLM，在本机执行终端命令和改文件。</li>
+    <li><b>Ingress（:8000）</b>：本地的统一入口，按路径把请求分给 Agent Server、Automation 或静态前端，浏览器只需要认一个地址。</li>
+    <li><b>两种通信方式</b>：REST 用来“办手续”（创建会话、读历史、暂停），WebSocket 用来“看直播”（实时推送事件、发送消息）。</li>
+  </ol>
+  <div class="frame">
+    <div class="frame-bar"><span>架构总览</span><a href="../architecture-canvas-overview-20260930-161259/canvas-overview.html" target="_blank" rel="noopener">新窗口打开 ↗</a></div>
+    <iframe loading="lazy" src="../architecture-canvas-overview-20260930-161259/canvas-overview.html" title="架构总览"></iframe>
+  </div>
+</section>
+
+<section class="flow" id="journey">
+  <h2>一条消息的完整旅程</h2>
+  <p class="where">把下面的流程串起来看</p>
+  <p>你在首页输入“帮我修复这个 bug”并回车后，会依次经过：</p>
+  <div class="journey">
+    <div><b>③ 前端</b>打包配置，发起创建会话</div>
+    <div><b>④ 服务端</b>建目录、建 Agent，首条消息开跑</div>
+    <div><b>⑤ 前端</b>跳到会话页，拉历史、连 WebSocket</div>
+    <div><b>⑥⑦ 服务端</b>循环：问 LLM → 调工具 → 看结果</div>
+    <div><b>⑧ 服务端</b>每个事件落盘后推送</div>
+    <div><b>⑨ 前端</b>收到事件，画成聊天卡片</div>
+    <div><b>⑩ 状态</b>RUNNING → FINISHED，按钮随之变化</div>
+  </div>
+</section>
+
+<section class="flow" id="f1">
+  <h2>① 本地栈启动流程</h2>
+  <p class="where">bin/agent-canvas.mjs · scripts/dev-with-automation.mjs · electron/main.mjs</p>
+  <div class="analogy"><b>一句话：</b>一条 <code>npx @openhands/agent-canvas</code> 命令（或打开桌面版），在你电脑上依次拉起 4 个进程，最后打开 <code>http://localhost:8000</code>。</div>
+  <ol class="steps">
+    <li><b>执行启动命令</b>：命令行版和 Electron 桌面版最终都调用同一个 <code>main()</code>，只是桌面版多一个显示启动日志的加载窗口。</li>
+    <li><b>检查环境</b>：确认装了 <code>uvx</code>（用来运行 Python 包）和 npm，并确认 8000 / 18000 / 18001 / 3001 端口空闲，被占用就立即报错。</li>
+    <li><b>生成配置</b>：从 <code>config/defaults.json</code> 读取版本和端口，生成或读取 Session API Key（保存在 <code>~/.openhands/agent-canvas/api-key.txt</code>），后续所有请求都要带上它。</li>
+    <li><b>启动 Agent Server</b>：用 uvx 按锁定版本安装并运行 Python 服务，每 500ms 轮询一次 <code>/server_info</code>，直到服务就绪。</li>
+    <li><b>启动 Automation</b>：先把自动化密钥写进 Agent Server，再启动定时任务服务（数据存在 SQLite）。</li>
+    <li><b>启动静态前端和 Ingress</b>：静态服务器把 API Key 注入页面，Ingress 按“最长前缀”规则分发请求。</li>
+    <li><b>打开页面</b>：浏览器或桌面窗口加载 :8000。按 Ctrl+C 或关窗时，给所有子进程发 SIGTERM，3 秒后还没退出的强制 SIGKILL。</li>
+  </ol>
+  <div class="frame">
+    <div class="frame-bar"><span>workflow</span><a href="01-startup/startup.html" target="_blank" rel="noopener">新窗口打开 ↗</a></div>
+    <iframe loading="lazy" src="01-startup/startup.html" title="本地栈启动流程"></iframe>
+  </div>
+</section>
+
+<section class="flow" id="f2">
+  <h2>② 前端启动与后端选择</h2>
+  <p class="where">src/entry.client.tsx · src/api/backend-registry/ · src/root.tsx</p>
+  <div class="analogy"><b>一句话：</b>页面加载后先决定“连哪个后端”，再确认这个后端能用、版本够新，最后才把界面画出来。</div>
+  <ol class="steps">
+    <li><b>entry.client</b>：等多语言文案加载完，再把 React 挂到页面上。</li>
+    <li><b>Provider 栈</b>：从外到内依次套上多语言、数据缓存（TanStack Query）、当前后端、埋点。所有页面都能通过它们拿到这些公共能力。</li>
+    <li><b>读取已存后端</b>：后端列表存在浏览器 localStorage。第一次打开时自动生成一个 <code>default-local</code>，地址就是当前页面，Key 是启动器注入的那个。</li>
+    <li><b>选出活动后端</b>：优先级依次是 URL 里指定的、上次选的、健康的本地后端。后端可以是 <code>local</code>（本机 Agent Server）或 <code>cloud</code>（OpenHands 云）。</li>
+    <li><b>探测 server_info</b>：请求 <code>/server_info</code>（5 秒超时），检查 Agent Server 版本不低于 1.47.0。</li>
+    <li><b>分支</b>：401 表示 Key 不对，显示“输入 API Key”画面；连不上或版本太低，显示“后端不可用”画面；通过则进入主界面。</li>
+  </ol>
+  <div class="frame">
+    <div class="frame-bar"><span>workflow</span><a href="02-boot/boot.html" target="_blank" rel="noopener">新窗口打开 ↗</a></div>
+    <iframe loading="lazy" src="02-boot/boot.html" title="前端启动与后端选择"></iframe>
+  </div>
+</section>
+
+<section class="flow" id="f3">
+  <h2>③ 创建会话：本地与云端两条路（前端视角）</h2>
+  <p class="where">home-chat-launcher.tsx · use-create-conversation.ts · agent-server-conversation-service.api.ts · agent-server-adapter.ts</p>
+  <div class="analogy"><b>一句话：</b>“创建会话”就是把 Agent 的全部配置（用哪个 LLM、有哪些工具、在哪个目录干活、第一句话是什么）打成一个包，交给后端。</div>
+  <ol class="steps">
+    <li><b>首页输入任务</b>：可以附带仓库、本地目录、插件，还没配置 LLM 时会拦住。</li>
+    <li><b>useCreateConversation</b>：决定用哪个 Agent Profile；某些情况下回退为直接发送完整的 agent_settings。</li>
+    <li><b>看后端类型</b>：本地和云端从这里分开走。</li>
+    <li><b>本地：准备工作目录</b>：默认每个会话一个独立目录（可以是 git worktree）；如果 Agent Server 跑在 Docker 里，就用容器内的 <code>/workspace</code>。</li>
+    <li><b>本地：组装启动请求</b>：包含 LLM 配置（开启流式）、工具（terminal / file_editor / task_tracker…）、技能、首条消息（带 <code>run:true</code>）、最多 500 步、卡死检测、确认策略。密钥只传“去哪取”的地址，不传明文。</li>
+    <li><b>本地：POST 创建会话</b>：Agent Server 立刻返回会话 id，状态直接是 READY。</li>
+    <li><b>云端</b>：先返回一个 <code>task-xxx</code>，云端要分配沙箱、克隆仓库、装技能，前端每 3 秒轮询一次，READY 后把地址栏换成真实 id。</li>
+  </ol>
+  <div class="frame">
+    <div class="frame-bar"><span>workflow</span><a href="03-create/create.html" target="_blank" rel="noopener">新窗口打开 ↗</a></div>
+    <iframe loading="lazy" src="03-create/create.html" title="创建会话"></iframe>
+  </div>
+</section>
+
+<section class="flow" id="f4">
+  <h2>④ 服务端创建会话（Agent Server 内部）</h2>
+  <p class="where">software-agent-sdk：conversation_router.py · conversation_service.py · event_service.py</p>
+  <div class="analogy"><b>一句话：</b>服务端把收到的 JSON 还原成真正的 Agent 对象，建好会话目录和运行时，把第一句话塞进去开跑，然后马上返回，Agent 在后台继续执行。</div>
+  <ol class="steps">
+    <li><b>POST /api/conversations</b>：所有 <code>/api</code> 接口统一校验 Session API Key。</li>
+    <li><b>还原请求对象</b>：用 Pydantic 把 JSON 变回 <code>Agent</code>（含 LLM 和工具清单）、工作区、确认策略等对象。</li>
+    <li><b>调整 Agent</b>：加载技能，追加系统提示，按需切换到 git worktree，注册前端提供的“客户端工具”。</li>
+    <li><b>EventService.start</b>：创建工作目录并 <code>git init</code>，建立 <code>LocalConversation</code>（真正运行 Agent 循环的对象），同时在磁盘上建 <code>base_state.json</code> 和 <code>events/</code> 目录。</li>
+    <li><b>挂上订阅者</b>：自动起标题、遥测、Webhook 等，都会收到之后的每一个事件；同时写 <code>meta.json</code>。</li>
+    <li><b>发送首条消息</b>：调用 <code>send_message(run=True)</code>，后台循环开跑。</li>
+    <li><b>返回 ConversationInfo</b>：新建返回 201，同 id 已存在返回 200。</li>
+  </ol>
+  <div class="frame">
+    <div class="frame-bar"><span>workflow</span><a href="04-server-create/server-create.html" target="_blank" rel="noopener">新窗口打开 ↗</a></div>
+    <iframe loading="lazy" src="04-server-create/server-create.html" title="服务端创建会话"></iframe>
+  </div>
+</section>
+
+<section class="flow" id="f5">
+  <h2>⑤ 打开会话：预加载历史 + 建立 WebSocket</h2>
+  <p class="where">conversation.tsx · use-conversation-history.ts · conversation-websocket-context.tsx · use-websocket.ts</p>
+  <div class="analogy"><b>一句话：</b>先用 REST 把“以前发生过什么”拉下来显示，再打开 WebSocket 看“接下来发生什么”。<code>after_seq</code> 相当于书签，告诉服务端“我已经看到第几条了”。</div>
+  <ol class="steps">
+    <li><b>拿会话信息</b>：<code>useActiveConversation</code> 请求会话详情，拿到 <code>conversation_url</code> 和 key。还没拿到地址时每 3 秒刷新一次，之后每 30 秒一次。</li>
+    <li><b>REST 预加载历史</b>：先查事件总数，再取最新 50 条，倒过来变成时间正序后放进事件 Store。书签 afterSeq = 总数 − 1。往上滚动时再加载更早的记录。</li>
+    <li><b>建立 WebSocket</b>：历史加载完才开始连接。地址是 <code>/sockets/session/:id?after_seq=N</code>，连上后第一帧发送 <code>{type:"auth"}</code> 鉴权（Key 不放在 URL 里），服务端补发 seq &gt; N 的事件。</li>
+    <li><b>断线重连</b>：按 1s、2s、4s… 最长 30s 的间隔自动重连（带随机抖动），每次都带最新书签，只补漏掉的事件。Store 按 id 去重，不会出现重复消息。</li>
+  </ol>
+  <div class="frame">
+    <div class="frame-bar"><span>sequence</span><a href="05-connect/connect.html" target="_blank" rel="noopener">新窗口打开 ↗</a></div>
+    <iframe loading="lazy" src="05-connect/connect.html" title="预加载历史与 WebSocket"></iframe>
+  </div>
+</section>
+
+<section class="flow" id="f6">
+  <h2>⑥ 发一条消息后，服务端怎么跑</h2>
+  <p class="where">session_socket.py · event_service.py · local_conversation.py · agent.py · llm.py</p>
+  <div class="analogy"><b>一句话：</b>消息先变成一个事件存起来，然后唤醒后台循环。循环每一步都是：把历史给 LLM 看，LLM 说“调用某个工具”，执行它，把结果记下来，再进入下一步。</div>
+  <ol class="steps">
+    <li><b>收到消息</b>：前端经 WebSocket 发送 <code>{role:"user", content}</code>，会话 Socket 交给 EventService。</li>
+    <li><b>写入 MessageEvent</b>：用户消息成为一条正式事件。如果会话之前是 FINISHED，会被重置为 IDLE。</li>
+    <li><b>后台 arun()</b>：以异步任务运行，接口不阻塞。如果已经在运行，就先记下来，这一轮跑完再跑一轮。</li>
+    <li><b>循环：astep</b>：Agent 把历史整理成对话发给 LLM，LLM 返回要调用的工具（tool_calls），生成 ActionEvent；执行工具得到 Observation，生成 ObservationEvent。每个事件都先落盘，再推送给前端。</li>
+    <li><b>结束</b>：Agent 调用 Finish 工具或直接回复文字时变为 FINISHED；EventService 推送一帧 <code>full_state</code>，前端据此更新状态。</li>
+  </ol>
+  <div class="note">一个容易误解的细节：前端在 WebSocket 消息里带了 <code>run:true</code>，但服务端解析时会丢弃这个字段，<b>每条</b> WS 消息都会触发运行。只有 REST 接口 <code>POST /events</code> 会认 <code>run</code>。</div>
+  <div class="frame">
+    <div class="frame-bar"><span>sequence</span><a href="06-server-run/server-run.html" target="_blank" rel="noopener">新窗口打开 ↗</a></div>
+    <iframe loading="lazy" src="06-server-run/server-run.html" title="服务端执行"></iframe>
+  </div>
+</section>
+
+<section class="flow" id="f7">
+  <h2>⑦ Agent 的一步（step）里发生了什么</h2>
+  <p class="where">openhands-sdk/openhands/sdk/agent/agent.py · response_dispatch.py</p>
+  <div class="analogy"><b>一句话：</b>一步 = 整理记忆 → 问大脑“下一步做什么” → 动手做。做完的结果成为新记忆，下一步大脑就能看到。</div>
+  <ol class="steps">
+    <li><b>读取事件视图</b>：从会话状态中取出到目前为止的所有事件。</li>
+    <li><b>事件 → LLM 消息</b>：把系统提示、用户消息、之前的动作和结果，转换成 LLM 能读懂的对话格式。如果太长，先触发“上下文压缩”（生成 Condensation 事件，本步结束，下一步用压缩后的上下文继续）。</li>
+    <li><b>LLM 生成</b>：连同工具定义一起发给 LLM（经 litellm，失败自动重试最多 5 次）。上下文超长等错误会请求压缩后再试。</li>
+    <li><b>看回复类型</b>：如果是纯文字，说明 LLM 认为可以直接回答用户，生成 MessageEvent 并标记 FINISHED；如果是工具调用，继续往下走。</li>
+    <li><b>生成 ActionEvent</b>：解析参数，找到对应的工具。工具名不存在或参数不合法时，生成 AgentErrorEvent 回给 LLM，让它自己修正。</li>
+    <li><b>风险确认闸门</b>：安全分析器评估风险，确认策略决定是否要人工确认。需要确认就进入 WAITING_FOR_CONFIRMATION 暂停；用户拒绝会生成 UserRejectObservation。</li>
+    <li><b>执行工具</b>：在本机执行（终端命令在 tmux 里跑，文件编辑直接改工作目录），结果包装成 ObservationEvent。如果执行的是 Finish 工具，就标记 FINISHED。</li>
+  </ol>
+  <div class="frame">
+    <div class="frame-bar"><span>workflow</span><a href="07-agent-step/agent-step.html" target="_blank" rel="noopener">新窗口打开 ↗</a></div>
+    <iframe loading="lazy" src="07-agent-step/agent-step.html" title="Agent step 内部"></iframe>
+  </div>
+</section>
+
+<section class="flow" id="f8">
+  <h2>⑧ 事件的一生：产生 → 落盘 → 广播</h2>
+  <p class="where">local_conversation.py · event_store.py · pub_sub.py · session_socket.py</p>
+  <div class="analogy"><b>一句话：</b>每个事件先写成磁盘上的一个 JSON 文件，写成功后才通知订阅者。所以前端即使断线，也总能从磁盘把漏掉的补回来。</div>
+  <ol class="steps">
+    <li><b>产生</b>：Agent 或会话每产生一个事件（消息、动作、结果、状态变化），都经过同一条回调链。</li>
+    <li><b>先写磁盘</b>：EventLog 加文件锁，写入 <code>events/event-00001-&lt;id&gt;.json</code>，每个事件都有递增的序号 seq。状态字段一变化，<code>base_state.json</code> 也会自动保存。</li>
+    <li><b>再广播</b>：AsyncCallbackWrapper 把事件从 Agent 线程安全地转交给服务端的事件循环，PubSub 并发通知所有订阅者，一个订阅者出错不会影响其他订阅者。</li>
+    <li><b>订阅者</b>：内部订阅者负责起标题、发 Webhook、遥测；会话 Socket 把事件包成 <code>DurableFrame(seq)</code> 发给前端。</li>
+    <li><b>打字机效果</b>：LLM 流式吐出的 token 走另一条“流式进度广播”，不落盘，前端收到的是 ItemStarted / Delta 帧；正式事件到达后，前端按 id 收起这些临时片段。</li>
+  </ol>
+  <div class="frame">
+    <div class="frame-bar"><span>dataflow</span><a href="08-event-publish/event-publish.html" target="_blank" rel="noopener">新窗口打开 ↗</a></div>
+    <iframe loading="lazy" src="08-event-publish/event-publish.html" title="事件落盘与广播"></iframe>
+  </div>
+</section>
+
+<section class="flow" id="f9">
+  <h2>⑨ 事件回到前端：分拣、存储、渲染</h2>
+  <p class="where">conversation-websocket-context.tsx · use-event-store.ts · handle-event-for-ui.ts · messages.tsx</p>
+  <div class="analogy"><b>一句话：</b>前端收到的每一帧先分类：流式文字进缓冲区，正式事件进 Store，同时触发界面副作用（刷新终端、文件树、状态按钮）。聊天区只渲染加工后的列表。</div>
+  <ol class="steps">
+    <li><b>routeSessionFrame</b>：按帧类型分流。<code>delta</code> 进缓冲区；<code>durable</code> 推进书签后作为正式事件；<code>error</code> 显示错误横幅，但连接保持。</li>
+    <li><b>增量批处理</b>：流式文字每个动画帧只合并提交一次，避免逐字触发渲染导致卡顿。</li>
+    <li><b>事件 Store</b>：按 id 去重，按时间排序，同时保存原始列表 <code>events</code> 和展示列表 <code>uiEvents</code>。</li>
+    <li><b>副作用分发</b>：命令事件写进终端面板，浏览器截图显示到浏览器面板，改文件时刷新 diff 缓存，状态事件写进会话状态 Store。</li>
+    <li><b>handleEventForUI</b>：工具结果（Observation）替换对应的动作卡片，正式消息替换流式临时槽，Think / Finish 的结果被隐藏。</li>
+    <li><b>渲染</b>：过滤掉不需要展示的事件，把连续的工具调用折叠成一组，再按事件类型选用对应组件（用户消息、Agent 回复、命令卡片、错误等）。</li>
+  </ol>
+  <div class="frame">
+    <div class="frame-bar"><span>dataflow</span><a href="09-render/render.html" target="_blank" rel="noopener">新窗口打开 ↗</a></div>
+    <iframe loading="lazy" src="09-render/render.html" title="前端渲染"></iframe>
+  </div>
+</section>
+
+<section class="flow" id="f10">
+  <h2>⑩ 会话执行状态的生命周期</h2>
+  <p class="where">openhands-sdk/.../conversation/state.py · local_conversation.py；前端 use-agent-state.ts</p>
+  <div class="analogy"><b>一句话：</b>每个会话都有一个执行状态，它决定界面上显示“停止”“继续”还是“确认/拒绝”按钮。</div>
+  <ol class="steps">
+    <li><b>IDLE → RUNNING</b>：收到消息并调用 <code>run()</code>。</li>
+    <li><b>RUNNING → FINISHED</b>：调用了 Finish 工具，或 LLM 直接回复了文字。之后发新消息会重置为 IDLE，再开始新一轮。</li>
+    <li><b>RUNNING → WAITING</b>：有动作需要人工确认。接受后回到 RUNNING 并执行这个动作，拒绝则回到 IDLE。</li>
+    <li><b>RUNNING → PAUSED</b>：用户点了停止（本地后端调用 interrupt，会取消正在进行的 LLM 请求）。点“继续”回到 RUNNING。</li>
+    <li><b>RUNNING → ERROR / STUCK</b>：出现异常、超过 500 步或预算上限，或者卡死检测发现在重复同样的动作。再次 run() 可以恢复。</li>
+  </ol>
+  <div class="frame">
+    <div class="frame-bar"><span>lifecycle</span><a href="10-status/status.html" target="_blank" rel="noopener">新窗口打开 ↗</a></div>
+    <iframe loading="lazy" src="10-status/status.html" title="执行状态生命周期"></iframe>
+  </div>
+</section>
+
+<section class="flow" id="glossary">
+  <h2>名词表</h2>
+  <dl class="gloss">
+    <dt>会话 Conversation</dt><dd>一次任务的完整上下文：配置、工作目录、所有事件。磁盘上对应 <code>conversations/&lt;id&gt;/</code>。</dd>
+    <dt>事件 Event</dt><dd>会话里发生的每一件事，都记录为一个事件，不可修改，按顺序编号（seq）。</dd>
+    <dt>MessageEvent</dt><dd>一条消息，来自用户、Agent 或环境。</dd>
+    <dt>ActionEvent</dt><dd>Agent 决定调用某个工具，比如“执行命令 ls”。</dd>
+    <dt>ObservationEvent</dt><dd>工具执行的结果，比如命令输出。通过 action_id 和对应的动作关联。</dd>
+    <dt>ConversationStateUpdateEvent</dt><dd>状态同步，比如 execution_status 变为 running，或 token 用量统计。</dd>
+    <dt>Condensation</dt><dd>上下文太长时，把早期事件“遗忘”并换成摘要，让 LLM 不超出窗口限制。</dd>
+    <dt>工具 Tool</dt><dd>Agent 能动手的方式：terminal、file_editor、task_tracker、browser，以及内置的 think、finish。</dd>
+    <dt>Session API Key</dt><dd>本地 Agent Server 的访问口令，REST 放在请求头 <code>X-Session-API-Key</code>，WebSocket 放在第一帧。</dd>
+    <dt>seq / after_seq</dt><dd>事件序号 / 客户端书签，用于断线续传。</dd>
+    <dt>DurableFrame / Delta</dt><dd>WebSocket 帧：前者是已落盘的正式事件，后者是流式文字片段（不落盘）。</dd>
+    <dt>Ingress</dt><dd>本地统一入口（:8000），按路径前缀把请求转发给各个服务。</dd>
+  </dl>
+</section>
+</main>
+</div>
+
+<footer>
+  依据：OpenHands @ <code>1ec86616</code>，software-agent-sdk @ <code>v1.49.6 / fcc102a6</code>（与 config/defaults.json 锁定的 Agent Server 版本一致）。图由 archify 生成，并通过 validate / deliver / check / browser-check 四道检查。
+</footer>
+</div>
+</body>
+</html>

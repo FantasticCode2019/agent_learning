@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "ec7f6baf-21e2-4950-b46f-a4882a6b576d",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/private/tmp/claude-501/-Users-yajun-Documents-opensource-openclaw/822bc09c-850c-4e26-82f3-63ca35d1b4ce/scratchpad/.archify/openclaw-deep-dive-20260930-140000/p2-reply.json",
+  "output": "/private/tmp/claude-501/-Users-yajun-Documents-opensource-openclaw/822bc09c-850c-4e26-82f3-63ca35d1b4ce/scratchpad/.archify/openclaw-deep-dive-20260930-140000/r2/p2-reply.html",
+  "specification": {
+    "sha256": "bb333bc8e7569f1b91a9763aa45f3f7f99289346b3dd18e946cc8cff7d2a22b3",
+    "bytes": 8174
+  },
+  "artifact": {
+    "sha256": "4b7aa6384b4dc636e60052905e91bdc10200c8eb1623f5cecd31a48911122240",
+    "bytes": 766703
+  }
+}

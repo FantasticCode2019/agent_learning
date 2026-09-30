@@ -1,0 +1,105 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "④ 服务端创建会话（Agent Server 内部）",
+    "locale": "zh-CN",
+    "output": ".archify/guide-20260930-162304/04-server-create/server-create.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/OpenHands/software-agent-sdk",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "fcc102a697874d54a357e36004e02c95040dbdc0"
+    }
+  },
+  "lanes": [
+    { "id": "http", "label": "HTTP 接口层" },
+    { "id": "service", "label": "ConversationService" },
+    { "id": "runtime", "label": "EventService + 会话" },
+    { "id": "disk", "label": "磁盘 conversations/<id>/" }
+  ],
+  "phases": [
+    { "id": "accept", "label": "接收请求", "fromCol": 0, "toCol": 1 },
+    { "id": "assemble", "label": "组装 Agent 与运行时", "fromCol": 2, "toCol": 4, "variant": "emphasis" },
+    { "id": "kickoff", "label": "开跑并返回", "fromCol": 5, "toCol": 5 }
+  ],
+  "mainPath": ["route", "parse", "prepare", "start", "subs", "initial", "reply"],
+  "nodes": [
+    {
+      "id": "route", "lane": "http", "col": 0, "type": "security", "label": "POST /api/conversations", "sublabel": "校验 Session API Key", "width": 190,
+      "sources": [
+        { "path": "openhands-agent-server/openhands/agent_server/conversation_router.py", "line": 257, "end_line": 286, "label": "start_conversation" },
+        { "path": "openhands-agent-server/openhands/agent_server/api.py", "line": 428, "end_line": 441, "label": "/api 统一鉴权" }
+      ]
+    },
+    {
+      "id": "parse", "lane": "http", "col": 1, "type": "backend", "label": "还原请求对象", "sublabel": "JSON → Agent / LLM / 工具规格", "width": 190,
+      "sources": [
+        { "path": "openhands-sdk/openhands/sdk/conversation/request.py", "line": 282, "end_line": 357, "label": "StartConversationRequest" },
+        { "path": "openhands-sdk/openhands/sdk/conversation/request.py", "line": 93, "end_line": 158, "label": "ConversationConfig 字段" }
+      ]
+    },
+    {
+      "id": "prepare", "lane": "service", "col": 2, "type": "backend", "label": "调整 Agent", "sublabel": "技能 · 系统提示 · worktree · 客户端工具", "width": 210,
+      "sources": [
+        { "path": "openhands-agent-server/openhands/agent_server/conversation_service.py", "line": 1725, "end_line": 1808, "label": "启动前的 Agent 改造" }
+      ]
+    },
+    {
+      "id": "start", "lane": "runtime", "col": 3, "type": "backend", "label": "EventService.start", "sublabel": "建工作目录 · 创建 LocalConversation", "width": 210,
+      "sources": [
+        { "path": "openhands-agent-server/openhands/agent_server/event_service.py", "line": 1024, "end_line": 1157, "label": "start()" },
+        { "path": "openhands-agent-server/openhands/agent_server/conversation_service.py", "line": 2436, "end_line": 2470, "label": "_start_event_service" }
+      ]
+    },
+    {
+      "id": "baseState", "lane": "disk", "col": 3, "type": "database", "label": "base_state.json + events/", "sublabel": "会话状态与事件日志", "width": 210,
+      "sources": [
+        { "path": "openhands-sdk/openhands/sdk/conversation/state.py", "line": 509, "end_line": 590, "label": "新建或恢复状态" },
+        { "path": "openhands-sdk/openhands/sdk/conversation/persistence_const.py", "line": 1, "end_line": 10, "label": "文件命名" }
+      ]
+    },
+    {
+      "id": "subs", "lane": "runtime", "col": 4, "type": "messagebus", "label": "挂上订阅者", "sublabel": "自动标题 · 遥测 · Webhook", "width": 180,
+      "sources": [
+        { "path": "openhands-agent-server/openhands/agent_server/conversation_service.py", "line": 2474, "end_line": 2518, "label": "订阅并登记服务" }
+      ]
+    },
+    {
+      "id": "meta", "lane": "disk", "col": 4, "type": "database", "label": "meta.json", "sublabel": "会话配置（不含 Agent）", "width": 180,
+      "sources": [
+        { "path": "openhands-agent-server/openhands/agent_server/models.py", "line": 102, "end_line": 145, "label": "StoredConversation" },
+        { "path": "openhands-agent-server/openhands/agent_server/event_service.py", "line": 183, "end_line": 200, "label": "save_meta" }
+      ]
+    },
+    {
+      "id": "initial", "lane": "runtime", "col": 5, "type": "backend", "label": "发送首条消息", "sublabel": "send_message(run=True)", "width": 180,
+      "sources": [
+        { "path": "openhands-agent-server/openhands/agent_server/conversation_service.py", "line": 1873, "end_line": 1878, "label": "initial_message" }
+      ]
+    },
+    {
+      "id": "reply", "lane": "http", "col": 5, "type": "backend", "label": "返回 ConversationInfo", "sublabel": "201 新建 / 200 已存在", "width": 190,
+      "sources": [
+        { "path": "openhands-agent-server/openhands/agent_server/conversation_service.py", "line": 1880, "end_line": 1887, "label": "组装返回值" },
+        { "path": "openhands-agent-server/openhands/agent_server/conversation_router.py", "line": 283, "label": "状态码" }
+      ]
+    }
+  ],
+  "edges": [
+    { "id": "route-parse", "from": "route", "to": "parse", "variant": "emphasis" },
+    { "id": "parse-prepare", "from": "parse", "to": "prepare", "variant": "emphasis" },
+    { "id": "prepare-start", "from": "prepare", "to": "start", "variant": "emphasis" },
+    { "id": "start-subs", "from": "start", "to": "subs", "variant": "emphasis" },
+    { "id": "subs-initial", "from": "subs", "to": "initial", "variant": "emphasis" },
+    { "id": "initial-reply", "from": "initial", "to": "reply", "label": "后台已开跑", "variant": "emphasis" },
+    { "id": "start-base", "from": "start", "to": "baseState", "label": "创建 / 恢复", "variant": "dashed" },
+    { "id": "subs-meta", "from": "subs", "to": "meta", "label": "save_meta", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "一句话理解", "items": ["服务端把请求 JSON 还原成真正的 Agent 对象，建好会话目录和运行时，再把首条消息丢进去开跑", "接口立即返回，Agent 在后台继续执行"] },
+    { "dot": "violet", "title": "磁盘上有什么", "items": ["meta.json：会话配置", "base_state.json：Agent 与执行状态", "events/event-00001-<id>.json：每个事件一个文件"] },
+    { "dot": "amber", "title": "重启与恢复", "items": ["同一个 id 再次创建会返回已有会话（200）", "目录里已有 base_state.json 时直接恢复，不重建 Agent", "上次崩溃遗留的 RUNNING 会被改成 ERROR"] }
+  ]
+}

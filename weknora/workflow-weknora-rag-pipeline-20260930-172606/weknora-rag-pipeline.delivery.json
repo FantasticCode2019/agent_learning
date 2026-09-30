@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "f2b4e172-d66c-4acd-bbd1-7500529adb01",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Users/yajun/Documents/opensource/WeKnora/.archify/workflow-weknora-rag-pipeline-20260930-172606/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/WeKnora/.archify/workflow-weknora-rag-pipeline-20260930-172606/weknora-rag-pipeline.html",
+  "specification": {
+    "sha256": "27106f8fde7d9fccbd0cbd8fd6c6406bc15442c7c14a164e6d453effcb319fb0",
+    "bytes": 7971
+  },
+  "artifact": {
+    "sha256": "ec53efa1b02f4f1656c63e463cd1ce73cdb75d381247881cedeb34d5b3feface",
+    "bytes": 762979
+  }
+}

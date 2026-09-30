@@ -1,0 +1,76 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "一个回合内部：Agent 主循环",
+    "output": ".archify/hermes-guide-20260930-162431/04-workflow-turn-loop/turn-loop.html",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "repository": { "url": "https://github.com/NousResearch/hermes-agent.git", "provider": "github", "link_mode": "web", "revision": "f42f579cf8bac4918ac9599bece71618afadd846" }
+  },
+  "lanes": [
+    { "id": "start", "label": "① 回合开始（只做一次）" },
+    { "id": "iter", "label": "② 每次迭代：准备并请求模型" },
+    { "id": "judge", "label": "③ 看模型怎么回" },
+    { "id": "finish", "label": "④ 收尾" }
+  ],
+  "nodes": [
+    { "id": "lease", "lane": "start", "col": 0, "type": "security", "label": "拿会话锁", "sublabel": "同一会话一次一回合", "width": 150,
+      "sources": [ { "path": "agent/turn_facade.py", "line": 82, "label": "admit_durable_turn_lease" }, { "path": "agent/turn_facade.py", "line": 197, "end_line": 201, "label": "finally 释放" } ] },
+    { "id": "turnctx", "lane": "start", "col": 1, "type": "backend", "label": "准备上下文", "sublabel": "加用户消息·提示词·先存库", "width": 170,
+      "sources": [ { "path": "agent/turn_context.py", "line": 989, "label": "build_turn_context" }, { "path": "agent/turn_context.py", "line": 972, "label": "_persist_turn_start" } ] },
+    { "id": "begin", "lane": "iter", "col": 2, "type": "backend", "label": "开始本轮", "sublabel": "查中断 · 扣预算", "width": 150,
+      "sources": [ { "path": "agent/turn_iteration_prep.py", "line": 333, "end_line": 397, "label": "begin_iteration" }, { "path": "agent/conversation_loop.py", "line": 1636, "label": "while 条件" } ] },
+    { "id": "assemble", "lane": "iter", "col": 3, "type": "backend", "label": "组装请求", "sublabel": "api_messages + 缓存点", "width": 150,
+      "sources": [ { "path": "agent/turn_iteration_prep.py", "line": 113, "label": "prepare_iteration" }, { "path": "agent/turn_request_assembly.py", "line": 106, "label": "assemble_api_request" } ] },
+    { "id": "preflight", "lane": "iter", "col": 4, "type": "security", "label": "长度检查", "sublabel": "太长先压缩", "width": 150,
+      "sources": [ { "path": "agent/turn_preflight_gate.py", "line": 20, "label": "run_preflight_gate" }, { "path": "agent/turn_preflight.py", "line": 57, "label": "run_preflight_compression" } ] },
+    { "id": "apicall", "lane": "iter", "col": 5, "type": "cloud", "label": "调用大模型", "sublabel": "流式输出 · 出错重试", "width": 150,
+      "sources": [ { "path": "agent/conversation_loop.py", "line": 1501, "label": "_run_api_retry_loop" }, { "path": "agent/turn_api_call.py", "line": 47, "label": "_should_stream" }, { "path": "agent/turn_api_call.py", "line": 68, "label": "perform_api_call" } ] },
+    { "id": "stop", "lane": "judge", "col": 2, "type": "security", "label": "提前停止", "sublabel": "被打断 / 预算用完", "width": 150,
+      "sources": [ { "path": "agent/turn_iteration_prep.py", "line": 363, "label": "interrupt 检查" }, { "path": "agent/interrupt_control.py", "line": 115, "end_line": 142, "label": "interrupt()" } ] },
+    { "id": "toolround", "lane": "judge", "col": 4, "type": "backend", "label": "执行工具", "sublabel": "先存库 · 结果追加", "width": 150,
+      "sources": [ { "path": "agent/turn_tool_round.py", "line": 46, "label": "run_tool_round" }, { "path": "agent/turn_tool_round.py", "line": 120, "end_line": 154, "label": "存库后执行" } ] },
+    { "id": "normalize", "lane": "judge", "col": 5, "type": "backend", "label": "解析回复", "sublabel": "有没有 tool_calls?", "width": 150,
+      "sources": [ { "path": "agent/turn_response_intake.py", "line": 120, "label": "normalize_model_response" }, { "path": "agent/conversation_loop.py", "line": 1668, "label": "分支判断" } ] },
+    { "id": "result", "lane": "finish", "col": 3, "type": "frontend", "label": "返回结果", "sublabel": "final_response 等", "width": 150,
+      "sources": [ { "path": "agent/turn_finalizer.py", "line": 671, "end_line": 786, "label": "result 字典" } ] },
+    { "id": "finalize", "lane": "finish", "col": 4, "type": "backend", "label": "收尾整理", "sublabel": "存库 · 记忆同步 · 复盘", "width": 150,
+      "sources": [ { "path": "agent/turn_finalizer.py", "line": 509, "label": "finalize_turn" }, { "path": "agent/turn_finalizer.py", "line": 746, "end_line": 766, "label": "记忆同步与后台复盘" } ] },
+    { "id": "finishtext", "lane": "finish", "col": 5, "type": "backend", "label": "文字答复", "sublabel": "空回复补救 · 存库", "width": 150,
+      "sources": [ { "path": "agent/turn_final_response.py", "line": 55, "label": "finish_text_response" }, { "path": "agent/turn_final_response.py", "line": 354, "end_line": 366, "label": "存库并 break" } ] }
+  ],
+  "edges": [
+    { "id": "e1", "from": "lease", "to": "turnctx", "variant": "emphasis" },
+    { "id": "e2", "from": "turnctx", "to": "begin", "variant": "emphasis" },
+    { "id": "e3", "from": "begin", "to": "assemble", "variant": "emphasis" },
+    { "id": "e4", "from": "assemble", "to": "preflight", "variant": "emphasis" },
+    { "id": "e5", "from": "preflight", "to": "apicall", "variant": "emphasis" },
+    { "id": "e6", "from": "apicall", "to": "normalize", "variant": "emphasis" },
+    { "id": "e7", "from": "normalize", "to": "toolround", "label": "有", "role": "branch" },
+    { "id": "e8", "from": "toolround", "to": "begin", "label": "下一轮", "variant": "dashed", "role": "return" },
+    { "id": "e9", "from": "normalize", "to": "finishtext", "label": "没有", "variant": "emphasis" },
+    { "id": "e10", "from": "finishtext", "to": "finalize", "variant": "emphasis" },
+    { "id": "e11", "from": "finalize", "to": "result", "variant": "emphasis" },
+    { "id": "e12", "from": "begin", "to": "stop", "label": "停", "variant": "security", "role": "error" },
+    { "id": "e13", "from": "stop", "to": "finalize", "variant": "security", "role": "error" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "① 回合开始", "items": [
+      "拿到会话锁，保证同一个会话不会同时跑两个回合",
+      "把用户消息加进对话；首轮构建系统提示词；必要时先压缩；用户消息先写进 state.db"
+    ] },
+    { "dot": "emerald", "title": "② 每次迭代", "items": [
+      "检查是否被打断、预算是否用完，然后扣一次预算",
+      "组装本次要发的消息，太长就先压缩，再以流式方式请求模型；网络或限流错误会自动重试"
+    ] },
+    { "dot": "amber", "title": "③ 分支：动手还是回答", "items": [
+      "有 tool_calls：先把助手消息存库，再执行工具，结果以 tool 消息追加，然后回到 ② 继续",
+      "没有：这就是最终答复，检查空回复后存库，跳出循环"
+    ] },
+    { "dot": "rose", "title": "④ 收尾", "items": [
+      "预算用完还没答案时，会额外请求一次让模型做总结",
+      "同步外部记忆、按需启动后台复盘，返回 final_response 和完整 messages"
+    ] }
+  ]
+}

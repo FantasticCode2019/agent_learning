@@ -1,0 +1,103 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "③ 创建会话：本地与云端两条路",
+    "locale": "zh-CN",
+    "output": ".archify/guide-20260930-162304/03-create/create.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/OpenHands/OpenHands",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "1ec86616bc0511b1e56269fd6ba5872438f4fb7f"
+    }
+  },
+  "lanes": [
+    { "id": "ui", "label": "用户界面" },
+    { "id": "local", "label": "本地后端路径" },
+    { "id": "logic", "label": "前端逻辑" },
+    { "id": "cloud", "label": "云端后端路径" }
+  ],
+  "phases": [
+    { "id": "intent", "label": "提交意图", "fromCol": 0, "toCol": 2 },
+    { "id": "build", "label": "准备并创建", "fromCol": 3, "toCol": 4, "variant": "emphasis" },
+    { "id": "enter", "label": "进入会话", "fromCol": 5, "toCol": 5 }
+  ],
+  "mainPath": ["input", "mutation", "branch", "workspace", "payload", "post", "open"],
+  "nodes": [
+    {
+      "id": "input", "lane": "ui", "col": 0, "type": "external", "label": "首页输入任务", "sublabel": "可选仓库 / 目录 / 插件", "width": 160,
+      "sources": [{ "path": "src/components/features/home/home-chat-launcher.tsx", "line": 92, "end_line": 156, "label": "handleSubmit" }]
+    },
+    {
+      "id": "mutation", "lane": "logic", "col": 1, "type": "frontend", "label": "useCreateConversation", "sublabel": "选定 Agent Profile", "width": 170,
+      "sources": [
+        { "path": "src/hooks/mutation/use-create-conversation.ts", "line": 102, "end_line": 275, "label": "mutationFn" },
+        { "path": "src/hooks/mutation/use-create-conversation.ts", "line": 364, "end_line": 392, "label": "onSuccess 刷新缓存" }
+      ]
+    },
+    {
+      "id": "branch", "lane": "logic", "col": 2, "type": "messagebus", "label": "看后端类型", "sublabel": "local 还是 cloud", "width": 150,
+      "sources": [{ "path": "src/api/conversation-service/agent-server-conversation-service.api.ts", "line": 451, "end_line": 478, "label": "cloud 分支判断" }]
+    },
+    {
+      "id": "workspace", "lane": "local", "col": 3, "type": "backend", "label": "准备工作目录", "sublabel": "每会话目录 / Docker 用 /workspace", "width": 190,
+      "sources": [
+        { "path": "src/api/conversation-workspace.ts", "line": 42, "end_line": 81, "label": "resolveNewConversationWorkspace" },
+        { "path": "src/api/conversation-service/agent-server-conversation-service.api.ts", "line": 488, "end_line": 497, "label": "生成 uuid 与模式" }
+      ]
+    },
+    {
+      "id": "payload", "lane": "local", "col": 4, "type": "security", "label": "组装启动请求", "sublabel": "LLM · 工具 · 技能 · 首条消息", "tag": "密钥只传引用", "width": 190,
+      "sources": [
+        { "path": "src/api/agent-server-adapter.ts", "line": 1646, "end_line": 1699, "label": "加密 settings 取数" },
+        { "path": "src/api/agent-server-adapter.ts", "line": 1222, "end_line": 1385, "label": "请求体字段" },
+        { "path": "src/api/agent-server-adapter.ts", "line": 1199, "end_line": 1220, "label": "LookupSecret" }
+      ]
+    },
+    {
+      "id": "post", "lane": "local", "col": 5, "type": "backend", "label": "POST 创建会话", "sublabel": "Agent Server · 5 分钟超时", "width": 180,
+      "sources": [{ "path": "src/api/conversation-service/agent-server-conversation-service.api.ts", "line": 519, "end_line": 560, "label": "ConversationClient.createConversation" }]
+    },
+    {
+      "id": "cloudPost", "lane": "cloud", "col": 3, "type": "cloud", "label": "POST app-conversations", "sublabel": "返回 task-xxx", "width": 190,
+      "sources": [{ "path": "src/api/cloud/conversation-service.api.ts", "line": 134, "end_line": 166, "label": "createCloudAppConversation" }]
+    },
+    {
+      "id": "poll", "lane": "cloud", "col": 4, "type": "cloud", "label": "每 3s 轮询任务", "sublabel": "沙箱 → 仓库 → 技能 → 会话", "width": 190,
+      "sources": [
+        { "path": "src/hooks/query/use-task-polling.ts", "line": 61, "end_line": 91, "label": "useTaskPolling" },
+        { "path": "src/api/conversation-service/agent-server-conversation-service.types.ts", "line": 92, "end_line": 101, "label": "任务状态枚举" }
+      ]
+    },
+    {
+      "id": "ready", "lane": "cloud", "col": 5, "type": "cloud", "label": "READY", "sublabel": "拿到真实会话 id", "width": 150,
+      "sources": [{ "path": "src/hooks/query/use-task-polling.ts", "line": 143, "end_line": 177, "label": "跳转并迁移待发消息" }]
+    },
+    {
+      "id": "open", "lane": "logic", "col": 5, "type": "frontend", "label": "进入会话页", "sublabel": "/conversations/:id", "width": 160,
+      "sources": [
+        { "path": "src/components/features/home/home-chat-launcher.tsx", "line": 185, "end_line": 224, "label": "navigate" },
+        { "path": "src/routes/conversation.tsx", "line": 215, "end_line": 237, "label": "会话页渲染树" }
+      ]
+    }
+  ],
+  "edges": [
+    { "id": "input-mutation", "from": "input", "to": "mutation", "variant": "emphasis" },
+    { "id": "mutation-branch", "from": "mutation", "to": "branch", "variant": "emphasis" },
+    { "id": "branch-workspace", "from": "branch", "to": "workspace", "label": "local", "variant": "emphasis" },
+    { "id": "workspace-payload", "from": "workspace", "to": "payload", "variant": "emphasis" },
+    { "id": "payload-post", "from": "payload", "to": "post", "variant": "emphasis" },
+    { "id": "post-open", "from": "post", "to": "open", "label": "立即 READY", "variant": "emphasis" },
+    { "id": "branch-cloud", "from": "branch", "to": "cloudPost", "label": "cloud", "variant": "dashed", "role": "branch" },
+    { "id": "cloud-poll", "from": "cloudPost", "to": "poll", "variant": "dashed" },
+    { "id": "poll-ready", "from": "poll", "to": "ready", "variant": "dashed" },
+    { "id": "ready-open", "from": "ready", "to": "open", "label": "替换 URL", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "一句话理解", "items": ["“创建会话”就是把 Agent 的全部配置打包，交给后端新建一个会话", "首条消息随请求一起发出，并带 run:true，会话一建好 Agent 就开跑"] },
+    { "dot": "violet", "title": "请求里有什么", "items": ["agent_settings：LLM（stream=true）、工具 terminal / file_editor / task_tracker 等", "workspace、max_iterations=500、stuck_detection、confirmation_policy", "secrets 只给查找地址，真实值由 Agent Server 自取"] },
+    { "dot": "amber", "title": "云端差异", "items": ["云端要先分配沙箱、克隆仓库，所以先返回 task-id", "前端轮询到 READY 后用真实 id 替换地址栏"] }
+  ]
+}

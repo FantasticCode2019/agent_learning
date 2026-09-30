@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "f2b303fb-8b15-4f94-af77-b4cc4641bcd1",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/05-connect/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/OpenHands/.archify/guide-20260930-162304/05-connect/connect.html",
+  "specification": {
+    "sha256": "8ef2900d54b1fa2bcc394943d043df19d7d35c3a2cf5d56eaec9b0daccbe2499",
+    "bytes": 6197
+  },
+  "artifact": {
+    "sha256": "fdc9b751485764776bc703c1f50b9c27aa539295f4c50b7fe355dfbf50f55d97",
+    "bytes": 761260
+  }
+}

@@ -1,0 +1,319 @@
+{
+  "schema_version": 2,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "④ Agent 状态机：一个 Agent 从创建到释放",
+    "locale": "zh-CN",
+    "output": ".archify/dsh-guide-20260929-171932/04-agent-lifecycle/agent-lifecycle.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/deepseek-ai/deepseek-harness.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "4878cdabd87d4041bdaff61d04c966883b9fd07a"
+    }
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "主路径"
+    },
+    {
+      "id": "waiting",
+      "label": "等待 / 锁存"
+    },
+    {
+      "id": "recovery",
+      "label": "中止"
+    },
+    {
+      "id": "terminal",
+      "label": "结束"
+    }
+  ],
+  "states": [
+    {
+      "id": "created",
+      "type": "start",
+      "label": "已创建",
+      "sublabel": "agents.create/resume",
+      "lane": "main",
+      "col": 0,
+      "step": "01",
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/index.ts",
+          "line": 714,
+          "end_line": 780,
+          "label": "createAgent"
+        },
+        {
+          "path": "packages/core/agent-loop/src/index.ts",
+          "line": 807,
+          "end_line": 890,
+          "label": "resume"
+        }
+      ]
+    },
+    {
+      "id": "setup",
+      "type": "active",
+      "label": "maintenance",
+      "sublabel": "setup + agent/created",
+      "lane": "main",
+      "col": 1,
+      "step": "02",
+      "tag": "对外仍是 idle",
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/index.ts",
+          "line": 782,
+          "end_line": 799,
+          "label": "initializeAgent"
+        },
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 183,
+          "end_line": 204,
+          "label": "runMaintenance"
+        }
+      ]
+    },
+    {
+      "id": "idle",
+      "type": "waiting",
+      "label": "idle",
+      "sublabel": "等待消息",
+      "lane": "main",
+      "col": 2,
+      "step": "03",
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 42,
+          "end_line": 50,
+          "label": "Phase"
+        },
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 145,
+          "end_line": 152,
+          "label": "setPhase"
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "type": "active",
+      "label": "running",
+      "sublabel": "驱动 turn()",
+      "lane": "main",
+      "col": 3,
+      "step": "04",
+      "tag": "agent/status",
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 214,
+          "end_line": 235,
+          "label": "wakeDriver"
+        },
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 252,
+          "end_line": 265,
+          "label": "kick"
+        }
+      ]
+    },
+    {
+      "id": "turnend",
+      "type": "decision",
+      "label": "turn/end",
+      "sublabel": "inbox 还有消息?",
+      "lane": "main",
+      "col": 4,
+      "step": "05",
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 382,
+          "end_line": 396,
+          "label": "hasPending"
+        }
+      ]
+    },
+    {
+      "id": "latched",
+      "type": "waiting",
+      "label": "唤醒已锁存",
+      "sublabel": "wakeRequested",
+      "lane": "waiting",
+      "col": 3,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 214,
+          "end_line": 222,
+          "label": "latch"
+        },
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 198,
+          "end_line": 200
+        }
+      ]
+    },
+    {
+      "id": "aborting",
+      "type": "failure",
+      "label": "中止中",
+      "sublabel": "abort(cause)",
+      "lane": "recovery",
+      "col": 4,
+      "tag": "user/parent/hook",
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/agent.ts",
+          "line": 175,
+          "end_line": 181,
+          "label": "cancel"
+        },
+        {
+          "path": "packages/core/session/src/types.ts",
+          "line": 189,
+          "end_line": 196,
+          "label": "原因"
+        }
+      ]
+    },
+    {
+      "id": "setupfail",
+      "type": "failure",
+      "label": "初始化失败",
+      "sublabel": "回滚创建",
+      "lane": "terminal",
+      "col": 1,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/index.ts",
+          "line": 782,
+          "end_line": 799
+        }
+      ]
+    },
+    {
+      "id": "disposed",
+      "type": "neutral",
+      "label": "已释放",
+      "sublabel": "dispose()",
+      "lane": "terminal",
+      "col": 2,
+      "sources": [
+        {
+          "path": "packages/core/agent-loop/src/index.ts",
+          "line": 526,
+          "end_line": 571,
+          "label": "dispose"
+        }
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "from": "created",
+      "to": "setup"
+    },
+    {
+      "from": "setup",
+      "to": "idle",
+      "label": "发布"
+    },
+    {
+      "from": "idle",
+      "to": "running",
+      "label": "唤醒",
+      "variant": "emphasis"
+    },
+    {
+      "from": "running",
+      "to": "turnend"
+    },
+    {
+      "from": "turnend",
+      "to": "running",
+      "label": "有 → 下一 turn",
+      "variant": "emphasis",
+      "route": "top-channel"
+    },
+    {
+      "from": "turnend",
+      "to": "idle",
+      "label": "空 → 回到 idle",
+      "route": "top-channel"
+    },
+    {
+      "from": "setup",
+      "to": "latched",
+      "label": "期间来消息",
+      "variant": "dashed"
+    },
+    {
+      "from": "latched",
+      "to": "running",
+      "label": "setup 后补唤醒",
+      "variant": "dashed"
+    },
+    {
+      "from": "running",
+      "to": "aborting",
+      "label": "cancel()",
+      "variant": "security"
+    },
+    {
+      "from": "aborting",
+      "to": "idle",
+      "label": "驱动退出",
+      "variant": "security"
+    },
+    {
+      "from": "setup",
+      "to": "setupfail",
+      "variant": "security"
+    },
+    {
+      "from": "idle",
+      "to": "disposed",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "只有三种内部阶段",
+      "items": [
+        "idle：空闲等待；maintenance：初始化或维护任务；running：驱动在跑 turn",
+        "对外的 agent/status 只有 idle / running，maintenance 对外也显示 idle",
+        "没有“disposed/error”阶段：出错会发 agent/error 并回到 idle"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "怎么被唤醒",
+      "items": [
+        "followup(msg) 放进 next-turn 并唤醒；steer(msg) 放进 next-step 并唤醒；inject(msg) 只放入不唤醒",
+        "唤醒时 idle → running，新建一个 AbortController，开始 while(await turn()) 循环",
+        "每个 turn 结束时若 inbox 还有消息，就换一个新的 AbortController 继续下一 turn"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "中止与释放",
+      "items": [
+        "cancel(cause) 默认清空 inbox，然后触发 abort；驱动在 finally 里自己回到 idle",
+        "turn/end 记录原因：completed / blocked / max-tokens / aborted / error",
+        "dispose：cancel(disposed) → 等待 idle → 释放作用域 → 关闭日志句柄 → 离开注册表"
+      ]
+    }
+  ]
+}

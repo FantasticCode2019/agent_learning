@@ -1,0 +1,390 @@
+{
+ "schema_version": 2,
+ "diagram_type": "workflow",
+ "meta": {
+  "title": "第 2 部分：回复编排（进入 harness 之前）",
+  "locale": "zh-CN",
+  "output": ".archify/openclaw-deep-dive-20260930-140000/p2-reply.html",
+  "quality_profile": "showcase",
+  "repository": {
+   "url": "https://github.com/openclaw/openclaw",
+   "provider": "github",
+   "link_mode": "web",
+   "revision": "63144fe0c4d170902aa50155daa36460af6e8569"
+  }
+ },
+ "lanes": [
+  {
+   "id": "pre",
+   "label": "① 预处理"
+  },
+  {
+   "id": "admit",
+   "label": "② 排队准入"
+  },
+  {
+   "id": "exec",
+   "label": "③ 执行与回退"
+  },
+  {
+   "id": "out",
+   "label": "④ 交给 harness · 投递"
+  }
+ ],
+ "mainPath": [
+  "dispatch",
+  "resolve",
+  "directives",
+  "admission",
+  "runreply",
+  "fallback",
+  "embedded"
+ ],
+ "nodes": [
+  {
+   "id": "dispatch",
+   "lane": "pre",
+   "col": 0,
+   "type": "backend",
+   "label": "渠道调度",
+   "sublabel": "replyResolver",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/dispatch-from-config.prepare-execution.ts",
+     "line": 334,
+     "end_line": 340,
+     "label": "默认 getReplyFromConfig"
+    },
+    {
+     "path": "src/auto-reply/reply/get-reply.ts",
+     "line": 213,
+     "label": "getReplyFromConfig"
+    }
+   ]
+  },
+  {
+   "id": "resolve",
+   "lane": "pre",
+   "col": 1,
+   "type": "backend",
+   "label": "解析上下文",
+   "sublabel": "agent · 会话 · 模型",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/get-reply.ts",
+     "line": 257,
+     "end_line": 267,
+     "label": "agent 作用域"
+    },
+    {
+     "path": "src/auto-reply/reply/get-reply.ts",
+     "line": 324,
+     "end_line": 331,
+     "label": "默认模型"
+    },
+    {
+     "path": "src/auto-reply/reply/get-reply.ts",
+     "line": 549,
+     "end_line": 626,
+     "label": "initSessionState"
+    }
+   ]
+  },
+  {
+   "id": "directives",
+   "lane": "pre",
+   "col": 2,
+   "type": "backend",
+   "label": "指令与命令",
+   "sublabel": "/model /think /queue",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/get-reply.ts",
+     "line": 835,
+     "end_line": 895,
+     "label": "resolveReplyDirectives"
+    },
+    {
+     "path": "src/auto-reply/reply/get-reply.ts",
+     "line": 939,
+     "end_line": 996,
+     "label": "handleInlineActions"
+    }
+   ]
+  },
+  {
+   "id": "direct",
+   "lane": "pre",
+   "col": 3,
+   "type": "frontend",
+   "label": "直接回复",
+   "sublabel": "命令结果 / 指令确认",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/get-reply.ts",
+     "line": 392,
+     "end_line": 420,
+     "label": "原生斜杠命令快路径"
+    },
+    {
+     "path": "src/auto-reply/reply/get-reply-inline-actions.ts",
+     "line": 641,
+     "end_line": 665,
+     "label": "命令处理后返回"
+    }
+   ]
+  },
+  {
+   "id": "admission",
+   "lane": "admit",
+   "col": 3,
+   "type": "security",
+   "label": "队列策略",
+   "sublabel": "steer · followup · interrupt",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/get-reply-run-admission.ts",
+     "line": 351,
+     "end_line": 621,
+     "label": "prepareReplyRunAdmission"
+    },
+    {
+     "path": "src/auto-reply/reply/queue/settings.ts",
+     "line": 22,
+     "end_line": 57,
+     "label": "默认 steer"
+    },
+    {
+     "path": "src/auto-reply/reply/queue-policy.ts",
+     "line": 5,
+     "end_line": 22,
+     "label": "resolveActiveRunQueueAction"
+    }
+   ]
+  },
+  {
+   "id": "queue",
+   "lane": "admit",
+   "col": 4,
+   "type": "messagebus",
+   "label": "注入或排队",
+   "sublabel": "steer 进活动运行 / 排队",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/agent-runner-run.ts",
+     "line": 340,
+     "end_line": 427,
+     "label": "steer / drop / followup"
+    },
+    {
+     "path": "src/auto-reply/reply/agent-runner-steer-adoption.ts",
+     "line": 77,
+     "end_line": 290,
+     "label": "runActiveReplySteer"
+    }
+   ]
+  },
+  {
+   "id": "runreply",
+   "lane": "exec",
+   "col": 4,
+   "type": "backend",
+   "label": "runReplyAgent",
+   "sublabel": "打字 · 分块管线 · 预压缩",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/agent-runner-run.ts",
+     "line": 486,
+     "end_line": 503,
+     "label": "分块回复管线"
+    },
+    {
+     "path": "src/auto-reply/reply/agent-runner-execute.ts",
+     "line": 111,
+     "end_line": 173,
+     "label": "记忆 flush · 预压缩"
+    },
+    {
+     "path": "src/auto-reply/reply/agent-runner-execution.ts",
+     "line": 307,
+     "end_line": 354,
+     "label": "执行回退循环"
+    }
+   ]
+  },
+  {
+   "id": "fallback",
+   "lane": "exec",
+   "col": 5,
+   "type": "backend",
+   "label": "模型回退",
+   "sublabel": "主模型 → 备用 · 轮换凭据",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run-entry.ts",
+     "line": 285,
+     "label": "runWithModelFallback"
+    },
+    {
+     "path": "src/agents/model-fallback-runner.ts",
+     "line": 136,
+     "end_line": 746,
+     "label": "回退执行器"
+    },
+    {
+     "path": "src/agents/model-fallback-candidates.ts",
+     "line": 345,
+     "end_line": 380,
+     "label": "候选模型顺序"
+    }
+   ]
+  },
+  {
+   "id": "embedded",
+   "lane": "out",
+   "col": 5,
+   "type": "backend",
+   "label": "runEmbeddedAgent",
+   "sublabel": "会话 lane → 全局 lane",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/agents/embedded-agent-runner/run-orchestrator.ts",
+     "line": 230,
+     "end_line": 244,
+     "label": "enqueueSession → enqueueGlobal"
+    },
+    {
+     "path": "src/agents/embedded-agent-runner/lanes.ts",
+     "line": 10,
+     "end_line": 44,
+     "label": "lane 名称"
+    }
+   ]
+  },
+  {
+   "id": "deliver",
+   "lane": "out",
+   "col": 4,
+   "type": "frontend",
+   "label": "ReplyDispatcher",
+   "sublabel": "block / final 发往渠道",
+   "width": 150,
+   "sources": [
+    {
+     "path": "src/auto-reply/reply/dispatch-from-config.turn-ledger.ts",
+     "line": 91,
+     "end_line": 99,
+     "label": "sendBlockReply / sendFinalReply"
+    },
+    {
+     "path": "src/auto-reply/reply/reply-dispatcher.ts",
+     "line": 246,
+     "label": "createReplyDispatcher"
+    }
+   ]
+  }
+ ],
+ "edges": [
+  {
+   "id": "e1",
+   "from": "dispatch",
+   "to": "resolve",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e2",
+   "from": "resolve",
+   "to": "directives",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e3",
+   "from": "directives",
+   "to": "admission",
+   "label": "需要模型",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e4",
+   "from": "admission",
+   "to": "runreply",
+   "label": "run-now",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e5",
+   "from": "runreply",
+   "to": "fallback",
+   "variant": "emphasis"
+  },
+  {
+   "id": "e6",
+   "from": "fallback",
+   "to": "embedded",
+   "label": "每个候选",
+   "variant": "emphasis"
+  },
+  {
+   "id": "only-cmd",
+   "from": "directives",
+   "to": "direct",
+   "label": "仅命令",
+   "variant": "dashed",
+   "role": "branch"
+  },
+  {
+   "id": "busy",
+   "from": "admission",
+   "to": "queue",
+   "label": "会话忙",
+   "variant": "dashed",
+   "role": "branch"
+  },
+  {
+   "id": "replies",
+   "from": "embedded",
+   "to": "deliver",
+   "label": "回复块",
+   "variant": "default",
+   "role": "return"
+  }
+ ],
+ "cards": [
+  {
+   "dot": "cyan",
+   "title": "① 预处理",
+   "items": [
+    "确定是哪个 agent、哪个会话、用哪个模型",
+    "处理 /model /think /queue 等指令",
+    "纯命令（如 /status）直接回复，不调用模型"
+   ]
+  },
+  {
+   "dot": "violet",
+   "title": "② 排队准入",
+   "items": [
+    "同一会话同一时刻只跑一个回合",
+    "会话正忙时默认 steer：把新消息注入正在运行的回合",
+    "也可配置为 followup / collect / interrupt"
+   ]
+  },
+  {
+   "dot": "amber",
+   "title": "③④ 执行与投递",
+   "items": [
+    "先 flush 记忆、按需预压缩，再开始回合",
+    "按 主模型 → 备用模型 顺序尝试，可轮换凭据",
+    "经会话 lane、全局 lane 排队后交给 harness（第 3 部分）"
+   ]
+  }
+ ]
+}

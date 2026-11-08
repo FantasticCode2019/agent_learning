@@ -1,0 +1,12 @@
+flowchart TB
+  R["<b>R</b>：4 条残差流 × 2560 维（hc = 4）"]
+  A["<b>① gr_read(attn)</b><br/>lo = SiLU((xn · W_downᵀ) / hc)<br/>mixed = mean_c( xn · σ(lo · W_upᵀ) )<br/>inject = xn · W_injectᵀ"]
+  M{"<b>② 混合器</b><br/>l % 4 == 3 ？"}
+  Q["<b>QSA 全注意力 · 12 层</b><br/>indexer 投影 → 块打分<br/>top-2048 cell → 只读选中 KV<br/>q/k L2 + rope，输出带 gate"]
+  G["<b>GDN 线性注意力 · 36 层</b><br/>qkv → conv + SiLU → q/k L2<br/>β、decay gate → 状态递推<br/>y = rms(o) · ssm_norm · σ(z)"]
+  W["<b>③ gr_write(attn)</b><br/>R += out · 2·σ(inject / hc)"]
+  N["→ FFN 半段（4b）"]
+  R --> A --> M
+  M -->|"是"| Q --> W
+  M -->|"否"| G --> W
+  W --> N

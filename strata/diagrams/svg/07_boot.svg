@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 852.6940000000001 625" width="852.6940000000001" height="625" style="--bg:#ffffff;--fg:#1f2328;--line:#d1d9e0;--accent:#0969da;--muted:#59636e;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=PingFang%20SC%2C%20Hiragino%20Sans%20GB%2C%20Microsoft%20YaHei%2C%20Helvetica%20Neue%2C%20Arial:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Arial', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="seq-arrow" markerWidth="8" markerHeight="5" refX="8" refY="2.5" orient="auto-start-reverse">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" />
+  </marker>
+  <marker id="seq-arrow-open" markerWidth="8" markerHeight="5" refX="8" refY="2.5" orient="auto-start-reverse">
+    <polyline points="0 0, 8 2.5, 0 5" fill="none" stroke="var(--_arrow)" stroke-width="1" />
+  </marker>
+</defs>
+<line class="lifeline" data-actor="L" x1="107.3665" y1="70" x2="107.3665" y2="595" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<line class="lifeline" data-actor="T" x1="264.733" y1="70" x2="264.733" y2="595" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<line class="lifeline" data-actor="S" x1="404.733" y1="70" x2="404.733" y2="595" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<line class="lifeline" data-actor="E" x1="574.272" y1="70" x2="574.272" y2="595" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<g class="message" data-from="L" data-to="L" data-label="选后端 · 解析组件（逐文件 sha256）· 拉模型 · 写 run config" data-line-style="solid" data-arrow-head="filled" data-self="true">
+  <polyline points="107.3665,90 137.3665,90 137.3665,110 107.3665,110" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="145.3665" y="100" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">选后端 · 解析组件（逐文件 sha256）· 拉模型 · 写 run config</text>
+</g>
+<g class="message" data-from="L" data-to="T" data-label="start（host / port / profile）" data-line-style="solid" data-arrow-head="filled" data-self="false">
+  <line x1="107.3665" y1="160" x2="264.733" y2="160" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="186.04975000000002" y="150" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">start（host / port / profile）</text>
+</g>
+<g class="message" data-from="T" data-to="S" data-label="python -m serve.server --config … --ready-file" data-line-style="solid" data-arrow-head="filled" data-self="false">
+  <line x1="264.733" y1="200" x2="404.733" y2="200" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="334.733" y="190" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">python -m serve.server --config … --ready-file</text>
+</g>
+<g class="message" data-from="S" data-to="E" data-label="spawn strata --serve（stdin/stdout 管道）" data-line-style="solid" data-arrow-head="filled" data-self="false">
+  <line x1="404.733" y1="240" x2="574.272" y2="240" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="489.50250000000005" y="230" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">spawn strata --serve（stdin/stdout 管道）</text>
+</g>
+<g class="message" data-from="E" data-to="E" data-label="读 GGUF → 建 arena → 捕获 96 张图 → warm" data-line-style="solid" data-arrow-head="filled" data-self="true">
+  <polyline points="574.272,280 604.272,280 604.272,300 574.272,300" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="612.272" y="290" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">读 GGUF → 建 arena → 捕获 96 张图 → warm</text>
+</g>
+<g class="message" data-from="E" data-to="S" data-label="READY &lt;ctx&gt; stop" data-line-style="dashed" data-arrow-head="filled" data-self="false">
+  <line x1="574.272" y1="350" x2="404.733" y2="350" stroke="var(--_line)" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#seq-arrow)" />
+  <text x="489.50250000000005" y="340" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">READY &lt;ctx&gt; stop</text>
+</g>
+<g class="message" data-from="S" data-to="T" data-label="写 ready 文件（只证明端口已绑）" data-line-style="dashed" data-arrow-head="filled" data-self="false">
+  <line x1="404.733" y1="390" x2="264.733" y2="390" stroke="var(--_line)" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#seq-arrow)" />
+  <text x="334.733" y="380" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">写 ready 文件（只证明端口已绑）</text>
+</g>
+<g class="message" data-from="T" data-to="S" data-label="/v1/telemetry + 一次 one-token 生成校验" data-line-style="solid" data-arrow-head="filled" data-self="false">
+  <line x1="264.733" y1="430" x2="404.733" y2="430" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="334.733" y="420" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">/v1/telemetry + 一次 one-token 生成校验</text>
+</g>
+<g class="message" data-from="T" data-to="L" data-label="ready" data-line-style="dashed" data-arrow-head="filled" data-self="false">
+  <line x1="264.733" y1="470" x2="107.3665" y2="470" stroke="var(--_line)" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#seq-arrow)" />
+  <text x="186.04975000000002" y="460" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">ready</text>
+</g>
+<g class="message" data-from="L" data-to="L" data-label="打印 OpenAI / Anthropic 地址与 key" data-line-style="dashed" data-arrow-head="filled" data-self="true">
+  <polyline points="107.3665,510 137.3665,510 137.3665,530 107.3665,530" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#seq-arrow)" />
+  <text x="145.3665" y="520" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">打印 OpenAI / Anthropic 地址与 key</text>
+</g>
+<g class="note" data-position="over" data-actors="S,E">
+  <polygon points="366.49050000000005,548 606.5145,548 612.5145,554 612.5145,571 366.49050000000005,571" fill="var(--bg)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <polygon points="606.5145,548 612.5145,554 606.5145,554" fill="var(--_inner-stroke)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="489.50250000000005" y="559.5" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">引擎崩溃 → ensure_loaded → restart（≤3 次）</text>
+</g>
+<g class="actor" data-id="L" data-label="strata CLI / 桌面 App" data-type="participant">
+  <rect x="30" y="30" width="154.733" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="107.3665" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">strata CLI / 桌面 App</text>
+</g>
+<g class="actor" data-id="T" data-label="runtime" data-type="participant">
+  <rect x="224.733" y="30" width="80" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="264.733" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">runtime</text>
+</g>
+<g class="actor" data-id="S" data-label="serve.server" data-type="participant">
+  <rect x="347.744" y="30" width="113.978" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="404.733" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">serve.server</text>
+</g>
+<g class="actor" data-id="E" data-label="引擎 strata --serve" data-type="participant">
+  <rect x="501.72200000000004" y="30" width="145.10000000000002" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="574.272" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">引擎 strata --serve</text>
+</g>
+</svg>

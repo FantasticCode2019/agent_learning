@@ -1,0 +1,18 @@
+flowchart TB
+  S["已 prefill 到位置 p"]
+  W["<b>choose_window</b><br/>T = min(win_cap, max_context − p)"]
+  D["<b>出草稿</b><br/>MTP 单层（接受率 0.89 / 0.86 / 0.85）<br/>DFlash2 一次前向 7 条<br/>prompt lookup 后缀匹配"]
+  V["<b>验证</b>：T 行一次过 48 层 + head<br/>每行取 argmax"]
+  C{"逐位等于草稿？"}
+  A["接受 a 个<br/>再白得 1 个 bonus token"]
+  R["第一处不匹配即停<br/>后面的草稿全部丢弃"]
+  M["<b>commit(a+1)</b><br/>回放 GDN conv/递推<br/>恢复 indexer key tail<br/>回滚 PLE 历史"]
+  E["发 T id；p += a+1"]
+  Z["未到 EOS / max_new：下一窗口"]
+  X["DONE：stop / length"]
+  S --> W --> D --> V --> C
+  C -->|"是"| A --> M
+  C -->|"否"| R --> M
+  M --> E
+  E --> Z
+  E -->|"结束"| X

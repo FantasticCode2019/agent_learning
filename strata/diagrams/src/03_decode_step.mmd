@@ -1,0 +1,22 @@
+sequenceDiagram
+  participant H as 主线程 host
+  participant G as GPU 主流
+  participant P as CPU 专家池
+  H->>G: stage_token(pos)：写入本 token 的图输入
+  H->>G: cudaGraphLaunch(pre[0])
+  Note over H,G: 一个验证窗（T 行）过 48 层；下面是一层内的交接
+  loop 每一层 l = 0 … 47
+    G->>G: gr_read → QSA/GDN → gr_write
+    G->>G: gr_read(ffn) → router top-10
+    G-->>H: doorbell 写 h_seq（约 0.05 ms 可见）
+    G->>G: shared expert（与 pool 并行）
+    H->>H: 自旋 h_seq + cudaEventQuery
+    H->>P: pool(x_f, ids, weights)：只算未命中专家
+    P-->>H: parts（k × n_embd fp32）
+    H->>G: H2D parts → VRAM
+    H->>G: launch post[l]：combine + gr_write
+    H->>G: launch pre[l+1]
+  end
+  G->>G: lm_head → logits
+  H->>H: argmax 接受 a 个草稿；commit 回放状态
+  Note over H,G: 采样在图外；窗末 token 是白得的 bonus token

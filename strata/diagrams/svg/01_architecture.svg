@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 921.4769999999999 927.1999999999999" width="921.4769999999999" height="927.1999999999999" style="--bg:#ffffff;--fg:#1f2328;--line:#d1d9e0;--accent:#0969da;--muted:#59636e;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=PingFang%20SC%2C%20Hiragino%20Sans%20GB%2C%20Microsoft%20YaHei%2C%20Helvetica%20Neue%2C%20Arial:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Arial', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<g class="subgraph" data-id="HW" data-label="硬件与存储">
+  <rect x="40" y="722.6999999999999" width="841.4769999999999" height="164.5" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="40" y="722.6999999999999" width="841.4769999999999" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="52" y="736.6999999999999" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">硬件与存储</text>
+</g>
+<polyline class="edge" data-from="C" data-to="S" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="HTTP / SSE" points="309.4264999999999,110.7 309.4264999999999,215 404.3468333333333,215 404.3468333333333,227" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S" data-to="E" data-style="solid" data-arrow-start="true" data-arrow-end="true" data-label="行协议：GEN / STOP
+PP / T / DONE" points="475.5584999999999,348.4 475.5584999999999,479" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" marker-start="url(#arrowhead-start)" />
+<polyline class="edge" data-from="K" data-to="S" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="启动 / 停止 / 更新" points="641.6904999999999,110.7 641.6904999999999,215 546.7701666666666,215 546.7701666666666,227" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="E" data-to="G" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="386.89549999999997,600.4 386.89549999999997,704.6999999999999 291.21524999999997,704.6999999999999 291.21524999999997,704.6999999999999 195.53499999999997,704.6999999999999 195.53499999999997,766.6999999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="E" data-to="R" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="doorbell 交接" points="475.5584999999999,600.4 475.5584999999999,766.6999999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="E" data-to="D" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="按 token 读行" points="564.2214999999999,600.4 564.2214999999999,636.4 652.4917499999999,636.4 652.4917499999999,704.6999999999999 740.762,704.6999999999999 740.762,766.6999999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="C" data-to="S" data-label="HTTP / SSE">
+  <rect x="271.9264999999999" y="153.7" width="74.07999999999998" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="308.9664999999999" y="168.85" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">HTTP / SSE</text>
+</g>
+<g class="edge-label" data-from="S" data-to="E" data-label="行协议：GEN / STOP
+PP / T / DONE">
+  <rect x="414.5584999999999" y="391.4" width="121.6" height="44.6" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="475.35849999999994" y="413.7" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)"><tspan x="475.35849999999994" dy="-3.3000000000000007">行协议：GEN / STOP</tspan><tspan x="475.35849999999994" dy="14.3">PP / T / DONE</tspan></text>
+</g>
+<g class="edge-label" data-from="K" data-to="S" data-label="启动 / 停止 / 更新">
+  <rect x="590.6904999999999" y="153.7" width="101.99800000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="641.6895" y="168.85" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">启动 / 停止 / 更新</text>
+</g>
+<g class="edge-label" data-from="E" data-to="R" data-label="doorbell 交接">
+  <rect x="434.0585" y="643.4" width="82.39600000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="475.25649999999996" y="658.55" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">doorbell 交接</text>
+</g>
+<g class="edge-label" data-from="E" data-to="D" data-label="按 token 读行">
+  <rect x="610.9917499999999" y="643.4" width="82.99000000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="652.4867499999999" y="658.55" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">按 token 读行</text>
+</g>
+<g class="node" data-id="C" data-label="&lt;b&gt;客户端与工具&lt;/b&gt;
+OpenAI SDK · Anthropic SDK / Claude Code
+Codex (Responses API) · 内置 Web UI" data-shape="rectangle">
+  <rect x="161.74049999999994" y="40" width="295.37199999999996" height="70.7" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="309.4264999999999" y="75.35" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="309.4264999999999" dy="-12.350000000000001"><tspan font-weight="bold">客户端与工具</tspan></tspan><tspan x="309.4264999999999" dy="16.900000000000002">OpenAI SDK · Anthropic SDK / Claude Code</tspan><tspan x="309.4264999999999" dy="16.900000000000002">Codex (Responses API) · 内置 Web UI</tspan></text>
+</g>
+<g class="node" data-id="S" data-label="&lt;b&gt;接入层 serve/server.py&lt;/b&gt;
+ThreadingHTTPServer：路由 · 鉴权 · CORS · SSE
+ChatTemplate + Tokenizer：模板渲染 · 图片展开 · 上下文检查
+Service FIFO：准入 · 排队 · 取消 · 会话前缀
+OutputParser + Detokenizer：工具调用解析 · 增量解码
+MCP Hub · Vision · Images" data-shape="rectangle">
+  <rect x="261.9235" y="227" width="427.26999999999987" height="121.4" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="475.5584999999999" y="287.7" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="475.5584999999999" dy="-37.70000000000001"><tspan font-weight="bold">接入层 serve/server.py</tspan></tspan><tspan x="475.5584999999999" dy="16.900000000000002">ThreadingHTTPServer：路由 · 鉴权 · CORS · SSE</tspan><tspan x="475.5584999999999" dy="16.900000000000002">ChatTemplate + Tokenizer：模板渲染 · 图片展开 · 上下文检查</tspan><tspan x="475.5584999999999" dy="16.900000000000002">Service FIFO：准入 · 排队 · 取消 · 会话前缀</tspan><tspan x="475.5584999999999" dy="16.900000000000002">OutputParser + Detokenizer：工具调用解析 · 增量解码</tspan><tspan x="475.5584999999999" dy="16.900000000000002">MCP Hub · Vision · Images</tspan></text>
+</g>
+<g class="node" data-id="E" data-label="&lt;b&gt;引擎进程 strata --serve（C++ / CUDA）&lt;/b&gt;
+请求循环：GEN → prefill → decode 验证窗 → T / DONE
+Session：48 层 × (pre, post) 计算图 + doorbell
+投机：MTP 草稿层 · DFlash2 · prompt lookup
+采样：penalties → top-k → top-p → min-p → temperature
+会话缓存：KV 位置态 + GDN 运行态 checkpoint" data-shape="rectangle">
+  <rect x="298.23249999999996" y="479" width="354.652" height="121.4" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="475.5585" y="539.7" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="475.5585" dy="-37.70000000000001"><tspan font-weight="bold">引擎进程 strata --serve（C++ / CUDA）</tspan></tspan><tspan x="475.5585" dy="16.900000000000002">请求循环：GEN → prefill → decode 验证窗 → T / DONE</tspan><tspan x="475.5585" dy="16.900000000000002">Session：48 层 × (pre, post) 计算图 + doorbell</tspan><tspan x="475.5585" dy="16.900000000000002">投机：MTP 草稿层 · DFlash2 · prompt lookup</tspan><tspan x="475.5585" dy="16.900000000000002">采样：penalties → top-k → top-p → min-p → temperature</tspan><tspan x="475.5585" dy="16.900000000000002">会话缓存：KV 位置态 + GDN 运行态 checkpoint</tspan></text>
+</g>
+<g class="node" data-id="K" data-label="&lt;b&gt;控制面&lt;/b&gt;
+strata CLI · 桌面 App（Tauri + Node Host）
+runtime：起服务器 · 探活 · 停止 · 组件更新" data-shape="rectangle">
+  <rect x="485.11249999999984" y="40" width="313.15600000000006" height="70.7" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="641.6904999999999" y="75.35" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="641.6904999999999" dy="-12.350000000000001"><tspan font-weight="bold">控制面</tspan></tspan><tspan x="641.6904999999999" dy="16.900000000000002">strata CLI · 桌面 App（Tauri + Node Host）</tspan><tspan x="641.6904999999999" dy="16.900000000000002">runtime：起服务器 · 探活 · 停止 · 组件更新</tspan></text>
+</g>
+<g class="node" data-id="G" data-label="&lt;b&gt;GPU VRAM&lt;/b&gt;
+dense 权重 arena（单次 cudaMalloc）
+12 层 QSA 的 KV cache + indexer
+专家缓存槽（自适应 LFU）
+MTP / DFlash2 草稿网络" data-shape="rectangle">
+  <rect x="56" y="766.6999999999999" width="279.06999999999994" height="104.50000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="195.53499999999997" y="818.9499999999999" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="195.53499999999997" dy="-29.250000000000004"><tspan font-weight="bold">GPU VRAM</tspan></tspan><tspan x="195.53499999999997" dy="16.900000000000002">dense 权重 arena（单次 cudaMalloc）</tspan><tspan x="195.53499999999997" dy="16.900000000000002">12 层 QSA 的 KV cache + indexer</tspan><tspan x="195.53499999999997" dy="16.900000000000002">专家缓存槽（自适应 LFU）</tspan><tspan x="195.53499999999997" dy="16.900000000000002">MTP / DFlash2 草稿网络</tspan></text>
+</g>
+<g class="node" data-id="R" data-label="&lt;b&gt;CPU RAM&lt;/b&gt;
+全部 24,576 个专家 pinned
+ExpertPool：AVX-512 / AVX2
+36 层 GDN 递推状态
+host 侧 KV 权威副本（可选）" data-shape="rectangle">
+  <rect x="363.06999999999994" y="766.6999999999999" width="224.97699999999995" height="104.50000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="475.5584999999999" y="818.9499999999999" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="475.5584999999999" dy="-29.250000000000004"><tspan font-weight="bold">CPU RAM</tspan></tspan><tspan x="475.5584999999999" dy="16.900000000000002">全部 24,576 个专家 pinned</tspan><tspan x="475.5584999999999" dy="16.900000000000002">ExpertPool：AVX-512 / AVX2</tspan><tspan x="475.5584999999999" dy="16.900000000000002">36 层 GDN 递推状态</tspan><tspan x="475.5584999999999" dy="16.900000000000002">host 侧 KV 权威副本（可选）</tspan></text>
+</g>
+<g class="node" data-id="D" data-label="&lt;b&gt;SSD&lt;/b&gt;
+PLE n-gram 表 28.8 GB
+每 token 只读 16 行（1,440 B）
+experts.bin（低内存 mmap 模式）" data-shape="rectangle">
+  <rect x="616.0469999999999" y="766.6999999999999" width="249.42999999999998" height="87.60000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="740.762" y="810.4999999999999" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="740.762" dy="-20.8"><tspan font-weight="bold">SSD</tspan></tspan><tspan x="740.762" dy="16.900000000000002">PLE n-gram 表 28.8 GB</tspan><tspan x="740.762" dy="16.900000000000002">每 token 只读 16 行（1,440 B）</tspan><tspan x="740.762" dy="16.900000000000002">experts.bin（低内存 mmap 模式）</tspan></text>
+</g>
+</svg>

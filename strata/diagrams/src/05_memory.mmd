@@ -1,0 +1,7 @@
+flowchart LR
+  S["<b>SSD</b><br/>PLE n-gram 表：320,001,536 行 × 90 B<br/>26.8 GiB（IQ4_NL）<br/>experts.bin（仅 --mmap-experts）"]
+  R["<b>CPU RAM · pinned</b><br/>全部 24,576 个专家（48 层 × 512）<br/>Q2_0 约 34 GB<br/>host 侧 KV 权威副本（--kv-resident）<br/>GDN 状态 + checkpoint ≈ 118 MB/会话"]
+  V["<b>GPU VRAM</b><br/>dense arena：attention · GDN · router<br/>shared expert · head · PLE key<br/>QSA KV cache（12 层，fp16 分页）<br/>专家缓存槽 + MTP/DFlash2 草稿网络"]
+  S -->|"每 token 16 行<br/>4 KiB 无缓冲读"| V
+  S -->|"低内存模式 mmap"| R
+  R -->|"PCIe 按需拷贝"| V

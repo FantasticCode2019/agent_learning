@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 557.213 1590.871" width="557.213" height="1590.871" style="--bg:#ffffff;--fg:#1f2328;--line:#d1d9e0;--accent:#0969da;--muted:#59636e;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=PingFang%20SC%2C%20Hiragino%20Sans%20GB%2C%20Microsoft%20YaHei%2C%20Helvetica%20Neue%2C%20Arial:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Arial', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<polyline class="edge" data-from="R" data-to="GR1" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="269.15874999999994,280.8 269.15874999999994,328.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GR1" data-to="T" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="269.15874999999994,399.5 269.15874999999994,447.5" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="T" data-to="QSA" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="是" points="248.1635833333333,552.4758333333334 248.1635833333333,585.471 142.85549999999998,585.471 142.85549999999998,665.771" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="QSA" data-to="GRW1" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="142.85549999999998,753.371 142.85549999999998,777.371 269.15874999999994,777.371 269.15874999999994,801.371" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="T" data-to="GDN" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="否" points="290.15391666666665,552.4758333333333 290.15391666666665,585.471 395.46199999999993,585.471 395.46199999999993,665.771" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GDN" data-to="GRW1" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="395.46199999999993,753.371 395.46199999999993,777.371 269.15874999999994,777.371 269.15874999999994,801.371" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GRW1" data-to="GR2" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="269.15874999999994,855.1709999999999 269.15874999999994,903.1709999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GR2" data-to="ROUTE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="269.15874999999994,956.9709999999999 269.15874999999994,1004.9709999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ROUTE" data-to="HIT" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="269.15874999999994,1075.6709999999998 269.15874999999994,1099.6709999999998 199.96649999999997,1099.6709999999998 199.96649999999997,1225.471" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ROUTE" data-to="MISS" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="269.15874999999994,1075.6709999999998 269.15874999999994,1099.6709999999998 338.351,1099.6709999999998 338.351,1123.6709999999998" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="HIT" data-to="COMB" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="199.96649999999997,1279.2709999999997 199.96649999999997,1315.2709999999997 236.23208333333332,1315.2709999999997 236.23208333333332,1327.2709999999997" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="MISS" data-to="COMB" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="parts 回传" points="338.351,1177.471 338.351,1315.2709999999997 302.0854166666666,1315.2709999999997 302.0854166666666,1327.2709999999997" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="COMB" data-to="GRW2" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="269.15874999999994,1381.071 269.15874999999994,1429.071" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GRW2" data-to="OUT" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="269.15874999999994,1465.971 269.15874999999994,1513.971" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PLE" data-to="R" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="残差更新" points="269.15874999999994,110.7 269.15874999999994,227" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="T" data-to="QSA" data-label="是">
+  <rect x="127.85549999999999" y="592.471" width="29.53" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="142.6205" y="607.621" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">是</text>
+</g>
+<g class="edge-label" data-from="T" data-to="GDN" data-label="否">
+  <rect x="380.46199999999993" y="592.471" width="29.53" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="395.2269999999999" y="607.621" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">否</text>
+</g>
+<g class="edge-label" data-from="MISS" data-to="COMB" data-label="parts 回传">
+  <rect x="303.851" y="1253.971" width="68.14" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="337.921" y="1269.121" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">parts 回传</text>
+</g>
+<g class="edge-label" data-from="PLE" data-to="R" data-label="残差更新">
+  <rect x="236.1587499999999" y="153.7" width="65.17" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="268.7437499999999" y="168.85" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">残差更新</text>
+</g>
+<g class="node" data-id="R" data-label="R：4 条残差流
+hc=4 × 2560 维" data-shape="rectangle">
+  <rect x="201.87124999999995" y="227" width="134.575" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="269.15874999999994" y="253.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="269.15874999999994" dy="-3.9000000000000012">R：4 条残差流</tspan><tspan x="269.15874999999994" dy="16.900000000000002">hc=4 × 2560 维</tspan></text>
+</g>
+<g class="node" data-id="GR1" data-label="gr_read(attn)
+mixed = mean_c(xn · sigmoid(lo·W_up))
+inject = xn · W_inject" data-shape="rectangle">
+  <rect x="133.69924999999998" y="328.8" width="270.9189999999999" height="70.7" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="269.15874999999994" y="364.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="269.15874999999994" dy="-12.350000000000001">gr_read(attn)</tspan><tspan x="269.15874999999994" dy="16.900000000000002">mixed = mean_c(xn · sigmoid(lo·W_up))</tspan><tspan x="269.15874999999994" dy="16.900000000000002">inject = xn · W_inject</tspan></text>
+</g>
+<g class="node" data-id="T" data-label="l % 4 == 3 ?" data-shape="diamond">
+  <polygon points="269.15874999999994,447.5 332.14424999999994,510.4855 269.15874999999994,573.471 206.17324999999994,510.4855" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="269.15874999999994" y="510.4855" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">l % 4 == 3 ?</text>
+</g>
+<g class="node" data-id="QSA" data-label="QSA 全注意力（12 层）
+indexer 打分 → top-2048 cell
+只对选中 KV 做 attention
+q/k L2 + rope，输出 gate" data-shape="rectangle">
+  <rect x="40" y="665.771" width="205.71099999999996" height="87.60000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="142.85549999999998" y="709.5709999999999" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="142.85549999999998" dy="-20.8">QSA 全注意力（12 层）</tspan><tspan x="142.85549999999998" dy="16.900000000000002">indexer 打分 → top-2048 cell</tspan><tspan x="142.85549999999998" dy="16.900000000000002">只对选中 KV 做 attention</tspan><tspan x="142.85549999999998" dy="16.900000000000002">q/k L2 + rope，输出 gate</tspan></text>
+</g>
+<g class="node" data-id="GDN" data-label="GDN 线性注意力（36 层）
+conv + SiLU → q/k L2
+β、decay gate → 状态递推
+out = rms(o)·ssm_norm·sigmoid(z)" data-shape="rectangle">
+  <rect x="273.71099999999996" y="665.771" width="243.50199999999995" height="87.60000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="395.46199999999993" y="709.5709999999999" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="395.46199999999993" dy="-20.8">GDN 线性注意力（36 层）</tspan><tspan x="395.46199999999993" dy="16.900000000000002">conv + SiLU → q/k L2</tspan><tspan x="395.46199999999993" dy="16.900000000000002">β、decay gate → 状态递推</tspan><tspan x="395.46199999999993" dy="16.900000000000002">out = rms(o)·ssm_norm·sigmoid(z)</tspan></text>
+</g>
+<g class="node" data-id="GRW1" data-label="gr_write(attn)
+R += out · 2·sigmoid(inject/hc)" data-shape="rectangle">
+  <rect x="161.11624999999998" y="801.371" width="216.08499999999995" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="269.15874999999994" y="828.271" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="269.15874999999994" dy="-3.9000000000000012">gr_write(attn)</tspan><tspan x="269.15874999999994" dy="16.900000000000002">R += out · 2·sigmoid(inject/hc)</tspan></text>
+</g>
+<g class="node" data-id="GR2" data-label="gr_read(ffn)
+第二条超连接" data-shape="rectangle">
+  <rect x="203.72374999999997" y="903.1709999999999" width="130.87" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="269.15874999999994" y="930.0709999999999" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="269.15874999999994" dy="-3.9000000000000012">gr_read(ffn)</tspan><tspan x="269.15874999999994" dy="16.900000000000002">第二条超连接</tspan></text>
+</g>
+<g class="node" data-id="ROUTE" data-label="MoE 路由
+bf16 router → 512 选 10
+另加 1 个 shared expert" data-shape="rectangle">
+  <rect x="179.27074999999996" y="1004.9709999999999" width="179.77599999999998" height="70.7" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="269.15874999999994" y="1040.321" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="269.15874999999994" dy="-12.350000000000001">MoE 路由</tspan><tspan x="269.15874999999994" dy="16.900000000000002">bf16 router → 512 选 10</tspan><tspan x="269.15874999999994" dy="16.900000000000002">另加 1 个 shared expert</tspan></text>
+</g>
+<g class="node" data-id="HIT" data-label="GPU 专家缓存命中
+MMVQ / MMQ" data-shape="rectangle">
+  <rect x="120.08199999999997" y="1225.471" width="159.769" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="199.96649999999997" y="1252.371" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="199.96649999999997" dy="-3.9000000000000012">GPU 专家缓存命中</tspan><tspan x="199.96649999999997" dy="16.900000000000002">MMVQ / MMQ</tspan></text>
+</g>
+<g class="node" data-id="MISS" data-label="CPU 专家池未命中
+AVX-512 / AVX2" data-shape="rectangle">
+  <rect x="258.4665" y="1123.6709999999998" width="159.769" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="338.351" y="1150.571" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="338.351" dy="-3.9000000000000012">CPU 专家池未命中</tspan><tspan x="338.351" dy="16.900000000000002">AVX-512 / AVX2</tspan></text>
+</g>
+<g class="node" data-id="COMB" data-label="moe_finish：combine 10 路
++ shared expert" data-shape="rectangle">
+  <rect x="170.37874999999997" y="1327.2709999999997" width="197.55999999999997" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="269.15874999999994" y="1354.1709999999998" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="269.15874999999994" dy="-3.9000000000000012">moe_finish：combine 10 路</tspan><tspan x="269.15874999999994" dy="16.900000000000002">+ shared expert</tspan></text>
+</g>
+<g class="node" data-id="GRW2" data-label="gr_write(ffn)" data-shape="rectangle">
+  <rect x="213.35674999999998" y="1429.071" width="111.60400000000001" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="269.15875" y="1447.521" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">gr_write(ffn)</text>
+</g>
+<g class="node" data-id="OUT" data-label="R' → 下一层" data-shape="rectangle">
+  <rect x="214.09774999999996" y="1513.971" width="110.122" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="269.15874999999994" y="1532.421" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">R&#39; → 下一层</text>
+</g>
+<g class="node" data-id="PLE" data-label="PLE（仅第 1 层）
+16 行 n-gram 表项
+投影进 4 条残差流" data-shape="rectangle">
+  <rect x="190.38574999999994" y="40" width="157.546" height="70.7" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="269.15874999999994" y="75.35" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="269.15874999999994" dy="-12.350000000000001">PLE（仅第 1 层）</tspan><tspan x="269.15874999999994" dy="16.900000000000002">16 行 n-gram 表项</tspan><tspan x="269.15874999999994" dy="16.900000000000002">投影进 4 条残差流</tspan></text>
+</g>
+</svg>

@@ -1,0 +1,21 @@
+flowchart TB
+  C["<b>客户端与工具</b><br/>OpenAI SDK · Anthropic SDK / Claude Code<br/>Codex (Responses API) · 内置 Web UI"]
+
+  S["<b>接入层 serve/server.py</b><br/>ThreadingHTTPServer：路由 · 鉴权 · CORS · SSE<br/>ChatTemplate + Tokenizer：模板渲染 · 图片展开 · 上下文检查<br/>Service FIFO：准入 · 排队 · 取消 · 会话前缀<br/>OutputParser + Detokenizer：工具调用解析 · 增量解码<br/>MCP Hub · Vision · Images"]
+
+  E["<b>引擎进程 strata --serve（C++ / CUDA）</b><br/>请求循环：GEN → prefill → decode 验证窗 → T / DONE<br/>Session：48 层 × (pre, post) 计算图 + doorbell<br/>投机：MTP 草稿层 · DFlash2 · prompt lookup<br/>采样：penalties → top-k → top-p → min-p → temperature<br/>会话缓存：KV 位置态 + GDN 运行态 checkpoint"]
+
+  subgraph HW["硬件与存储"]
+  G["<b>GPU VRAM</b><br/>dense 权重 arena（单次 cudaMalloc）<br/>12 层 QSA 的 KV cache + indexer<br/>专家缓存槽（自适应 LFU）<br/>MTP / DFlash2 草稿网络"]
+  R["<b>CPU RAM</b><br/>全部 24,576 个专家 pinned<br/>ExpertPool：AVX-512 / AVX2<br/>36 层 GDN 递推状态<br/>host 侧 KV 权威副本（可选）"]
+  D["<b>SSD</b><br/>PLE n-gram 表 28.8 GB<br/>每 token 只读 16 行（1,440 B）<br/>experts.bin（低内存 mmap 模式）"]
+
+  end
+  K["<b>控制面</b><br/>strata CLI · 桌面 App（Tauri + Node Host）<br/>runtime：起服务器 · 探活 · 停止 · 组件更新"]
+
+  C -->|"HTTP / SSE"| S
+  S <-->|"行协议：GEN / STOP<br/>PP / T / DONE"| E
+  E --> G
+  E -->|"doorbell 交接"| R
+  E -->|"按 token 读行"| D
+  K -.->|"启动 / 停止 / 更新"| S

@@ -1,0 +1,16 @@
+sequenceDiagram
+  participant L as strata CLI / 桌面 App
+  participant T as runtime
+  participant S as serve.server
+  participant E as 引擎 strata --serve
+  L->>L: 选后端 · 解析组件（逐文件 sha256）· 拉模型 · 写 run config
+  L->>T: start（host / port / profile）
+  T->>S: python -m serve.server --config … --ready-file
+  S->>E: spawn strata --serve（stdin/stdout 管道）
+  E->>E: 读 GGUF → 建 arena → 捕获 96 张图 → warm
+  E-->>S: READY <ctx> stop
+  S-->>T: 写 ready 文件（只证明端口已绑）
+  T->>S: /v1/telemetry + 一次 one-token 生成校验
+  T-->>L: ready
+  L-->>L: 打印 OpenAI / Anthropic 地址与 key
+  Note over S,E: 引擎崩溃 → ensure_loaded → restart（≤3 次）

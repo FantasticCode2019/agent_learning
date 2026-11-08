@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520.163 800.481" width="520.163" height="800.481" style="--bg:#ffffff;--fg:#1f2328;--line:#d1d9e0;--accent:#0969da;--muted:#59636e;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=PingFang%20SC%2C%20Hiragino%20Sans%20GB%2C%20Microsoft%20YaHei%2C%20Helvetica%20Neue%2C%20Arial:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Arial', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<polyline class="edge" data-from="R" data-to="A" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="260.63725,76.9 260.63725,124.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="A" data-to="M" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="260.63725,212.5 260.63725,260.5" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="M" data-to="Q" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="是" points="238.40708333333333,371.6508333333333 238.40708333333333,405.88100000000003 143.5965,405.88100000000003 143.5965,486.18100000000004" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Q" data-to="W" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="143.5965,573.7810000000001 143.5965,597.7810000000001 260.63724999999994,597.7810000000001 260.63724999999994,621.7810000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="M" data-to="G" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="否" points="282.86741666666666,371.6508333333333 282.86741666666666,405.88100000000003 377.67799999999994,405.88100000000003 377.67799999999994,486.18100000000004" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="G" data-to="W" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="377.678,573.7810000000001 377.678,597.7810000000001 260.63724999999994,597.7810000000001 260.63724999999994,621.7810000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="W" data-to="N" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="260.63724999999994,675.581 260.63725,723.581" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="M" data-to="Q" data-label="是">
+  <rect x="128.5965" y="412.88100000000003" width="29.53" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="143.36149999999998" y="428.031" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">是</text>
+</g>
+<g class="edge-label" data-from="M" data-to="G" data-label="否">
+  <rect x="362.67799999999994" y="412.88100000000003" width="29.53" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="377.4429999999999" y="428.031" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">否</text>
+</g>
+<g class="node" data-id="R" data-label="&lt;b&gt;R&lt;/b&gt;：4 条残差流 × 2560 维（hc = 4）" data-shape="rectangle">
+  <rect x="132.21724999999998" y="40" width="256.84000000000003" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="260.63725" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55"><tspan font-weight="bold">R</tspan>：4 条残差流 × 2560 维（hc = 4）</text>
+</g>
+<g class="node" data-id="A" data-label="&lt;b&gt;① gr_read(attn)&lt;/b&gt;
+lo = SiLU((xn · W_downᵀ) / hc)
+mixed = mean_c( xn · σ(lo · W_upᵀ) )
+inject = xn · W_injectᵀ" data-shape="rectangle">
+  <rect x="135.55175000000003" y="124.9" width="250.17099999999996" height="87.60000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="260.63725" y="168.70000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="260.63725" dy="-20.8"><tspan font-weight="bold">① gr_read(attn)</tspan></tspan><tspan x="260.63725" dy="16.900000000000002">lo = SiLU((xn · W_downᵀ) / hc)</tspan><tspan x="260.63725" dy="16.900000000000002">mixed = mean_c( xn · σ(lo · W_upᵀ) )</tspan><tspan x="260.63725" dy="16.900000000000002">inject = xn · W_injectᵀ</tspan></text>
+</g>
+<g class="node" data-id="M" data-label="&lt;b&gt;② 混合器&lt;/b&gt;
+l % 4 == 3 ？" data-shape="diamond">
+  <polygon points="260.63725,260.5 327.32775,327.1905 260.63725,393.881 193.94675,327.1905" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="260.63725" y="327.1905" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="260.63725" dy="-3.9000000000000012"><tspan font-weight="bold">② 混合器</tspan></tspan><tspan x="260.63725" dy="16.900000000000002">l % 4 == 3 ？</tspan></text>
+</g>
+<g class="node" data-id="Q" data-label="&lt;b&gt;QSA 全注意力 · 12 层&lt;/b&gt;
+indexer 投影 → 块打分
+top-2048 cell → 只读选中 KV
+q/k L2 + rope，输出带 gate" data-shape="rectangle">
+  <rect x="40" y="486.18100000000004" width="207.19299999999998" height="87.60000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="143.5965" y="529.981" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="143.5965" dy="-20.8"><tspan font-weight="bold">QSA 全注意力 · 12 层</tspan></tspan><tspan x="143.5965" dy="16.900000000000002">indexer 投影 → 块打分</tspan><tspan x="143.5965" dy="16.900000000000002">top-2048 cell → 只读选中 KV</tspan><tspan x="143.5965" dy="16.900000000000002">q/k L2 + rope，输出带 gate</tspan></text>
+</g>
+<g class="node" data-id="G" data-label="&lt;b&gt;GDN 线性注意力 · 36 层&lt;/b&gt;
+qkv → conv + SiLU → q/k L2
+β、decay gate → 状态递推
+y = rms(o) · ssm_norm · σ(z)" data-shape="rectangle">
+  <rect x="275.193" y="486.18100000000004" width="204.96999999999997" height="87.60000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="377.678" y="529.981" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="377.678" dy="-20.8"><tspan font-weight="bold">GDN 线性注意力 · 36 层</tspan></tspan><tspan x="377.678" dy="16.900000000000002">qkv → conv + SiLU → q/k L2</tspan><tspan x="377.678" dy="16.900000000000002">β、decay gate → 状态递推</tspan><tspan x="377.678" dy="16.900000000000002">y = rms(o) · ssm_norm · σ(z)</tspan></text>
+</g>
+<g class="node" data-id="W" data-label="&lt;b&gt;③ gr_write(attn)&lt;/b&gt;
+R += out · 2·σ(inject / hc)" data-shape="rectangle">
+  <rect x="168.89674999999994" y="621.7810000000001" width="183.48100000000002" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="260.63724999999994" y="648.681" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="260.63724999999994" dy="-3.9000000000000012"><tspan font-weight="bold">③ gr_write(attn)</tspan></tspan><tspan x="260.63724999999994" dy="16.900000000000002">R += out · 2·σ(inject / hc)</tspan></text>
+</g>
+<g class="node" data-id="N" data-label="→ FFN 半段（4b）" data-shape="rectangle">
+  <rect x="183.34625" y="723.581" width="154.582" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="260.63725" y="742.0310000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">→ FFN 半段（4b）</text>
+</g>
+</svg>

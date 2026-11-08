@@ -1,0 +1,6 @@
+flowchart LR
+  A["客户端 (OpenAI SDK)"] --> B["HTTP 服务器 serve/server.py"]
+  B --> C["引擎子进程 strata --serve"]
+  C --> D["GPU: 48 层计算图"]
+  C --> E["CPU: 专家线程池"]
+  D -.doorbell.-> E

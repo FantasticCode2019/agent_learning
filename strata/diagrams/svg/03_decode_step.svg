@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 477.4565 918" width="477.4565" height="918" style="--bg:#ffffff;--fg:#1f2328;--line:#d1d9e0;--accent:#0969da;--muted:#59636e;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=PingFang%20SC%2C%20Hiragino%20Sans%20GB%2C%20Microsoft%20YaHei%2C%20Helvetica%20Neue%2C%20Arial:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Arial', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="seq-arrow" markerWidth="8" markerHeight="5" refX="8" refY="2.5" orient="auto-start-reverse">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" />
+  </marker>
+  <marker id="seq-arrow-open" markerWidth="8" markerHeight="5" refX="8" refY="2.5" orient="auto-start-reverse">
+    <polyline points="0 0, 8 2.5, 0 5" fill="none" stroke="var(--_arrow)" stroke-width="1" />
+  </marker>
+</defs>
+<g class="block" data-type="loop" data-label="每一层 l = 0 … 47">
+  <rect x="40.88849999999999" y="173" width="406.568" height="540" rx="0" ry="0" fill="none" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="40.88849999999999" y="173" width="133.81" height="18" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="46.88849999999999" y="182" font-size="11" font-weight="600" fill="var(--_text-sec)" dy="3.8499999999999996">loop [每一层 l = 0 … 47]</text>
+</g>
+<line class="lifeline" data-actor="H" x1="103.80199999999999" y1="70" x2="103.80199999999999" y2="888" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<line class="lifeline" data-actor="G" x1="243.802" y1="70" x2="243.802" y2="888" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<line class="lifeline" data-actor="P" x1="383.802" y1="70" x2="383.802" y2="888" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<g class="message" data-from="H" data-to="G" data-label="stage_token(pos)：写入本 token 的图输入" data-line-style="solid" data-arrow-head="filled" data-self="false">
+  <line x1="103.80199999999999" y1="90" x2="243.802" y2="90" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="173.802" y="80" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">stage_token(pos)：写入本 token 的图输入</text>
+</g>
+<g class="message" data-from="H" data-to="G" data-label="cudaGraphLaunch(pre[0])" data-line-style="solid" data-arrow-head="filled" data-self="false">
+  <line x1="103.80199999999999" y1="130" x2="243.802" y2="130" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="173.802" y="120" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">cudaGraphLaunch(pre[0])</text>
+</g>
+<g class="message" data-from="G" data-to="G" data-label="gr_read → QSA/GDN → gr_write" data-line-style="solid" data-arrow-head="filled" data-self="true">
+  <polyline points="243.802,213 273.802,213 273.802,233 243.802,233" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="281.802" y="223" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">gr_read → QSA/GDN → gr_write</text>
+</g>
+<g class="message" data-from="G" data-to="G" data-label="gr_read(ffn) → router top-10" data-line-style="solid" data-arrow-head="filled" data-self="true">
+  <polyline points="243.802,283 273.802,283 273.802,303 243.802,303" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="281.802" y="293" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">gr_read(ffn) → router top-10</text>
+</g>
+<g class="message" data-from="G" data-to="H" data-label="doorbell 写 h_seq（约 0.05 ms 可见）" data-line-style="dashed" data-arrow-head="filled" data-self="false">
+  <line x1="243.802" y1="353" x2="103.80199999999999" y2="353" stroke="var(--_line)" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#seq-arrow)" />
+  <text x="173.802" y="343" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">doorbell 写 h_seq（约 0.05 ms 可见）</text>
+</g>
+<g class="message" data-from="G" data-to="G" data-label="shared expert（与 pool 并行）" data-line-style="solid" data-arrow-head="filled" data-self="true">
+  <polyline points="243.802,393 273.802,393 273.802,413 243.802,413" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="281.802" y="403" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">shared expert（与 pool 并行）</text>
+</g>
+<g class="message" data-from="H" data-to="H" data-label="自旋 h_seq + cudaEventQuery" data-line-style="solid" data-arrow-head="filled" data-self="true">
+  <polyline points="103.80199999999999,463 133.802,463 133.802,483 103.80199999999999,483" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="141.802" y="473" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">自旋 h_seq + cudaEventQuery</text>
+</g>
+<g class="message" data-from="H" data-to="P" data-label="pool(x_f, ids, weights)：只算未命中专家" data-line-style="solid" data-arrow-head="filled" data-self="false">
+  <line x1="103.80199999999999" y1="533" x2="383.802" y2="533" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="243.80200000000002" y="523" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">pool(x_f, ids, weights)：只算未命中专家</text>
+</g>
+<g class="message" data-from="P" data-to="H" data-label="parts（k × n_embd fp32）" data-line-style="dashed" data-arrow-head="filled" data-self="false">
+  <line x1="383.802" y1="573" x2="103.80199999999999" y2="573" stroke="var(--_line)" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#seq-arrow)" />
+  <text x="243.80200000000002" y="563" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">parts（k × n_embd fp32）</text>
+</g>
+<g class="message" data-from="H" data-to="G" data-label="H2D parts → VRAM" data-line-style="solid" data-arrow-head="filled" data-self="false">
+  <line x1="103.80199999999999" y1="613" x2="243.802" y2="613" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="173.802" y="603" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">H2D parts → VRAM</text>
+</g>
+<g class="message" data-from="H" data-to="G" data-label="launch post[l]：combine + gr_write" data-line-style="solid" data-arrow-head="filled" data-self="false">
+  <line x1="103.80199999999999" y1="653" x2="243.802" y2="653" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="173.802" y="643" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">launch post[l]：combine + gr_write</text>
+</g>
+<g class="message" data-from="H" data-to="G" data-label="launch pre[l+1]" data-line-style="solid" data-arrow-head="filled" data-self="false">
+  <line x1="103.80199999999999" y1="693" x2="243.802" y2="693" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="173.802" y="683" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">launch pre[l+1]</text>
+</g>
+<g class="message" data-from="G" data-to="G" data-label="lm_head → logits" data-line-style="solid" data-arrow-head="filled" data-self="true">
+  <polyline points="243.802,733 273.802,733 273.802,753 243.802,753" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="281.802" y="743" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">lm_head → logits</text>
+</g>
+<g class="message" data-from="H" data-to="H" data-label="argmax 接受 a 个草稿；commit 回放状态" data-line-style="solid" data-arrow-head="filled" data-self="true">
+  <polyline points="103.80199999999999,803 133.802,803 133.802,823 103.80199999999999,823" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <text x="141.802" y="813" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">argmax 接受 a 个草稿；commit 回放状态</text>
+</g>
+<g class="note" data-position="over" data-actors="H,G">
+  <polygon points="30,138 311.604,138 317.604,144 317.604,161 30,161" fill="var(--bg)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <polygon points="311.604,138 317.604,144 311.604,144" fill="var(--_inner-stroke)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="173.802" y="149.5" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">一个验证窗（T 行）过 48 层；下面是一层内的交接</text>
+</g>
+<g class="note" data-position="over" data-actors="H,G">
+  <polygon points="45.14699999999999,841 296.457,841 302.457,847 302.457,864 45.14699999999999,864" fill="var(--bg)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <polygon points="296.457,841 302.457,847 296.457,847" fill="var(--_inner-stroke)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="173.802" y="852.5" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">采样在图外；窗末 token 是白得的 bonus token</text>
+</g>
+<g class="actor" data-id="H" data-label="主线程 host" data-type="participant">
+  <rect x="50.88849999999999" y="30" width="105.827" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="103.80199999999999" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">主线程 host</text>
+</g>
+<g class="actor" data-id="G" data-label="GPU 主流" data-type="participant">
+  <rect x="197.5575" y="30" width="92.48899999999999" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="243.802" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">GPU 主流</text>
+</g>
+<g class="actor" data-id="P" data-label="CPU 专家池" data-type="participant">
+  <rect x="330.14750000000004" y="30" width="107.30899999999998" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="383.802" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">CPU 专家池</text>
+</g>
+</svg>

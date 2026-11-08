@@ -1,0 +1,11 @@
+flowchart TB
+  F["<b>④ gr_read(ffn)</b><br/>第二条超连接（hc_ffn_*）"]
+  RT["<b>router</b>：bf16 GEMV → 512 选 10<br/>softmax 权重 + 1 个 shared expert"]
+  H["<b>GPU 专家缓存命中</b><br/>MMVQ（decode）/ MMQ（prefill）"]
+  C["<b>CPU 专家池未命中</b><br/>AVX-512 / AVX2 定点点积 → parts"]
+  CB["<b>⑤ moe_finish</b>：combine 10 路 + shared<br/><b>gr_write(ffn)</b>：R += out · 2·σ(inject₂ / hc)"]
+  O["<b>R'</b> → 下一层（重复 48 次）"]
+  F --> RT
+  RT --> H --> CB
+  RT --> C --> CB
+  CB --> O

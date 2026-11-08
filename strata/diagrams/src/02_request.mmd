@@ -1,0 +1,20 @@
+sequenceDiagram
+  participant C as 客户端
+  participant S as serve/server.py
+  participant E as 引擎 strata --serve
+  Note over C,S: 一次请求的生命周期（OpenAI / Anthropic / Responses 共用）
+  C->>S: POST /v1/chat/completions
+  Note over S: 适配 messages → Jinja 模板渲染 → 分词 → 图片展开<br/>prompt + max_new + 8 > context 时返回 400，绝不截断
+  Note over S: Service FIFO 准入（draining→503，队列满→429）
+  S->>E: GEN max_new [temperature=…] ids（pin=N 前缀检查点）
+  loop 每个 prefill chunk（默认 8K token）
+    E-->>S: PP position prompt_tokens ms tok/s
+  end
+  Note over E: 短尾部或逐 token 阶段走验证窗：<br/>MTP / DFlash2 出草稿 → 一次前向验证 T 行
+  loop 每个验证窗
+    E-->>S: T id（窗口内被接受的 token）
+  end
+  E-->>S: DONE generated prompt_ms decode_ms stop accepted/offered
+  Note over S: Detokenizer + OutputParser 增量解析<br/>工具调用 / reasoning / stop 串截断
+  S-->>C: SSE data: chunk … data: [DONE]
+  Note over S,C: 客户端断开 → 探活 → STOP → 取消

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一次请求的四层接力</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Serif:ital@0;1&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400&family=Noto+Sans+TC:wght@400;500;600&family=Noto+Serif+TC:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --color-paper: #f5f5f5; --color-ink: #2d3142; --color-muted: #4f5d75; --color-accent: #bf4520;
+    --font-sans: 'Geist','Noto Sans SC','PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+    --font-serif: 'Instrument Serif','Noto Serif','Songti SC','STSong',serif;
+    --font-mono: 'Geist Mono',ui-monospace,monospace;
+  }
+  body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+  .frame { max-width: 1188px; width: 100%; }
+  .diagram-container { width: 100%; overflow-x: auto; }
+  .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+  h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+    letter-spacing: -0.01em; line-height: 1.2; color: var(--color-ink); margin-bottom: 1.5rem; }
+  svg { width: 100%; min-width: 1140px; display: block; }
+  @media print { .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Process · Strata Inference</p>
+    <h1>一次请求，四层接力</h1>
+    <div class="diagram-container">
+      <svg viewBox="0 0 1140 516" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="strata-process-title strata-process-desc" font-family="'Geist','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif">
+<title id="strata-process-title">Strata 一次请求的四层接力</title>
+<desc id="strata-process-desc">四个角色（客户端、接入层、引擎、算力与存储）与七个阶段的端到端推理流程：请求经模板与准入进入引擎，分块预填、出草稿、一次验证 T 行，再增量输出回客户端。</desc>
+<defs>
+<marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+<marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#bf4520"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#f5f5f5"/>
+<rect x="168" y="52" width="972" height="124" fill="rgba(45,49,66,0.018)"/>
+<rect x="168" y="300" width="972" height="124" fill="rgba(45,49,66,0.018)"/>
+<path d="M296.0,114.0 H364 Q372,114.0 372,122.0 V186.0" fill="none" stroke="#4f5d75" stroke-width="1.0" marker-end="url(#arrow)"/>
+<path d="M432.0,238.0 H500 Q508,238.0 508,246.0 V310.0" fill="none" stroke="#4f5d75" stroke-width="1.0" marker-end="url(#arrow)"/>
+<line x1="568.0" y1="362.0" x2="582.0" y2="362.0" stroke="#4f5d75" stroke-width="1.0" marker-end="url(#arrow)"/>
+<line x1="704.0" y1="362.0" x2="718.0" y2="362.0" stroke="#bf4520" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+<path d="M840.0,362.0 H908 Q916,362.0 916,370.0 V290.0" fill="none" stroke="#bf4520" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+<path d="M976.0,238.0 H1044 Q1052,238.0 1052,246.0 V166.0" fill="none" stroke="#4f5d75" stroke-width="1.0" marker-end="url(#arrow)"/>
+<text x="84.0" y="112.0" text-anchor="middle" font-size="13" font-weight="600" fill="#2d3142">客户端</text>
+<text x="84.0" y="128.0" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.14em" fill="#5a6580">CLT</text>
+<line x1="0" y1="52" x2="1140" y2="52" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="84.0" y="236.0" text-anchor="middle" font-size="13" font-weight="600" fill="#2d3142">接入层</text>
+<text x="84.0" y="252.0" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.14em" fill="#5a6580">SRV</text>
+<line x1="0" y1="176" x2="1140" y2="176" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<text x="84.0" y="360.0" text-anchor="middle" font-size="13" font-weight="600" fill="#2d3142">引擎</text>
+<text x="84.0" y="376.0" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.14em" fill="#5a6580">ENG</text>
+<line x1="0" y1="300" x2="1140" y2="300" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<line x1="0" y1="424" x2="1140" y2="424" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+<line x1="168" y1="52" x2="168" y2="424" stroke="rgba(45,49,66,0.20)" stroke-width="1"/>
+<rect x="225" y="10" width="22" height="22" rx="11" fill="rgba(45,49,66,0.12)"/>
+<text x="236" y="25" text-anchor="middle" font-size="10" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" fill="#2d3142">1</text>
+<text x="236" y="46" text-anchor="middle" font-size="12" font-weight="500" fill="#4f5d75">请求</text>
+<rect x="361" y="10" width="22" height="22" rx="11" fill="rgba(45,49,66,0.12)"/>
+<text x="372" y="25" text-anchor="middle" font-size="10" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" fill="#2d3142">2</text>
+<text x="372" y="46" text-anchor="middle" font-size="12" font-weight="500" fill="#4f5d75">适配</text>
+<rect x="497" y="10" width="22" height="22" rx="11" fill="rgba(45,49,66,0.12)"/>
+<text x="508" y="25" text-anchor="middle" font-size="10" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" fill="#2d3142">3</text>
+<text x="508" y="46" text-anchor="middle" font-size="12" font-weight="500" fill="#4f5d75">预填</text>
+<rect x="633" y="10" width="22" height="22" rx="11" fill="rgba(45,49,66,0.12)"/>
+<text x="644" y="25" text-anchor="middle" font-size="10" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" fill="#2d3142">4</text>
+<text x="644" y="46" text-anchor="middle" font-size="12" font-weight="500" fill="#4f5d75">草稿</text>
+<rect x="769" y="10" width="22" height="22" rx="11" fill="rgba(191,69,32,0.20)"/>
+<text x="780" y="25" text-anchor="middle" font-size="10" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" fill="#bf4520">5</text>
+<text x="780" y="46" text-anchor="middle" font-size="12" font-weight="500" fill="#bf4520">验证</text>
+<rect x="905" y="10" width="22" height="22" rx="11" fill="rgba(45,49,66,0.12)"/>
+<text x="916" y="25" text-anchor="middle" font-size="10" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" fill="#2d3142">6</text>
+<text x="916" y="46" text-anchor="middle" font-size="12" font-weight="500" fill="#4f5d75">输出</text>
+<rect x="1041" y="10" width="22" height="22" rx="11" fill="rgba(45,49,66,0.12)"/>
+<text x="1052" y="25" text-anchor="middle" font-size="10" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" fill="#2d3142">7</text>
+<text x="1052" y="46" text-anchor="middle" font-size="12" font-weight="500" fill="#4f5d75">渲染</text>
+<rect x="176.0" y="64.0" width="120" height="100" rx="6" fill="#f5f5f5"/>
+<rect x="176.0" y="64.0" width="120" height="100" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.25)" stroke-width="1"/>
+<rect x="184.0" y="72.0" width="30" height="14" rx="2" fill="rgba(45,49,66,0.07)" stroke="#4f5d75" stroke-opacity="0.35" stroke-width="0.8"/>
+<text x="199.0" y="82.0" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" letter-spacing="0.08em" fill="#4f5d75">CLT</text>
+<text x="236.0" y="110.0" text-anchor="middle" font-size="14" font-weight="600" fill="#2d3142">发起请求</text>
+<text x="236.0" y="127.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">messages + tools</text>
+<text x="236.0" y="141.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#5a6580">OpenAI SDK</text>
+<rect x="268.0" y="148.0" width="20" height="12" rx="2" fill="#5e7a9b"/>
+<text x="278.0" y="157.0" text-anchor="middle" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" font-weight="700" fill="#ffffff">DB</text>
+<rect x="312.0" y="188.0" width="120" height="100" rx="6" fill="#f5f5f5"/>
+<rect x="312.0" y="188.0" width="120" height="100" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.25)" stroke-width="1"/>
+<rect x="320.0" y="196.0" width="30" height="14" rx="2" fill="rgba(45,49,66,0.07)" stroke="#4f5d75" stroke-opacity="0.35" stroke-width="0.8"/>
+<text x="335.0" y="206.0" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" letter-spacing="0.08em" fill="#4f5d75">SRV</text>
+<text x="372.0" y="234.0" text-anchor="middle" font-size="14" font-weight="600" fill="#2d3142">适配 · 排队</text>
+<text x="372.0" y="251.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">Jinja2 → ids · FIFO</text>
+<text x="372.0" y="265.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#5a6580">ChatTemplate</text>
+<rect x="320.0" y="272.0" width="20" height="12" rx="2" fill="#5e7a9b"/>
+<text x="330.0" y="281.0" text-anchor="middle" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" font-weight="700" fill="#ffffff">DB</text>
+<rect x="404.0" y="272.0" width="20" height="12" rx="2" fill="#5e7a9b"/>
+<text x="414.0" y="281.0" text-anchor="middle" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" font-weight="700" fill="#ffffff">DB</text>
+<rect x="448.0" y="312.0" width="120" height="100" rx="6" fill="#f5f5f5"/>
+<rect x="448.0" y="312.0" width="120" height="100" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.25)" stroke-width="1"/>
+<rect x="456.0" y="320.0" width="30" height="14" rx="2" fill="rgba(45,49,66,0.07)" stroke="#4f5d75" stroke-opacity="0.35" stroke-width="0.8"/>
+<text x="471.0" y="330.0" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" letter-spacing="0.08em" fill="#4f5d75">ENG</text>
+<text x="508.0" y="358.0" text-anchor="middle" font-size="14" font-weight="600" fill="#2d3142">分块预填</text>
+<text x="508.0" y="375.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">8K chunk · 专家 ring</text>
+<text x="508.0" y="389.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#5a6580">MMQ · PCIe</text>
+<rect x="456.0" y="396.0" width="20" height="12" rx="2" fill="#5e7a9b"/>
+<text x="466.0" y="405.0" text-anchor="middle" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" font-weight="700" fill="#ffffff">DB</text>
+<rect x="584.0" y="312.0" width="120" height="100" rx="6" fill="#f5f5f5"/>
+<rect x="584.0" y="312.0" width="120" height="100" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.25)" stroke-width="1"/>
+<rect x="592.0" y="320.0" width="30" height="14" rx="2" fill="rgba(45,49,66,0.07)" stroke="#4f5d75" stroke-opacity="0.35" stroke-width="0.8"/>
+<text x="607.0" y="330.0" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" letter-spacing="0.08em" fill="#4f5d75">ENG</text>
+<text x="644.0" y="358.0" text-anchor="middle" font-size="14" font-weight="600" fill="#2d3142">出草稿</text>
+<text x="644.0" y="375.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">MTP · DFlash2</text>
+<text x="644.0" y="389.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#5a6580">choose_window</text>
+<rect x="720.0" y="312.0" width="120" height="100" rx="6" fill="#f5f5f5"/>
+<rect x="720.0" y="312.0" width="120" height="100" rx="6" fill="rgba(191,69,32,0.08)" stroke="#bf4520" stroke-width="1.2"/>
+<rect x="728.0" y="320.0" width="30" height="14" rx="2" fill="rgba(191,69,32,0.18)" stroke="#bf4520" stroke-opacity="0.35" stroke-width="0.8"/>
+<text x="743.0" y="330.0" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" letter-spacing="0.08em" fill="#bf4520">ENG</text>
+<text x="780.0" y="358.0" text-anchor="middle" font-size="14" font-weight="600" fill="#2d3142">验证窗口</text>
+<text x="780.0" y="375.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">T 行 · 48 层一次</text>
+<text x="780.0" y="389.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#5a6580">verify · sample</text>
+<rect x="856.0" y="188.0" width="120" height="100" rx="6" fill="#f5f5f5"/>
+<rect x="856.0" y="188.0" width="120" height="100" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.25)" stroke-width="1"/>
+<rect x="864.0" y="196.0" width="30" height="14" rx="2" fill="rgba(45,49,66,0.07)" stroke="#4f5d75" stroke-opacity="0.35" stroke-width="0.8"/>
+<text x="879.0" y="206.0" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" letter-spacing="0.08em" fill="#4f5d75">SRV</text>
+<text x="916.0" y="234.0" text-anchor="middle" font-size="14" font-weight="600" fill="#2d3142">增量输出</text>
+<text x="916.0" y="251.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">SSE · tool calls</text>
+<text x="916.0" y="265.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#5a6580">OutputParser</text>
+<rect x="948.0" y="272.0" width="20" height="12" rx="2" fill="#6e6479"/>
+<text x="958.0" y="281.0" text-anchor="middle" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" font-weight="700" fill="#ffffff">WB</text>
+<rect x="992.0" y="64.0" width="120" height="100" rx="6" fill="#f5f5f5"/>
+<rect x="992.0" y="64.0" width="120" height="100" rx="6" fill="#ffffff" stroke="rgba(45,49,66,0.25)" stroke-width="1"/>
+<rect x="1000.0" y="72.0" width="30" height="14" rx="2" fill="rgba(45,49,66,0.07)" stroke="#4f5d75" stroke-opacity="0.35" stroke-width="0.8"/>
+<text x="1015.0" y="82.0" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" font-weight="600" letter-spacing="0.08em" fill="#4f5d75">CLT</text>
+<text x="1052.0" y="110.0" text-anchor="middle" font-size="14" font-weight="600" fill="#2d3142">渲染展示</text>
+<text x="1052.0" y="127.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">stream → UI</text>
+<text x="1052.0" y="141.0" text-anchor="middle" font-size="9.5" font-family="'Geist Mono',ui-monospace,monospace" fill="#5a6580">SDK</text>
+<rect x="1000.0" y="148.0" width="20" height="12" rx="2" fill="#6e6479"/>
+<text x="1010.0" y="157.0" text-anchor="middle" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" font-weight="700" fill="#ffffff">WB</text>
+<line x1="0" y1="416" x2="1140" y2="416" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+<text x="24" y="438" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.14em" fill="#4f5d75">STEPS</text>
+<text x="24" y="466" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.14em" fill="#4f5d75">DATA</text>
+<text x="24" y="494" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.14em" fill="#4f5d75">FLOW</text>
+<rect x="206" y="428" width="16" height="16" rx="8" fill="rgba(45,49,66,0.10)"/>
+<text x="214" y="439" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">1</text>
+<text x="228" y="439" font-size="10" fill="#4f5d75">请求</text>
+<rect x="342" y="428" width="16" height="16" rx="8" fill="rgba(45,49,66,0.10)"/>
+<text x="350" y="439" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">2</text>
+<text x="364" y="439" font-size="10" fill="#4f5d75">适配</text>
+<rect x="478" y="428" width="16" height="16" rx="8" fill="rgba(45,49,66,0.10)"/>
+<text x="486" y="439" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">3</text>
+<text x="500" y="439" font-size="10" fill="#4f5d75">预填</text>
+<rect x="614" y="428" width="16" height="16" rx="8" fill="rgba(45,49,66,0.10)"/>
+<text x="622" y="439" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">4</text>
+<text x="636" y="439" font-size="10" fill="#4f5d75">草稿</text>
+<rect x="750" y="428" width="16" height="16" rx="8" fill="rgba(45,49,66,0.10)"/>
+<text x="758" y="439" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">5</text>
+<text x="772" y="439" font-size="10" fill="#4f5d75">验证</text>
+<rect x="886" y="428" width="16" height="16" rx="8" fill="rgba(45,49,66,0.10)"/>
+<text x="894" y="439" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">6</text>
+<text x="908" y="439" font-size="10" fill="#4f5d75">输出</text>
+<rect x="1022" y="428" width="16" height="16" rx="8" fill="rgba(45,49,66,0.10)"/>
+<text x="1030" y="439" text-anchor="middle" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" fill="#4f5d75">7</text>
+<text x="1044" y="439" font-size="10" fill="#4f5d75">渲染</text>
+<rect x="206" y="456" width="20" height="12" rx="2" fill="#5e7a9b"/><text x="216" y="465" text-anchor="middle" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" font-weight="700" fill="#ffffff">DB</text>
+<text x="232" y="465" font-size="10" fill="#4f5d75">请求体 / token id</text>
+<rect x="614" y="456" width="20" height="12" rx="2" fill="#6e6479"/><text x="624" y="465" text-anchor="middle" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" font-weight="700" fill="#ffffff">WB</text>
+<text x="640" y="465" font-size="10" fill="#4f5d75">SSE 流</text>
+<text x="886" y="465" font-size="9" font-family="'Geist Mono',ui-monospace,monospace" fill="#5a6580">左 = 输入 · 右 = 输出</text>
+<line x1="206" y1="488" x2="246" y2="488" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+<text x="254" y="491" font-size="10" fill="#4f5d75">角色交接</text>
+<line x1="478" y1="488" x2="518" y2="488" stroke="#bf4520" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+<text x="526" y="491" font-size="10" fill="#4f5d75">焦点路径：验证窗口</text>
+</svg>
+    </div>
+  </div>
+</body>
+</html>

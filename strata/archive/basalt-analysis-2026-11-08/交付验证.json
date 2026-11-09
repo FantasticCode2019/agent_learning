@@ -1,0 +1,16 @@
+{
+  "report": "/Users/yajun/Documents/opensource/llm/artifacts/basalt-analysis-2026-11-08/Basalt项目分析.md",
+  "report_sha256": "cd30979997858a2fe3f00ec160bdc72a241179a102bc3389f3962efbd140df80",
+  "analysis_revision": "4998eb3733ee83b7e7d6ff94854c399dd89cfebe",
+  "diagram_type": "architecture",
+  "output": "/Users/yajun/Documents/opensource/llm/artifacts/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.html",
+  "specification_sha256": "72867f6cc65d8ee8e03c9081dae8428f2002f2e758c613322d92e0e7154d79de",
+  "artifact_sha256": "6a410dc2c060bcb6615416b55364c323917eebcef7c50c45cad6c1f7cf82f93e",
+  "validation": "9/9 showcase, 0 errors, 0 warnings",
+  "browser_evidence": "passed",
+  "visual_review": "not_requested",
+  "mermaid_blocks": 4,
+  "source_references": 58,
+  "gpu_benchmarks": "repository records only; not rerun",
+  "summary_receipt": "/Users/yajun/Documents/opensource/llm/artifacts/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.finalize-summary.json"
+}

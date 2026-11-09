@@ -1,0 +1,7 @@
+flowchart TB
+  Prompt["已知 prompt<br/>token 0 到 N-1"] --> Prefill["Prefill<br/>分块读取已有输入"]
+  Prefill --> State["可继续生成的会话状态"]
+  State --> Decode["Decode<br/>目标模型计算与选 token"]
+  Decode --> Output["提交新 token"]
+  Output -->|token 与新位置| Decode
+  Output -->|达到停止条件| Done["完成响应"]

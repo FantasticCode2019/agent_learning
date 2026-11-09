@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Basalt：请求到异构专家执行",
+    "locale": "zh-CN",
+    "output": ".archify/architecture-basalt-20261108-143000/basalt-architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/jesdga95/basalt",
+      "revision": "4998eb3733ee83b7e7d6ff94854c399dd89cfebe",
+      "provider": "github"
+    }
+  },
+  "components": [
+    {
+      "id": "client",
+      "type": "external",
+      "label": "调用方 / Web UI",
+      "sublabel": "OpenAI · Anthropic API",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        250,
+        76
+      ],
+      "sources": [
+        {
+          "path": "serve/handler.py",
+          "line": 358,
+          "end_line": 453
+        }
+      ]
+    },
+    {
+      "id": "http",
+      "type": "frontend",
+      "label": "Python HTTP 服务",
+      "sublabel": "解析请求 · 模板 · 流式输出",
+      "pos": [
+        460,
+        60
+      ],
+      "size": [
+        250,
+        76
+      ],
+      "sources": [
+        {
+          "path": "serve/handler.py",
+          "line": 828,
+          "end_line": 852
+        },
+        {
+          "path": "serve/service.py",
+          "line": 791,
+          "end_line": 797
+        }
+      ]
+    },
+    {
+      "id": "router",
+      "type": "backend",
+      "label": "模型路由与进程管理",
+      "sublabel": "一次加载一个模型",
+      "pos": [
+        880,
+        60
+      ],
+      "size": [
+        250,
+        76
+      ],
+      "sources": [
+        {
+          "path": "serve/router.py",
+          "line": 1,
+          "end_line": 9
+        },
+        {
+          "path": "serve/router.py",
+          "line": 195,
+          "end_line": 238
+        },
+        {
+          "path": "serve/engine/process.py",
+          "line": 270,
+          "end_line": 272
+        }
+      ]
+    },
+    {
+      "id": "runtime",
+      "type": "backend",
+      "label": "C++ 服务 Runtime",
+      "sublabel": "槽位 · 语法 · 请求生命周期",
+      "pos": [
+        880,
+        340
+      ],
+      "size": [
+        250,
+        76
+      ],
+      "sources": [
+        {
+          "path": "src/program/serve/request.cpp",
+          "line": 6,
+          "end_line": 16
+        },
+        {
+          "path": "src/program/serve/README.md",
+          "line": 1,
+          "end_line": 25
+        }
+      ]
+    },
+    {
+      "id": "model",
+      "type": "backend",
+      "label": "模型执行与加载层",
+      "sublabel": "Qwen / DeepSeek 各自实现",
+      "pos": [
+        460,
+        340
+      ],
+      "size": [
+        250,
+        76
+      ],
+      "sources": [
+        {
+          "path": "include/basalt/model/adapter.hpp",
+          "line": 128,
+          "end_line": 164
+        },
+        {
+          "path": "src/models/builtin.cpp",
+          "line": 9,
+          "end_line": 11
+        },
+        {
+          "path": "src/models/qwen4exp/load/qfn_run.cpp",
+          "line": 15,
+          "end_line": 28
+        }
+      ]
+    },
+    {
+      "id": "pack",
+      "type": "database",
+      "label": ".basalt 模型文件",
+      "sublabel": "分区权重 · tokenizer · drafter",
+      "pos": [
+        40,
+        340
+      ],
+      "size": [
+        250,
+        76
+      ],
+      "sources": [
+        {
+          "path": "include/basalt/core/model_format.hpp",
+          "line": 1,
+          "end_line": 32
+        },
+        {
+          "path": "src/core/model_file.cpp",
+          "line": 271,
+          "end_line": 349
+        }
+      ]
+    },
+    {
+      "id": "gpu",
+      "type": "backend",
+      "label": "主 GPU / CUDA kernels",
+      "sublabel": "Attention · MoE · Head",
+      "pos": [
+        460,
+        620
+      ],
+      "size": [
+        250,
+        76
+      ],
+      "sources": [
+        {
+          "path": "src/core/graph.cpp",
+          "line": 47,
+          "end_line": 80
+        },
+        {
+          "path": "src/models/qwen4exp/decode/expert_dispatch.cpp",
+          "line": 110,
+          "end_line": 128
+        },
+        {
+          "path": "src/models/qwen4exp/load/qfn_run.cpp",
+          "line": 58,
+          "end_line": 89
+        }
+      ]
+    },
+    {
+      "id": "cache",
+      "type": "database",
+      "label": "会话状态缓存",
+      "sublabel": "live · checkpoint · RAM · 磁盘",
+      "pos": [
+        880,
+        620
+      ],
+      "size": [
+        250,
+        76
+      ],
+      "sources": [
+        {
+          "path": "src/program/serve/request_restore.cpp",
+          "line": 79,
+          "end_line": 132
+        }
+      ]
+    },
+    {
+      "id": "dispatch",
+      "type": "backend",
+      "label": "专家分工与协同",
+      "sublabel": "设备计划 · 主机线程 · 共享内存",
+      "pos": [
+        460,
+        900
+      ],
+      "size": [
+        250,
+        76
+      ],
+      "sources": [
+        {
+          "path": "src/models/qwen4exp/decode/expert_dispatch.cpp",
+          "line": 84,
+          "end_line": 128
+        },
+        {
+          "path": "src/models/qwen4exp/decode/expert_dispatch.cpp",
+          "line": 200,
+          "end_line": 215
+        },
+        {
+          "path": "src/core/peer_experts.cpp",
+          "line": 343,
+          "end_line": 372
+        }
+      ]
+    },
+    {
+      "id": "cpu",
+      "type": "backend",
+      "label": "CPU 专家池 / RAM",
+      "sublabel": "AVX 运算 · 缺页时读取文件",
+      "pos": [
+        40,
+        900
+      ],
+      "size": [
+        250,
+        76
+      ],
+      "sources": [
+        {
+          "path": "src/kernels/cpu/pool.cpp",
+          "line": 253,
+          "end_line": 327
+        },
+        {
+          "path": "src/models/qwen4exp/decode/expert_dispatch.cpp",
+          "line": 40,
+          "end_line": 54
+        }
+      ]
+    },
+    {
+      "id": "peer",
+      "type": "backend",
+      "label": "可选 peer GPU",
+      "sublabel": "驻留专家 · 本卡计算",
+      "pos": [
+        880,
+        900
+      ],
+      "size": [
+        250,
+        76
+      ],
+      "sources": [
+        {
+          "path": "src/core/peer_experts.cpp",
+          "line": 341,
+          "end_line": 372
+        },
+        {
+          "path": "src/models/qwen4exp/load/qfn_run.cpp",
+          "line": 77,
+          "end_line": 89
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "client-http",
+      "from": "client",
+      "to": "http",
+      "label": "HTTP / SSE",
+      "variant": "emphasis"
+    },
+    {
+      "id": "http-router",
+      "from": "http",
+      "to": "router",
+      "label": "选择模型",
+      "variant": "emphasis"
+    },
+    {
+      "id": "router-runtime",
+      "from": "router",
+      "to": "runtime",
+      "label": "stdin / stdout",
+      "variant": "emphasis"
+    },
+    {
+      "id": "runtime-model",
+      "from": "runtime",
+      "to": "model",
+      "label": "请求阶段调用",
+      "variant": "emphasis"
+    },
+    {
+      "id": "pack-model",
+      "from": "pack",
+      "to": "model",
+      "label": "读取分区"
+    },
+    {
+      "id": "runtime-cache",
+      "from": "runtime",
+      "to": "cache",
+      "label": "保存 / 恢复"
+    },
+    {
+      "id": "model-gpu",
+      "from": "model",
+      "to": "gpu",
+      "label": "prefill / decode",
+      "variant": "emphasis"
+    },
+    {
+      "id": "gpu-dispatch",
+      "from": "gpu",
+      "to": "dispatch",
+      "label": "专家计划 / 结果",
+      "variant": "emphasis"
+    },
+    {
+      "id": "dispatch-cpu",
+      "from": "dispatch",
+      "to": "cpu",
+      "label": "CPU 分支"
+    },
+    {
+      "id": "dispatch-peer",
+      "from": "dispatch",
+      "to": "peer",
+      "label": "peer 分支",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "图的范围",
+      "items": [
+        "展示常见 expert-tier 路径；箭头概括调用与数据交换。",
+        "同规格多卡可按成本模型选择 layer split，见报告。"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "两种不同的数据",
+      "items": [
+        "请求和 token 经进程管道流转；权重由本地文件加载。",
+        "RAM 是专家计算层；SSD 缺页会增加推理等待。"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "条件与模型差异",
+      "items": [
+        "无图单槽可用 C++ tokenizer；batch / 图像另有路径。",
+        "Qwen 使用 MTP，DeepSeek 使用 DSpark。"
+      ]
+    }
+  ]
+}

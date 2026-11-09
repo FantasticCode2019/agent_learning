@@ -1,0 +1,22 @@
+flowchart TB
+  subgraph Entry["操作入口"]
+    Desktop["桌面窗口：Tauri + Web UI"] --> Host["App Host：Node.js"]
+    Terminal["终端：strata launch"]
+  end
+  Host -->|调用 Control 的 CLI，交换 JSON| Control
+  Terminal --> Control["CLI / Control<br/>选模型、准备文件、配置与进程生命周期"]
+  Control -->|启动并监控服务| API
+  subgraph ServiceProcess["Python API 服务进程"]
+    API["HTTP Handler<br/>接口适配、鉴权、请求校验"] --> Service["Service<br/>模板、tokenizer、排队、输出解析"]
+    Service --> EngineProxy["StrataEngine<br/>子进程与协议适配"]
+  end
+  Client["外部聊天 / 编程客户端"] -->|HTTP messages| API
+  EngineProxy -->|stdin：GEN、token IDs、参数| Engine
+  Engine -->|stdout：T、进度、DONE| EngineProxy
+  subgraph EngineProcess["原生引擎进程"]
+    Engine["C++ 主机侧运行器<br/>请求循环、session、prefill、decode"] --> GPU["GPU kernels<br/>attention / mixer、专家、head"]
+    Engine --> CPU["CPU 专家线程池"]
+    GPU <-->|计划、激活、计算结果| CPU
+  end
+  Files[("模型与派生文件")] -->|加载权重、索引和布局| Engine
+  Engine -->|日志与状态| Monitor["日志 / 监控 / 健康检查"]

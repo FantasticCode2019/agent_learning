@@ -1,0 +1,9 @@
+flowchart TB
+  X["当前 hidden 向量"] --> Router["MoE router<br/>教学例：4 选 2"]
+  Router -->|expert ID=1，权重=0.7| E1["专家 E1"]
+  Router -->|expert ID=3，权重=0.3| E3["专家 E3"]
+  X -->|同一份输入激活| E1
+  X -->|同一份输入激活| E3
+  E1 -->|输出向量| Sum["按路由权重求和"]
+  E3 -->|输出向量| Sum
+  Sum --> Result["本层 routed 输出"]

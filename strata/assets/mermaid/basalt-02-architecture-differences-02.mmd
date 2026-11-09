@@ -1,0 +1,11 @@
+sequenceDiagram
+  participant API as Strata Service
+  participant P as Prefill engine
+  participant F as Session 文件
+  participant D as Decode engine
+  API->>P: 需要重读的长 prompt
+  P->>P: Prefill，更新 KV/递归状态
+  P->>F: SAVE 会话状态
+  F->>D: RESTORE 同一会话状态
+  API->>D: 继续生成回答
+  D-->>API: 输出 tokens

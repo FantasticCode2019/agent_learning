@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "01fa9d6a-b73a-4d5c-b593-1b22a01a27e0",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/yajun/Documents/opensource/llm/artifacts/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/candidate.json",
+  "output": "/Users/yajun/Documents/opensource/llm/artifacts/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.html",
+  "specification": {
+    "sha256": "72867f6cc65d8ee8e03c9081dae8428f2002f2e758c613322d92e0e7154d79de",
+    "bytes": 8519
+  },
+  "artifact": {
+    "sha256": "6a410dc2c060bcb6615416b55364c323917eebcef7c50c45cad6c1f7cf82f93e",
+    "bytes": 769384
+  }
+}

@@ -1,0 +1,8 @@
+flowchart TB
+  A["HTTP 请求<br/>messages"] --> B["模板与编码<br/>token IDs"]
+  B --> C["进程协议<br/>GEN / T"]
+  C --> D["状态与 prompt<br/>restore / prefill"]
+  D --> E["单步生成<br/>层计算 / sample"]
+  E --> F["返回用户<br/>解析 / SSE"]
+  D -. 理解后扩展 .-> G["前缀缓存 / 多会话"]
+  E -. 理解后扩展 .-> H["MTP / DFlash2 / DSpark"]

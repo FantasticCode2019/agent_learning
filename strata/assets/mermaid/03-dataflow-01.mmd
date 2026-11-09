@@ -1,0 +1,12 @@
+flowchart TB
+  Input["模型文件与元数据<br/>权重类型、形状、分片、模板"] --> Read["读取并检查模型布局"]
+  Read --> Budget["计算资源预算<br/>dense、状态、工作区、专家"]
+  Budget --> Main["主 GPU VRAM<br/>主干权重和部分专家"]
+  Budget --> Ram["系统 RAM<br/>未放进 GPU 的专家及必要副本"]
+  Budget -.-> Peer["可选 peer GPU<br/>本卡持有的专家"]
+  Budget -.-> File["内存不足时<br/>文件后备专家"]
+  Main --> Tables["建立地址、驻留表和会话对象"]
+  Ram --> Tables
+  Peer -.-> Tables
+  File -.-> Tables
+  Tables --> Ready["报告就绪，等待请求"]

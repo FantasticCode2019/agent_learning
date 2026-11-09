@@ -1,0 +1,11 @@
+flowchart TB
+  Draft["可选 drafter 提出 token 候选"] --> Verify["目标模型验证整个窗口<br/>产生各行目标结果"]
+  Verify --> Accept["确定可接受的 draft 前缀"]
+  Accept --> Enabled{"本请求启用 engine grammar？"}
+  Enabled -->|否| Commit["提交有效输入行及输出 token"]
+  Enabled -->|是| Scan["扫描准备输出的 token"]
+  Scan --> Bad{"是否出现不符合语法的 token？"}
+  Bad -->|否| Commit
+  Bad -->|是| Resample["用 grammar mask 重采样该行<br/>在该行截短窗口"]
+  Resample --> Commit
+  Commit --> Next["继续下一窗口，或完成请求"]

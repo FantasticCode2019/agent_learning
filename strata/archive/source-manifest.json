@@ -1,0 +1,155 @@
+{
+  "archive_note": "Original material copied without editing; absolute paths in old receipts describe original delivery, not this copy.",
+  "files": [
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/cli-launch.md",
+      "to": "strata/learning-guide/archive/strata-notes/cli-launch.md",
+      "sha256": "a73f2c02cd618320b5616b0d8ead97e9748f563022665bc57e6af68a518e42e4"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/dsv41-split-ports.md",
+      "to": "strata/learning-guide/archive/strata-notes/dsv41-split-ports.md",
+      "sha256": "df1378a803cd301cf20fde8e3d96bffa3c01470c42b098165aa148386f0c8f60"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/engine-core.md",
+      "to": "strata/learning-guide/archive/strata-notes/engine-core.md",
+      "sha256": "4d11f77830062a01bab33f49c5e3064fddc66abd468778729c18a0f59a43107e"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/kernels-spec.md",
+      "to": "strata/learning-guide/archive/strata-notes/kernels-spec.md",
+      "sha256": "98679e09d2b1a5a899c3fa3d54167d139857408f12df49c4f3ed63d1ce2530f9"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/memory-weights.md",
+      "to": "strata/learning-guide/archive/strata-notes/memory-weights.md",
+      "sha256": "38841833cf8537089a6df110ec5cceb8c065cd4bc93e9c061eb3a15ea8ca05a3"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/server.md",
+      "to": "strata/learning-guide/archive/strata-notes/server.md",
+      "sha256": "b4d913c0a12fba91232a4c5fdbd45c505441b3ce57157cea04735a03c7ca0c9e"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/src/01_architecture.mmd",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/src/01_architecture.mmd",
+      "sha256": "b126020185c32b8eb6a092cd6d9eaae5bfe6e6aa85158c813d4291b66266ad9e"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/src/02_request.mmd",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/src/02_request.mmd",
+      "sha256": "a0358eb55ffde3459b1b2837918c292b5abaaae65eae1c6765cafcca2a10f070"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/src/03_decode_step.mmd",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/src/03_decode_step.mmd",
+      "sha256": "5a159b39a0c1d5dcf5f77836293422b7d69f8a3bed3783da01271e12152447f1"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/src/04a_mixer.mmd",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/src/04a_mixer.mmd",
+      "sha256": "44cd7a1cd6ba7833be9c7982ef06b09475a72777a72b87857d639249d9625038"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/src/04b_moe.mmd",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/src/04b_moe.mmd",
+      "sha256": "016478d79e2dc19021b2d8582185bc9483794a27ab5bf0e90de0c4b4c8c54762"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/src/05_memory.mmd",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/src/05_memory.mmd",
+      "sha256": "4400c4094fb3094790d600e596e73bef89b72375ffab83f237aed3ebd660efdf"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/src/06_spec.mmd",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/src/06_spec.mmd",
+      "sha256": "edd3d175e982d0f51d91d198722f6ecdb8df04fc9ecf0cb3d59d60af86faeeda"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/src/07_boot.mmd",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/src/07_boot.mmd",
+      "sha256": "5d724f7cc27414783759d4489174181edd401643de2d10445b07183ed6abf932"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/svg/01_architecture.svg",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/svg/01_architecture.svg",
+      "sha256": "082540475cb362808b33cc818ee25923f21bb5859b920c636c65386adf22e578"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/svg/02_request.svg",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/svg/02_request.svg",
+      "sha256": "c8bdcb35f5d36d8a260f72d46f8e0e192115bc164a931bad2997f3696d36cd6c"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/svg/03_decode_step.svg",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/svg/03_decode_step.svg",
+      "sha256": "b03e684eb0599bfeb76e8eaffb6b3b65469e51de778433aa7a4255c661895fe4"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/svg/04a_mixer.svg",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/svg/04a_mixer.svg",
+      "sha256": "acdad21e7c274c0eba37b47dc55a86c07e18b0899fa340a46846466c803660c5"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/svg/04b_moe.svg",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/svg/04b_moe.svg",
+      "sha256": "5d3bbcdb04c419bfb70bc52fd40b0c4734fba863f2eb794e67e12b878aa4d1a4"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/svg/05_memory.svg",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/svg/05_memory.svg",
+      "sha256": "6380f977247989aa749ce2c54054abfca78ea2bfe87277271663527947f16704"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/svg/06_spec.svg",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/svg/06_spec.svg",
+      "sha256": "d1448b730d20fffc5c8e8d1a6a94d16a3eb203a807cee4878b899b5b40721e8c"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/strata/diagrams/svg/07_boot.svg",
+      "to": "strata/learning-guide/archive/strata-notes/diagrams/svg/07_boot.svg",
+      "sha256": "35f4b3a873f509b0879aa9ebd72d212040d55657cd6618b043b44a6b5f673d2c"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.browser-check.json",
+      "to": "strata/learning-guide/archive/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.browser-check.json",
+      "sha256": "a49576f1f87a6d30cd61969ed784cfdc34558d82d580c131acd5941d8d8f1a92"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.delivery.json",
+      "to": "strata/learning-guide/archive/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.delivery.json",
+      "sha256": "5509cb9cb21a47310b6d3069e6514d4e18b7cfa2e8501d401e3cca412ae04a4b"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.finalize-summary.json",
+      "to": "strata/learning-guide/archive/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.finalize-summary.json",
+      "sha256": "dcbbf4bf0f63df70e78ab91ec42f5f4155eabd18b838003c0eb624b660fb7c96"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.finalize.json",
+      "to": "strata/learning-guide/archive/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.finalize.json",
+      "sha256": "9aa71c35380db18f248c46804e90d0dce35f6318d1c34e5655e37242087a56bc"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.html",
+      "to": "strata/learning-guide/archive/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/basalt-architecture.html",
+      "sha256": "6a410dc2c060bcb6615416b55364c323917eebcef7c50c45cad6c1f7cf82f93e"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/candidate.json",
+      "to": "strata/learning-guide/archive/basalt-analysis-2026-11-08/.archify/architecture-basalt-20261108-143000/candidate.json",
+      "sha256": "72867f6cc65d8ee8e03c9081dae8428f2002f2e758c613322d92e0e7154d79de"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/basalt-analysis-2026-11-08/Basalt项目分析.md",
+      "to": "strata/learning-guide/archive/basalt-analysis-2026-11-08/Basalt项目分析.md",
+      "sha256": "cd30979997858a2fe3f00ec160bdc72a241179a102bc3389f3962efbd140df80"
+    },
+    {
+      "from": "/Users/yajun/Documents/obsidian/agent_learning/basalt-analysis-2026-11-08/交付验证.json",
+      "to": "strata/learning-guide/archive/basalt-analysis-2026-11-08/交付验证.json",
+      "sha256": "389cfc6c2600eb7062dea778acb42c380e75c700c5381fe5a7b4ca691e098e87"
+    }
+  ]
+}

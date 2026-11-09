@@ -1,0 +1,6 @@
+flowchart TB
+  Client["客户端"] <-->|"HTTP JSON / SSE 文本事件"| Py["Python 服务"]
+  Py <-->|"stdin / stdout<br/>命令、token、进度、完成"| Host["C++ 主机侧执行器"]
+  Host <-->|"CUDA 调用、设备内存、事件"| GPU["主 GPU"]
+  Host <-->|"任务、激活、结果"| CPU["CPU 专家池"]
+  Host -.->|"可选 peer 调度"| Peer["第二张 GPU"]

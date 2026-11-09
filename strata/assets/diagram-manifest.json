@@ -1,0 +1,146 @@
+[
+  {
+    "chapter": "README.md",
+    "title": "先建立一条主线",
+    "id": "readme-01",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/readme-01.mmd",
+    "svg": "svg/readme-01.svg"
+  },
+  {
+    "chapter": "01-foundations.md",
+    "title": "3. Token ID、embedding 和 hidden state",
+    "id": "01-foundations-01",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/01-foundations-01.mmd",
+    "svg": "svg/01-foundations-01.svg"
+  },
+  {
+    "chapter": "01-foundations.md",
+    "title": "5. Dense 与 MoE：每个 token 是否要用所有专家",
+    "id": "01-foundations-02",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/01-foundations-02.mmd",
+    "svg": "svg/01-foundations-02.svg"
+  },
+  {
+    "chapter": "01-foundations.md",
+    "title": "7. Prefill 与 decode 是两个计算阶段",
+    "id": "01-foundations-03",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/01-foundations-03.mmd",
+    "svg": "svg/01-foundations-03.svg"
+  },
+  {
+    "chapter": "02-architecture.md",
+    "title": "2. Strata：启动入口与推理主链",
+    "id": "02-architecture-01",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/02-architecture-01.mmd",
+    "svg": "svg/02-architecture-01.svg"
+  },
+  {
+    "chapter": "02-architecture.md",
+    "title": "6. Basalt：沿用分层思路，重新整理服务与模型接口",
+    "id": "02-architecture-02",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/02-architecture-02.mmd",
+    "svg": "svg/02-architecture-02.svg"
+  },
+  {
+    "chapter": "03-dataflow.md",
+    "title": "2. 启动时：文件如何成为可以计算的权重",
+    "id": "03-dataflow-01",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/03-dataflow-01.mmd",
+    "svg": "svg/03-dataflow-01.svg"
+  },
+  {
+    "chapter": "03-dataflow.md",
+    "title": "4. 两条通信链不能混在一起",
+    "id": "03-dataflow-02",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/03-dataflow-02.mmd",
+    "svg": "svg/03-dataflow-02.svg"
+  },
+  {
+    "chapter": "03-dataflow.md",
+    "title": "5. 一层 MoE：移动的是哪些东西",
+    "id": "03-dataflow-03",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/03-dataflow-03.mmd",
+    "svg": "svg/03-dataflow-03.svg"
+  },
+  {
+    "chapter": "04-inference.md",
+    "title": "5. 普通 decode：一轮新产生一个 token",
+    "id": "04-inference-01",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/04-inference-01.mmd",
+    "svg": "svg/04-inference-01.svg"
+  },
+  {
+    "chapter": "04-inference.md",
+    "title": "6.2 Basalt 的 grammar 检查发生在哪一步",
+    "id": "04-inference-02",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/04-inference-02.mmd",
+    "svg": "svg/04-inference-02.svg"
+  },
+  {
+    "chapter": "04-inference.md",
+    "title": "8. 一次请求的时序图",
+    "id": "04-inference-03",
+    "kind": "sequenceDiagram",
+    "mermaid": "mermaid/04-inference-03.mmd",
+    "svg": "svg/04-inference-03.svg"
+  },
+  {
+    "chapter": "05-source-reading.md",
+    "title": "1. 先选一条主线",
+    "id": "05-source-reading-01",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/05-source-reading-01.mmd",
+    "svg": "svg/05-source-reading-01.svg"
+  },
+  {
+    "chapter": "basalt/README.md",
+    "title": "3. 在总学习路线中放在哪里",
+    "id": "basalt-readme-01",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/basalt-readme-01.mmd",
+    "svg": "svg/basalt-readme-01.svg"
+  },
+  {
+    "chapter": "basalt/01-blackwell-optimizations.md",
+    "title": "4. 专家缓存：把快存储留给近期会用的权重",
+    "id": "basalt-01-blackwell-optimizations-01",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/basalt-01-blackwell-optimizations-01.mmd",
+    "svg": "svg/basalt-01-blackwell-optimizations-01.svg"
+  },
+  {
+    "chapter": "basalt/01-blackwell-optimizations.md",
+    "title": "7. 输出 head 和草稿窗口：避免每轮做过多无效工作",
+    "id": "basalt-01-blackwell-optimizations-02",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/basalt-01-blackwell-optimizations-02.mmd",
+    "svg": "svg/basalt-01-blackwell-optimizations-02.svg"
+  },
+  {
+    "chapter": "basalt/02-architecture-differences.md",
+    "title": "2. `.basalt` 是一个资源包，不是把 GGUF 换个后缀",
+    "id": "basalt-02-architecture-differences-01",
+    "kind": "flowchart TB",
+    "mermaid": "mermaid/basalt-02-architecture-differences-01.mmd",
+    "svg": "svg/basalt-02-architecture-differences-01.svg"
+  },
+  {
+    "chapter": "basalt/02-architecture-differences.md",
+    "title": "5.2 Strata 的 split serving 是另一层机制",
+    "id": "basalt-02-architecture-differences-02",
+    "kind": "sequenceDiagram",
+    "mermaid": "mermaid/basalt-02-architecture-differences-02.mmd",
+    "svg": "svg/basalt-02-architecture-differences-02.svg"
+  }
+]

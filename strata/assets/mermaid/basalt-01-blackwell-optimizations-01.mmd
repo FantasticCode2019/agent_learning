@@ -1,0 +1,13 @@
+flowchart TB
+  Route["当前层路由结果<br/>expert IDs + routing weights"] --> Lookup["查询专家驻留位置"]
+  Lookup --> G0["主卡显存<br/>直接计算驻留专家"]
+  Lookup -.-> G1["peer 卡显存<br/>传激活与计划，在 peer 计算"]
+  Lookup --> RAM["系统 RAM<br/>CPU 计算；部分路径可搬往 GPU"]
+  Lookup -.-> File["RAM 也不足的专家<br/>按需从模型文件读取"]
+  File --> RAM
+  G0 --> Out["汇合专家输出<br/>routed 按路由权重相加"]
+  G1 --> Out
+  RAM --> Out
+  Route -.-> Counts["路由访问统计"]
+  Counts -.-> Adapt["换入热专家，换出冷专家"]
+  Adapt -.-> Lookup

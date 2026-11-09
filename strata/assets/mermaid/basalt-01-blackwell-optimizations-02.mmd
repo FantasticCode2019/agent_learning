@@ -1,0 +1,7 @@
+flowchart TB
+  Anchor["已接受 token / 状态"] --> Draft["轻量 drafter<br/>提出候选 tokens"]
+  Draft --> Verify["主模型一次验证窗口"]
+  Verify --> Accept["确定可接受前缀"]
+  Accept --> Grammar["若启用 grammar<br/>检查、必要时重采样并截短"]
+  Grammar --> Commit["提交有效状态与输出"]
+  Commit --> Anchor

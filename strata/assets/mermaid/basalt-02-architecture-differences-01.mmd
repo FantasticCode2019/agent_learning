@@ -1,0 +1,8 @@
+flowchart TB
+  Src["源权重 / tokenizer / draft / vision"] --> PrepS["Strata 准备路径"]
+  Src --> PrepB["Basalt converter"]
+  PrepS --> SetS["GGUF + native pack + 附属资源"]
+  PrepB --> PackB["单个 .basalt 文件<br/>dense / experts / gguf / tokenizer / draft / vision"]
+  SetS --> LoadS["对应 Strata engine 加载"]
+  PackB --> LoadB["ModelFile 按 section 加载"]
+  Profile["Basalt data/profiles"] --> LoadB

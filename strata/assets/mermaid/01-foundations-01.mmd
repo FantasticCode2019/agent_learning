@@ -1,0 +1,8 @@
+flowchart TB
+  Messages["messages<br/>角色 + 文本"] -->|模板渲染| Prompt["格式化 prompt"]
+  Prompt -->|tokenizer 编码| IDs["整数 token IDs"]
+  IDs -->|按 ID 取 embedding 行| Hidden["浮点向量 / hidden state"]
+  Hidden -->|模型各层计算| Final["最后一层表示"]
+  Final -->|输出 head 投影| Logits["每个词表 token 的分数"]
+  Logits -->|采样或取最大值| Next["下一个 token ID"]
+  Next -->|detokenize| Text["可见文本片段"]

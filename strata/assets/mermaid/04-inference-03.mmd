@@ -1,0 +1,33 @@
+sequenceDiagram
+  autonumber
+  actor Client as 客户端
+  participant Py as Python API / Service
+  participant Engine as C++ Runtime
+  participant Cache as 会话状态来源
+  participant Model as 模型执行器
+  participant Compute as GPU / CPU / peer
+  Client->>Py: model + messages + 生成设置
+  Py->>Py: 校验、等模型 turn、渲染模板、请求准入
+  Py->>Engine: GENT + UTF-8 prompt（stdin）
+  Engine->>Engine: Tokenize、解析选项
+  Engine->>Cache: 查找最长可恢复前缀
+  Cache-->>Engine: 状态与恢复位置，或未命中
+  Engine->>Model: 恢复状态，处理待读 prompt
+  Model->>Compute: 分块 prefill 与专家计算
+  Compute-->>Model: 更新后的模型状态
+  loop 直到 EOS、长度上限或取消
+    opt Drafting 已启用
+      Model->>Model: 提议下一窗口的 draft tokens
+    end
+    Engine->>Model: 计算/验证窗口
+    Model->>Compute: 各层 + head + 目标采样
+    Compute-->>Model: 每行目标结果
+    Model-->>Engine: 可接受结果
+    Engine->>Engine: Grammar 检查，必要时重采样；commit
+    Engine-->>Py: T token_id（stdout）
+    Py-->>Client: SSE 文本 / reasoning / tool-call 事件
+  end
+  Engine->>Cache: 按策略保留或停放有效状态
+  Engine-->>Py: DONE 与统计
+  Py-->>Client: 最终事件 / 结束响应
+  Py->>Py: 释放该请求的 turn / slot

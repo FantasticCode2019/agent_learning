@@ -1,0 +1,181 @@
+{
+  "checked_at_utc": "2026-11-08T13:58:56.054383+00:00",
+  "status": "passed",
+  "scope": "新学习文档、SVG 与原材料复制完整性；不含 GPU 运行时正确性或性能测试",
+  "versions": {
+    "strata": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+    "basalt": "4998eb3733ee83b7e7d6ff94854c399dd89cfebe"
+  },
+  "markdown": {
+    "checked_files": 14,
+    "relative_links": 281,
+    "undefined_references": 0,
+    "missing_local_targets": 0,
+    "archive_legacy_links": "归档原稿保持原样，旧版本源码/绝对路径不改写；新归档导航已检查"
+  },
+  "source_references": {
+    "markdown_files": 10,
+    "occurrences": 123,
+    "unique_urls": 89,
+    "unique_file_objects": 65,
+    "line_anchored_unique_urls": 65,
+    "range_anchored_unique_urls": 0,
+    "verified_unique_urls": 89,
+    "errors": []
+  },
+  "archive": {
+    "files": 30,
+    "source_and_destination_sha256_checks": 60,
+    "status": "passed"
+  },
+  "diagrams": {
+    "count": 18,
+    "renderer": "Mermaid 11.12.0 via local headless Chrome",
+    "browser": "Google Chrome 156.0.8078.80",
+    "xml_parse": "passed",
+    "render": "passed",
+    "visual_review_sample": [
+      "02-architecture-01",
+      "04-inference-03"
+    ],
+    "results": [
+      {
+        "id": "readme-01",
+        "status": "passed",
+        "viewBox": "0 0 571 892",
+        "source_sha256": "3b47e844eb5c34857f1a4a0a05cc577daa4a028f34bc429f4d617df23bfb4c4e",
+        "svg_sha256": "329106bc2a75d7f6530fd13087a28acb665bf780c0f91aaebef533b244288306"
+      },
+      {
+        "id": "01-foundations-01",
+        "status": "passed",
+        "viewBox": "0 0 272.671875 1024",
+        "source_sha256": "6083f57e04f371a07632b3cbe8243415b95c9fc01d2bb4020840c33155210da9",
+        "svg_sha256": "8544f9a4f06419ccf476c66d78a43d02efe683467418a2a60924294db4d4365a"
+      },
+      {
+        "id": "01-foundations-02",
+        "status": "passed",
+        "viewBox": "0 0 581.8671875 574",
+        "source_sha256": "0a5d660e8e09bdf545bf70f4cb5260c49b6b7c5312d6d1fd9b272e607fd4a93a",
+        "svg_sha256": "2932024f24e4c4c9aac475118023464fd68ad69d57b3ac18b2458e886cdd1b10"
+      },
+      {
+        "id": "01-foundations-03",
+        "status": "passed",
+        "viewBox": "0 0 272.515625 733",
+        "source_sha256": "97320a244303131233a7a4c178d87ee62b58909a21b82a470505f4d8fca040aa",
+        "svg_sha256": "460f9f9f6a8089fb1c0d75de01d33fb3339d48e38c78b8bb522fcab5db8f2e93"
+      },
+      {
+        "id": "02-architecture-01",
+        "status": "passed",
+        "viewBox": "0 0 1109.59765625 1570",
+        "source_sha256": "f0668a93f02a181ed0bec8d4c19a428a3c6613d2650b914178fda2f435e32242",
+        "svg_sha256": "ea92ade99a3c6b0ba2938003eebbb2f5b1bc29a62aabd4f95113152df8203ada"
+      },
+      {
+        "id": "02-architecture-02",
+        "status": "passed",
+        "viewBox": "0 0 1174.3515625 1159",
+        "source_sha256": "6efe31ab2f39e902780918ea484dccd52fdf59b323fa445f7dae099b08779a9a",
+        "svg_sha256": "d0e338108c0063d53f8479a5ed3aae86e35dac7afb98d287efa762627d704e68"
+      },
+      {
+        "id": "03-dataflow-01",
+        "status": "passed",
+        "viewBox": "0 0 957 787",
+        "source_sha256": "b67b0ac5e16470080a361829b74bf8d8d5b5a24b44e1a245fe4428f615ef6926",
+        "svg_sha256": "478f1ff56d314c67a13b6f786648d5b9e941688f708fe970a7c5358e527ceceb"
+      },
+      {
+        "id": "03-dataflow-02",
+        "status": "passed",
+        "viewBox": "0 0 579.6328125 577",
+        "source_sha256": "88327b074f3bce62184c577a1dba57e275acea63ac82d77e00b7f140d5cf273d",
+        "svg_sha256": "798abae8611b66950e4193637572917ef336701b7e1db0cee1a29289e6b3ac44"
+      },
+      {
+        "id": "03-dataflow-03",
+        "status": "passed",
+        "viewBox": "0 0 605.61328125 787",
+        "source_sha256": "3c6bd3d862898dbe912f2ecb9c660f22644a8356d6449490d4fc15d42b4579e8",
+        "svg_sha256": "d9af9ead5efcfd8ebab03cd43953b7c458a22d748d87fa33ad551061b82a2731"
+      },
+      {
+        "id": "04-inference-01",
+        "status": "passed",
+        "viewBox": "0 0 497.578125 1150",
+        "source_sha256": "1006f94937c7f5717f8c2d0a32081bda2e647f8f0672af2b6d8366a5e0bedfcd",
+        "svg_sha256": "69a550e8445fe14145fd0f368bb163068fcf77b96c595e06ec0aa43f4deba417"
+      },
+      {
+        "id": "04-inference-02",
+        "status": "passed",
+        "viewBox": "0.5 0 460 1583",
+        "source_sha256": "140ba5e2020a9fc2f97cd4cee27e437d9c5a12c018a2179d2f6d5dc26a84645e",
+        "svg_sha256": "003440e2fa6eafab61df5f6a44a1226b293b5907b402a8387d0f25815705ac42"
+      },
+      {
+        "id": "04-inference-03",
+        "status": "passed",
+        "viewBox": "-50 -10 1286 1819",
+        "source_sha256": "2234ab7611ae302241d80f2a923070e4870c0f91a1ad6d017340f295a0441bc2",
+        "svg_sha256": "0e2aba1dd9a141507c5c5b93c5e6ca67f5fb49e07e83c59409485d58483407b4"
+      },
+      {
+        "id": "05-source-reading-01",
+        "status": "passed",
+        "viewBox": "0 0 551.0703125 814",
+        "source_sha256": "11818fdc7abb25af8eaf24e1ed41b52dcb023fde58c953004c3c63359ae0c518",
+        "svg_sha256": "f36da998cc47fcf41c0ba047efba071c2c7010397d86c89c3bfe1551cabd1e12"
+      },
+      {
+        "id": "basalt-readme-01",
+        "status": "passed",
+        "viewBox": "0 0 866 577",
+        "source_sha256": "2fcd524bfd25e77a5b038992fdda344a1e1dd40a3c2758cbcec281e77bf62a16",
+        "svg_sha256": "a2ea25c3ad59e13baf4bd4f05baac3ade218db2993fa5b133a88756e0b1a0187"
+      },
+      {
+        "id": "basalt-01-blackwell-optimizations-01",
+        "status": "passed",
+        "viewBox": "0 0 860.25 865",
+        "source_sha256": "662d13ff0cd552bb4f0327642199910bda56a7900b1b4b0dbadcb96c996da707",
+        "svg_sha256": "f1b3845ff02ab7f5216c59c8d08bdfd213fec037a0753f398f8ab51b37ca5710"
+      },
+      {
+        "id": "basalt-01-blackwell-optimizations-02",
+        "status": "passed",
+        "viewBox": "0 0 336.5 679",
+        "source_sha256": "565aab1ee7c7186581c2c5405e97ad6c432ed8378680baeb457bb196b8da801c",
+        "svg_sha256": "ee134569a189bc2279634a6c3f049494fe55cc3d6a93524c4815a34a255bcdc1"
+      },
+      {
+        "id": "basalt-02-architecture-differences-01",
+        "status": "passed",
+        "viewBox": "0 0 832 523",
+        "source_sha256": "c7b8184f11d6aa34aa12124f5f435b737bc91ff5db70ddcc405dbc1328e43ade",
+        "svg_sha256": "bfdbadee7fa65f071546356649a1ee0325010d5ea73011cc7a199ee614bd14ec"
+      },
+      {
+        "id": "basalt-02-architecture-differences-02",
+        "status": "passed",
+        "viewBox": "-50 -10 850 547",
+        "source_sha256": "4544fd71622bb6e6a1d052f72954986c69321110681dc6f10f43bb0a8eda7096",
+        "svg_sha256": "cf2fe1abbca87958cedf4729fe9061af4a70d52d0f1d8cb6a2396f15a1294853"
+      }
+    ]
+  },
+  "manual": {
+    "path": "完整学习手册.md",
+    "svg_images": 17,
+    "generated_from": "正文八章与 SOURCES.md",
+    "sha256": "6825e9d07f9d715028fdb7f2f91a4963b63d1de185f508ee9c79fa2a67adb08c"
+  },
+  "limitations": [
+    "未编译或运行 Strata/Basalt 引擎，未进行 GPU 基准或质量复测。",
+    "固定源码路径与行号由本地 Git 对象验证，未逐个测试 GitHub HTTP 可达性。",
+    "图表是概念和依赖关系说明，不是实际 profiler trace。"
+  ]
+}

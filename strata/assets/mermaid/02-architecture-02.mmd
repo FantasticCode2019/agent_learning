@@ -1,0 +1,15 @@
+flowchart TB
+  Client["客户端 messages / model"] --> API["Python API / Service<br/>serve/"]
+  API --> Router["Basalt Router<br/>选择配置模型；一次只加载一个"]
+  Router --> Process["ProcessEngine<br/>驻留进程与 stdin/stdout"]
+  Process --> Entry["C++ 统一入口<br/>选择 ModelAdapter"]
+  Entry --> Qwen["Qwen adapter / 专用运行器<br/>MTP、Verifier、模型状态"]
+  Entry --> Deep["DeepSeek adapter / ModelSession<br/>DSpark、模型状态"]
+  Qwen -. 复用请求与解码框架 .-> Runtime["共享 serve Runtime<br/>src/program/serve/"]
+  Deep -. 由 SessionRuntime 接入 .-> Runtime
+  Qwen --> Shared["公共资源层<br/>文件、专家来源、Graph、会话存储、平台"]
+  Deep --> Shared
+  Qwen --> Kernels["共享与模型专属 kernels"]
+  Deep --> Kernels
+  Pack[(".basalt：分区模型容器")] -->|加载 sections| Shared
+  Kernels --> Devices["主 GPU / CPU 专家池 / 可选 peer GPU"]

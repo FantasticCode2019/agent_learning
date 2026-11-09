@@ -1,0 +1,9 @@
+flowchart TB
+  Anchor["输入当前 anchor token<br/>加位置和已有会话状态"] --> Embed["查 embedding"]
+  Embed --> Layers["逐层 attention/recurrent + MoE<br/>更新本轮中间状态"]
+  Layers --> Head["末层 norm / 输出 head<br/>得到词表 logits"]
+  Head --> Pick["按该请求的生成策略选 token"]
+  Pick --> Commit["保留有效状态并提交输出"]
+  Commit --> Stop{"到达停止条件？"}
+  Stop -->|否：新 token 成为下一轮输入| Anchor
+  Stop -->|是| Finish["结束响应，保留或停放会话"]

@@ -1,0 +1,7 @@
+flowchart TB
+  Common["共同原理<br/>token → prefill → decode → 输出"] --> Tier["异构 MoE<br/>专家分布在 GPU / RAM / 文件"]
+  Tier --> Strata["Strata 基线<br/>多硬件后端与多种引擎/服务模式"]
+  Tier --> Basalt["Basalt 基线<br/>聚焦 sm_120 的执行路径"]
+  Basalt --> Compute["计算：量化、FP4 prefill、融合"]
+  Basalt --> Move["供数：专家驻留、peer、PCIe 重叠"]
+  Basalt --> Window["窗口：draft / verify / commit"]
